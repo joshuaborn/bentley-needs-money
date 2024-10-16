@@ -3,7 +3,7 @@ require "test_helper"
 class PeopleControllerTest < ActionDispatch::IntegrationTest
   setup do
     post login_path, params: { person_id: people(:administrator).id }
-    @person = people(:administrator)
+    @person = people(:user_one)
   end
 
   test "should not be allowed to access any actions if not an administrator" do
