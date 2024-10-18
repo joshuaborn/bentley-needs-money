@@ -43,15 +43,15 @@
   </div>
   <div class="expenses-content fixed-grid has-3-cols-mobile has-7-cols-tablet scroller">
     <% last_date = nil %>
-    <% group_by_date(@person_expenses).each do |this_date, person_expense_list| %>
+    <% group_by_date(@person_transfers).each do |this_date, person_transfer_list| %>
       <% if this_date != last_date %>
         <% last_date = this_date %>
         <div class="date is-hidden-tablet">
           <%= this_date %>
         </div>
       <% end %>
-      <% person_expense_list.each do |person_expense| %>
-        <%= render person_expense %>
+      <% person_transfer_list.each do |person_transfer| %>
+        <%= render person_transfer %>
       <% end %>
     <% end %>
   </div>

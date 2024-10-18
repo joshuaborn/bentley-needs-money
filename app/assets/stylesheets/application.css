@@ -61,7 +61,7 @@ body.side-frame #contents {
   margin: 1rem;
 }
 
-.expenses .expenses-headings, .person-expense.grid {
+.expenses .expenses-headings, .person-transfer.grid {
   margin-bottom: 0;
 }
 
@@ -131,7 +131,7 @@ body.side-frame #contents {
     padding: 0.25rem 1rem;
   }
 
-  .person-expense.grid {
+  .person-transfer.grid {
     background-color: var(--bulma-background);
     border-top: var(--main-border);
     color: inherit;
@@ -139,11 +139,11 @@ body.side-frame #contents {
     padding: 0.25rem 0.5rem;
   }
     
-  .person-expense.grid .expense-payee, .person-expense.grid .expense-dollar-amount-paid {
+  .person-transfer.grid .expense-payee, .person-transfer.grid .expense-dollar-amount-paid {
     color: var(--bulma-text-bold);
   }
 
-  .person-expense.grid .expense-memo, .person-expense.grid .person-expense-dollar-amount {
+  .person-transfer.grid .expense-memo, .person-transfer.grid .person-transfer-dollar-amount {
     font-size: 0.9rem;
   }
 
@@ -161,7 +161,7 @@ body.side-frame #contents {
     padding: 0.25rem 0.5rem;
   }
 
-  .expenses .expenses-headings, .expenses .person-expense {
+  .expenses .expenses-headings, .expenses .person-transfer {
     padding: 0 0.5rem;
   }
    
@@ -175,7 +175,7 @@ body.side-frame #contents {
     border-right: var(--main-border);
   }
 
-  .expenses .person-expense {
+  .expenses .person-transfer {
     border-bottom: var(--main-border);
     color: var(--bulma-text-bold);
   }

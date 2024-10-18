@@ -109,18 +109,18 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   test "getting #edit" do
     build_expenses_for_tests()
     post login_path, params: { person_id: people(:user_one).id }
-    person_expense = people(:user_one).person_expenses.first
-    get edit_expense_path(person_expense.id)
+    person_transfer = people(:user_one).person_transfers.first
+    get edit_expense_path(person_transfer.id)
     assert_response :success
   end
-  test "error when trying to #edit a PersonExpense that is not of the current user's" do
+  test "error when trying to #edit a person_transfer that is not of the current user's" do
     build_expenses_for_tests()
     post login_path, params: { person_id: people(:user_one).id }
-    person_expense = people(:user_two).person_expenses.first
-    get edit_expense_path(person_expense.id)
+    person_transfer = people(:user_two).person_transfers.first
+    get edit_expense_path(person_transfer.id)
     assert_response :missing
   end
-  test "#update expenses and associated person_expenses" do
+  test "#update expenses and associated person_transfers" do
     build_expenses_for_tests()
     post login_path, params: { person_id: people(:user_one).id }
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
@@ -129,13 +129,13 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         expense: {
           dollar_amount_paid: 3.00,
           payee: "Expenses Splitting Software Company",
-          person_expenses_attributes: {
+          person_transfers_attributes: {
             "0": {
-              id: expense.person_expenses.first.id,
+              id: expense.person_transfers.first.id,
               dollar_amount: -1.50
             },
             "1": {
-              id: expense.person_expenses.last.id,
+              id: expense.person_transfers.last.id,
               dollar_amount: 1.50,
               in_ynab: true
             }
@@ -149,13 +149,13 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 3.00, expense_after.dollar_amount_paid
     assert_equal "Expenses Splitting Software Company", expense_after.payee
     assert_equal expense.date, expense_after.date
-    person_expense_0 = PersonExpense.find(expense.person_expenses.first.id)
-    assert_equal expense_after, person_expense_0.expense
-    assert_equal (-1.50), person_expense_0.dollar_amount
-    person_expense_1 = PersonExpense.find(expense.person_expenses.last.id)
-    assert_equal expense_after, person_expense_1.expense
-    assert_equal 1.50, person_expense_1.dollar_amount
-    assert person_expense_1.in_ynab?
+    person_transfer_0 = PersonTransfer.find(expense.person_transfers.first.id)
+    assert_equal expense_after, person_transfer_0.transfer
+    assert_equal (-1.50), person_transfer_0.dollar_amount
+    person_transfer_1 = PersonTransfer.find(expense.person_transfers.last.id)
+    assert_equal expense_after, person_transfer_1.transfer
+    assert_equal 1.50, person_transfer_1.dollar_amount
+    assert person_transfer_1.in_ynab?
   end
   test "#update re-rendering edit when there are validation errors" do
     build_expenses_for_tests()
@@ -167,13 +167,13 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         expense: {
           dollar_amount_paid: 4.00,
           payee: "Expenses Splitting Software Company",
-          person_expenses_attributes: {
+          person_transfers_attributes: {
             "0": {
-              id: expense.person_expenses.first.id,
+              id: expense.person_transfers.first.id,
               dollar_amount: -1.50
             },
             "1": {
-              id: expense.person_expenses.last.id,
+              id: expense.person_transfers.last.id,
               dollar_amount: 1.50
             }
           }
@@ -195,13 +195,13 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         expense: {
           dollar_amount_paid: 3.00,
           payee: "Expenses Splitting Software Company",
-          person_expenses_attributes: {
+          person_transfers_attributes: {
             "0": {
-              id: expense.person_expenses.first.id,
+              id: expense.person_transfers.first.id,
               dollar_amount: -1.50
             },
             "1": {
-              id: expense.person_expenses.last.id,
+              id: expense.person_transfers.last.id,
               dollar_amount: 1.50
             }
           }

@@ -12,16 +12,16 @@
       <div class="card-content">
         <div class="content">
           <%= form.bulma_form_element :number_field, :dollar_amount_paid, step: 0.01, min: 0, icon_left: "fa-solid fa-dollar-sign" %>
-          <%= form.fields_for :person_expenses do |subform| %>
+          <%= form.fields_for :person_transfers do |subform| %>
             <% if subform.object.person == @current_user %>
               <div class="field">
                 <%= subform.label :dollar_amount, "Your Contribution", class: "label" %>
                 <div class="control has-icons-left">
-                  <%= subform.number_field :dollar_amount, step: 0.01, icon_left: "fa-solid fa-dollar-sign", class: @expense.errors[:person_expenses].present? ? "input is-danger" : "input" %>
+                  <%= subform.number_field :dollar_amount, step: 0.01, icon_left: "fa-solid fa-dollar-sign", class: @expense.errors[:person_transfers].present? ? "input is-danger" : "input" %>
                   <span class="icon is-small is-left"><i class="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                 </div>
-                <% if @expense.errors[:person_expenses] %>
-                  <% @expense.errors[:person_expenses].each do |error| %>
+                <% if @expense.errors[:person_transfers] %>
+                  <% @expense.errors[:person_transfers].each do |error| %>
                     <p class="help is-danger"><%= error %></p>
                   <% end %>
                 <% end %>
@@ -36,11 +36,11 @@
               <div class="field">
                 <%= subform.label :dollar_amount, subform.object.person.name + "'s Contribution", class: "label" %>
                 <div class="control has-icons-left">
-                  <%= subform.number_field :dollar_amount, step: 0.01, icon_left: "fa-solid fa-dollar-sign", class: @expense.errors[:person_expenses].present? ? "input is-danger" : "input" %>
+                  <%= subform.number_field :dollar_amount, step: 0.01, icon_left: "fa-solid fa-dollar-sign", class: @expense.errors[:person_transfers].present? ? "input is-danger" : "input" %>
                   <span class="icon is-small is-left"><i class="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                 </div>
-                <% if @expense.errors[:person_expenses] %>
-                  <% @expense.errors[:person_expenses].each do |error| %>
+                <% if @expense.errors[:person_transfers] %>
+                  <% @expense.errors[:person_transfers].each do |error| %>
                     <p class="help is-danger"><%= error %></p>
                   <% end %>
                 <% end %>

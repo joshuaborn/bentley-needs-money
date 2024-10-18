@@ -1,0 +1,2 @@
+class Payback < Transfer
+end

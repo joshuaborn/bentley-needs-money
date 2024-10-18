@@ -2,7 +2,7 @@ class ExpensesController < ApplicationController
   layout "side_frame"
 
   def index
-    @person_expenses = @current_user.person_expenses.includes(:expense, :person_expenses, :people).order(expenses: { date: :desc })
+    @person_transfers = @current_user.person_transfers.includes(:transfer, :person_transfers, :people).order(transfers: { date: :desc })
   end
 
   def new
@@ -30,8 +30,8 @@ class ExpensesController < ApplicationController
   end
 
   def edit
-    @person_expense = @current_user.person_expenses.find(params[:id])
-    @expense = @person_expense.expense
+    @person_transfer = @current_user.person_transfers.find(params[:id])
+    @expense = @person_transfer.transfer
     render layout: false
   end
 
@@ -59,7 +59,7 @@ class ExpensesController < ApplicationController
     def update_expense_params
       params.require(:expense).permit(
         :dollar_amount_paid, :date, :payee, :memo,
-        person_expenses_attributes: [ :id, :dollar_amount, :in_ynab ]
+        person_transfers_attributes: [ :id, :dollar_amount, :in_ynab ]
       )
     end
 end
