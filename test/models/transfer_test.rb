@@ -45,4 +45,10 @@ class TransferTest < ActiveSupport::TestCase
   test "setting amount_paid in dollars" do
     assert_equal 731, Transfer.new(dollar_amount_paid: "7.31").amount_paid
   end
+  test "getting all and only expenses split between two people" do
+    build_expenses_for_tests()
+    transfers = Transfer.find_between_two_people(people(:user_one), people(:user_two))
+    assert_equal 4, transfers.length
+    assert_equal 115303, transfers.inject(0) { |sum, expense| sum + expense.amount_paid }
+  end
 end

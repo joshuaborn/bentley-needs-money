@@ -47,12 +47,6 @@ class ExpenseTest < ActiveSupport::TestCase
     assert_equal (-3.66), expense.person_transfers.where(person: people(:user_two)).first.dollar_amount
     assert_not expense.person_transfers.where(person: people(:user_two)).first.in_ynab
   end
-  test "getting all and only expenses split between two people" do
-    build_expenses_for_tests()
-    expenses = Expense.find_between_two_people(people(:user_one), people(:user_two))
-    assert_equal 4, expenses.length
-    assert_equal 115303, expenses.inject(0) { |sum, expense| sum + expense.amount_paid }
-  end
   test "creating Expense record and corresponding person_transfer records with dollar amount" do
     expense = Expense.split_between_two_people(
       people(:user_one),

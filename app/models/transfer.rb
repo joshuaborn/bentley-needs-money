@@ -17,6 +17,14 @@ class Transfer < ApplicationRecord
     self.amount_paid = (100 * dollars.to_f).to_i
   end
 
+  class << self
+    def find_between_two_people(first_person, second_person)
+      Transfer.joins("JOIN person_transfers AS pe1 ON transfers.id = pe1.transfer_id").
+        joins("JOIN person_transfers AS pe2 ON transfers.id = pe2.transfer_id").
+        where("pe1.person_id = ? AND pe2.person_id = ?", first_person, second_person)
+    end
+  end
+
   private
     def amounts_sum_to_amount_paid
       amount_sum = self.person_transfers.inject(0) do |cumulative_sum, person_transfer|
