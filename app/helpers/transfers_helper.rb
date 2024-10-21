@@ -1,4 +1,4 @@
-module ExpensesHelper
+module TransfersHelper
   def group_by_date(person_transfers)
     person_transfers.inject({}) do |this_hash, this_person_transfer|
       this_date = localize this_person_transfer.transfer.date, format: :ynab

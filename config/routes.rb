@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
   resource :login, only: [ :new, :create, :destroy ]
-  resources :expenses, except: [ :show ]
+  resources :transfers, only: [ :index ]
+  resources :expenses, except: [ :index, :show ]
   resources :people, except: [ :show ]
-  root "expenses#index"
+  root "transfers#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

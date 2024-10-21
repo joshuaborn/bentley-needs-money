@@ -38,7 +38,7 @@
         </div>
         <div class="navbar-menu" data-burger-target="menu">
           <div class="navbar-start">
-            <% if current_page?(controller: 'expenses') or current_page?(root_path) %>
+            <% if current_page?(controller: 'transfers') or current_page?(root_path) %>
               <%= link_to 'Transactions', expenses_path, class: 'navbar-item is-selected' %>
             <% else %>
               <%= link_to 'Transactions', expenses_path, class: 'navbar-item' %>

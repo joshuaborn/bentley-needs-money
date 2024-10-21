@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ExpensesHelperTest < ActionView::TestCase
+class TransfersHelperTest < ActionView::TestCase
   test "grouping of transactions by date" do
     build_expenses_for_tests()
     person_transfers = people(:user_one).person_transfers.includes(:transfer, :person_transfers, :people).order(transfers: { date: :desc })
