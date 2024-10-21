@@ -51,7 +51,7 @@
         </div>
       <% end %>
       <% person_transfer_list.each do |person_transfer| %>
-        <%= render person_transfer %>
+        <%= render partial: person_transfer.transfer, locals: { person_transfer: person_transfer } %>
       <% end %>
     <% end %>
   </div>
