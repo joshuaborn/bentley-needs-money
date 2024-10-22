@@ -1,5 +1,5 @@
 class Expense < Transfer
-  validate :amounts_sum_to_near_zero
+  validate :amounts_sum_to_amount_paid
 
   class << self
     def split_between_two_people(payer, ower, attrs = {})
@@ -27,12 +27,12 @@ class Expense < Transfer
   end
 
   private
-    def amounts_sum_to_near_zero
+    def amounts_sum_to_amount_paid
       amount_sum = self.person_transfers.inject(0) do |cumulative_sum, person_transfer|
-        cumulative_sum + person_transfer.try(&:amount).to_i
+        cumulative_sum + person_transfer.try(&:amount).to_i.abs
       end
-      if amount_sum < -1 or amount_sum > 1
-        self.errors.add(:person_transfers, "amounts should sum to zero")
+      if amount_sum != self.amount_paid
+        self.errors.add(:dollar_amount_paid, "should be the sum of the amounts split between people")
       end
     end
 end

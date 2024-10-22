@@ -7,7 +7,7 @@ class Transfer < ApplicationRecord
   validates :dollar_amount_paid, comparison: { greater_than: 0 }
   validates :person_transfers, length: { minimum: 2 }
   validates_associated :person_transfers
-  validate :amounts_sum_to_amount_paid
+  validate :amounts_sum_to_near_zero
 
   def dollar_amount_paid
     self.amount_paid.to_f / 100
@@ -26,12 +26,12 @@ class Transfer < ApplicationRecord
   end
 
   private
-    def amounts_sum_to_amount_paid
+    def amounts_sum_to_near_zero
       amount_sum = self.person_transfers.inject(0) do |cumulative_sum, person_transfer|
-        cumulative_sum + person_transfer.try(&:amount).to_i.abs
+        cumulative_sum + person_transfer.try(&:amount).to_i
       end
-      if amount_sum != self.amount_paid
-        self.errors.add(:dollar_amount_paid, "should be the sum of the amounts split between people")
+      if amount_sum < -1 or amount_sum > 1
+        self.errors.add(:person_transfers, "amounts should sum to zero")
       end
     end
 end
