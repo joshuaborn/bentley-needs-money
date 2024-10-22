@@ -13,4 +13,12 @@ class PersonTest < ActiveSupport::TestCase
          end
       end
    end
+  test "getting a list of people and the money owed" do
+   srand(9192031)
+   build_expenses_for_tests()
+   person = people(:user_one)
+   amounts_owed = person.get_amounts_owed()
+   assert_equal 447.61, amounts_owed[people(:administrator).name]
+   assert_equal 561.11, amounts_owed[people(:user_two).name]
+  end
 end

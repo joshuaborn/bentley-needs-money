@@ -33,8 +33,8 @@ class PersonTransfer < ApplicationRecord
   class << self
     def find_for_person_with_other_person(first_person, second_person)
       PersonTransfer.joins("LEFT OUTER JOIN transfers ON transfers.id = person_transfers.transfer_id").
-        joins("JOIN person_transfers AS pe2 ON transfers.id = pe2.transfer_id").
-        where("person_transfers.person_id = ? AND pe2.person_id = ?", first_person, second_person).
+        joins("JOIN person_transfers AS pt2 ON transfers.id = pt2.transfer_id").
+        where("person_transfers.person_id = ? AND pt2.person_id = ?", first_person, second_person).
         order("transfers.date", "transfers.updated_at")
     end
   end
