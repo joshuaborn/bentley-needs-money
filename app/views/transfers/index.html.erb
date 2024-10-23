@@ -27,6 +27,23 @@
       </span>
       <span>New Transaction</span>
     </button>
+    <%= link_to new_payback_path,
+      class: "button",
+      "data-turbo-frame": "side_panel_contents",
+      "data-action": "click->action-bar#disablePayback",
+      "data-action-bar-target": "enabledSettle" do
+    %>
+      <span class="icon">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </span>
+      <span>Pay Back</span>
+    <% end %>
+    <button class="button" data-action-bar-target="disabledSettle" style="display: none;" disabled="disabled">
+      <span class="icon">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </span>
+      <span>Pay Back</span>
+    </button>
   </div>
 <% end %>
 

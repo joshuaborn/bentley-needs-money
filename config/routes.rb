@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :login, only: [ :new, :create, :destroy ]
   resources :transfers, only: [ :index ]
   resources :expenses, except: [ :index, :show ]
+  resources :paybacks, only: [ :new, :create ]
   resources :people, except: [ :show ]
   root "transfers#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

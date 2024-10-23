@@ -1,0 +1,2 @@
+module PaybacksHelper
+end
