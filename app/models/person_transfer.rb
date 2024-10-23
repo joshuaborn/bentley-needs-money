@@ -37,6 +37,14 @@ class PersonTransfer < ApplicationRecord
         where("person_transfers.person_id = ? AND pt2.person_id = ?", first_person, second_person).
         order("transfers.date", "transfers.updated_at")
     end
+
+    def get_amounts_owed_for(person)
+      person.person_transfers.joins("LEFT OUTER JOIN transfers ON transfers.id = person_transfers.transfer_id").
+        joins("JOIN person_transfers AS pt2 ON transfers.id = pt2.transfer_id", "LEFT JOIN people ON people.id = pt2.person_id").
+        where("pt2.person_id != ?", person).
+        select("DISTINCT ON (pt2.person_id) pt2.person_id, pt2.*, people.name, transfers.date, transfers.updated_at").
+        order("pt2.person_id", "transfers.date DESC", "transfers.updated_at DESC")
+    end
   end
 
   private
