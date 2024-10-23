@@ -11,11 +11,15 @@ class Person < ApplicationRecord
       joins("JOIN person_transfers AS pt2 ON transfers.id = pt2.transfer_id", "LEFT JOIN people ON people.id = pt2.person_id").
       where("pt2.person_id != ?", self).
       select("DISTINCT ON (pt2.person_id) pt2.person_id, pt2.*, people.name, transfers.date, transfers.updated_at").
-      order("pt2.person_id", "transfers.date DESC", "transfers.updated_at DESC").
-      inject(Hash.new) do |hash, row|
-        hash[row.name] = row.dollar_cumulative_sum
-        hash
-      end
+      order("pt2.person_id", "transfers.date DESC", "transfers.updated_at DESC")
+    # inject(Hash.new) do |hash, row|
+    #  hash[row.person_id] = Hash.new({
+    #    dollar_cumulative_sum: row.dollar_cumulative_sum,
+    #    id: row.person_id,
+    #    name: row.name
+    #  })
+    #  hash
+    # end
   end
 
   private
