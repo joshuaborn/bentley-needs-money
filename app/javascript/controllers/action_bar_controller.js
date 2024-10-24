@@ -28,4 +28,11 @@ export default class extends Controller {
         this.enabledSettleTarget.style.display = ""
         this.disabledSettleTarget.style.display = "none"
     }
+
+    enableAllActions() {
+        this.enabledAddTarget.style.display = ""
+        this.disabledAddTarget.style.display = "none"
+        this.enabledSettleTarget.style.display = ""
+        this.disabledSettleTarget.style.display = "none"
+    }
 }
