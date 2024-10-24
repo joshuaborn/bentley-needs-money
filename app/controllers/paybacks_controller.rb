@@ -9,10 +9,9 @@ class PaybacksController < ApplicationController
   def create
     other_person = Person.find(params[:person][:id])
     @payback = Payback.new_from_parameters(
-      params[:payback][:date],
       @current_user,
       other_person,
-      params[:payback][:dollar_amount_paid]
+      create_payback_params()
     )
     if @payback.save!
       flash[:info] = "Payback was successfully created."
@@ -22,4 +21,9 @@ class PaybacksController < ApplicationController
       render :new, status: 422, layout: false
     end
   end
+
+  private
+    def create_payback_params
+      params.require(:payback).permit(:dollar_amount_paid, :date)
+    end
 end

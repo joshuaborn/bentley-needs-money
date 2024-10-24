@@ -5,10 +5,12 @@ class PaybackTest < ActiveSupport::TestCase
     srand(9192031)
     build_expenses_for_tests()
     Payback.new_from_parameters(
-      "2024-09-25",
       people(:user_one),
       people(:administrator),
-      447.61
+      {
+        date: "2024-09-25",
+        dollar_amount_paid: "447.61"
+      }
     ).save!
     person_transfer = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:administrator)).last
     assert_equal 447.61, person_transfer.dollar_amount
