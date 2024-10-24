@@ -1,5 +1,6 @@
 class Expense < Transfer
   validate :amounts_sum_to_amount_paid
+  validates :dollar_amount_paid, comparison: { greater_than: 0 }
 
   class << self
     def split_between_two_people(payer, ower, attrs = {})

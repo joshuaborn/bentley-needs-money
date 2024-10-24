@@ -4,7 +4,6 @@ class Transfer < ApplicationRecord
   has_many :people, through: :person_transfers
 
   validates :payee, :date, presence: true
-  validates :dollar_amount_paid, comparison: { greater_than: 0 }
   validates :person_transfers, length: { minimum: 2 }
   validates_associated :person_transfers
   validate :amounts_sum_to_near_zero
