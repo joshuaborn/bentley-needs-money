@@ -31,7 +31,7 @@
               <div class="field amount" id="payback_amount_<%= person_transfer.person_id %>">
                 <%= form.label :dollar_amount_paid, "Amount", class: "label" %>
                 <div class="control has-icons-left">
-                  <%= form.number_field :dollar_amount_paid, step: 0.01, value: person_transfer.dollar_amount, class: "input" %>
+                  <%= form.number_field :dollar_amount_paid, step: 0.01, value: person_transfer.dollar_cumulative_sum, class: "input" %>
                   <span class="icon is-small is-left">
                     <i class="fa-solid fa-dollar-sign" aria-hidden="true"></i>
                   </span>
@@ -41,7 +41,7 @@
               <div class="field amount" style="display: none;" id="payback_amount_<%= person_transfer.person_id %>">
                 <%= form.label :dollar_amount_paid, "Amount", class: "label" %>
                 <div class="control has-icons-left">
-                  <%= form.number_field :dollar_amount_paid, step: 0.01, value: person_transfer.dollar_amount, class: "input", disabled: "disabled" %>
+                  <%= form.number_field :dollar_amount_paid, step: 0.01, value: person_transfer.dollar_cumulative_sum, class: "input", disabled: "disabled" %>
                   <span class="icon is-small is-left">
                     <i class="fa-solid fa-dollar-sign" aria-hidden="true"></i>
                   </span>
