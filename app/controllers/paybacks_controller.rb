@@ -38,6 +38,12 @@ class PaybacksController < ApplicationController
     end
   end
 
+  def destroy
+    @current_user.paybacks.find(params[:id]).destroy!
+    flash[:info] = "Payback was successfully deleted."
+    render turbo_stream: turbo_stream.action(:refresh, "")
+  end
+
   private
     def create_payback_params
       params.require(:payback).permit(:dollar_amount_paid, :date)

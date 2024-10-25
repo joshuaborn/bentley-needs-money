@@ -105,4 +105,38 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :missing
     assert_equal attributes_before, Payback.find(payback.id).attributes.to_yaml
   end
+  test "#destroy" do
+    build_expenses_for_tests()
+    post login_path, params: { person_id: people(:administrator).id }
+    post paybacks_path, params: {
+      person: { id: people(:user_one).id },
+      payback: {
+        date: "2024-10-24",
+        dollar_amount_paid: "-447.61"
+      }
+    }
+    payback = people(:administrator).paybacks.last
+    assert_difference("Payback.count", -1) do
+      delete payback_path(payback)
+    end
+    assert_response :success
+    assert_select 'turbo-stream[action="refresh"]'
+  end
+  test "#destroy of transaction not associated with current_user" do
+    build_expenses_for_tests()
+    post login_path, params: { person_id: people(:administrator).id }
+    post paybacks_path, params: {
+      person: { id: people(:user_one).id },
+      payback: {
+        date: "2024-10-24",
+        dollar_amount_paid: "-447.61"
+      }
+    }
+    payback = people(:administrator).paybacks.last
+    post login_path, params: { person_id: people(:user_two).id }
+    assert_no_difference("Payback.count") do
+      delete payback_path(payback)
+    end
+    assert_response :missing
+  end
 end
