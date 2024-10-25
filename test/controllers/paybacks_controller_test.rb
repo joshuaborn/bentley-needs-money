@@ -54,4 +54,53 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     get edit_payback_path(person_transfer.id)
     assert_response :success
   end
+  test "#update payback and associated person_transfers" do
+    build_expenses_for_tests()
+    post login_path, params: { person_id: people(:administrator).id }
+    post paybacks_path, params: {
+      person: { id: people(:user_one).id },
+      payback: {
+        date: "2024-10-24",
+        dollar_amount_paid: "-447.61"
+      }
+    }
+    payback = people(:administrator).paybacks.last
+    assert_no_difference("Payback.count") do
+      patch payback_path(payback), params: {
+        payback: {
+          date: "2024-10-25",
+          dollar_amount_paid: "-445.46"
+        }
+      }
+    end
+    assert_response :success
+    assert_select 'turbo-stream[action="refresh"]'
+    payback_after = Payback.find(payback.id)
+    assert_equal (-445.46), payback_after.dollar_amount_paid
+    assert_equal Date.new(2024, 10, 25), payback_after.date
+  end
+  test "error when trying to #update an expense not associated with current user" do
+    build_expenses_for_tests()
+    post login_path, params: { person_id: people(:administrator).id }
+    post paybacks_path, params: {
+      person: { id: people(:user_one).id },
+      payback: {
+        date: "2024-10-24",
+        dollar_amount_paid: "-447.61"
+      }
+    }
+    payback = people(:administrator).paybacks.last
+    attributes_before = payback.attributes.to_yaml
+    post login_path, params: { person_id: people(:user_two).id }
+    assert_no_difference("Payback.count") do
+      patch payback_path(payback), params: {
+        payback: {
+          date: "2024-10-25",
+          dollar_amount_paid: "-445.46"
+        }
+      }
+    end
+    assert_response :missing
+    assert_equal attributes_before, Payback.find(payback.id).attributes.to_yaml
+  end
 end

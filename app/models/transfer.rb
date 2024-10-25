@@ -1,7 +1,7 @@
 class Transfer < ApplicationRecord
   has_many :person_transfers, dependent: :destroy
   accepts_nested_attributes_for :person_transfers
-  has_many :people, through: :person_transfers
+  has_many :people, through: :person_transfers, source: "person"
 
   validates :payee, :date, presence: true
   validates :person_transfers, length: { minimum: 2 }

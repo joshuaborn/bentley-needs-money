@@ -24,12 +24,26 @@ class PaybacksController < ApplicationController
 
   def edit
     @payback = @current_user.person_transfers.find(params[:id]).transfer
-    @person_transfers = @current_user.get_amounts_owed
+    @other_person = @payback.people.find { |person| person != @current_user }
     render layout: false
+  end
+
+  def update
+    @payback = @current_user.paybacks.find(params[:id])
+    if @payback.update(update_payback_params)
+      flash[:info] = "Payback was successfully updated."
+      render turbo_stream: turbo_stream.action(:refresh, "")
+    else
+      render :edit, status: 422, layout: false
+    end
   end
 
   private
     def create_payback_params
+      params.require(:payback).permit(:dollar_amount_paid, :date)
+    end
+
+    def update_payback_params
       params.require(:payback).permit(:dollar_amount_paid, :date)
     end
 end

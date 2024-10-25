@@ -12,15 +12,11 @@
       <div class="card-content">
         <div class="content">
           <div class="field">
-            <%= label :person, :id, "Person", class: "label" %>
-            <div class="control has-icons-left has-icons-right">
-              <%= collection_select :person, :id, @person_transfers, :person_id, :name, {}, { class: "input" } %>
-              <span class="icon is-small is-left">
-                <i class="fas fa-user"></i>
-              </span>
-              <span class="icon is-right">
-                <i class="fa-solid fa-caret-down"></i>
-              </span>
+            <div class="label">
+              Person
+            </div>
+            <div class="control">
+              <%= @other_person.name %>
             </div>
           </div>
           <%= form.bulma_form_element :number_field, :dollar_amount_paid, step: 0.01, icon_left: "fa-solid fa-dollar-sign", label_text: "Amount" %>
