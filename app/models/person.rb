@@ -2,6 +2,7 @@ class Person < ApplicationRecord
   has_many :person_transfers, dependent: :destroy
   has_many :transfers, through: :person_transfers, dependent: :destroy
   has_many :expenses, through: :person_transfers, source: :transfer
+  has_many :paybacks, through: :person_transfers, source: :transfer
   before_destroy :check_administrator_count
 
   validates :name, presence: true

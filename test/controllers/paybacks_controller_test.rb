@@ -40,4 +40,18 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'turbo-stream[action="refresh"]'
   end
+  test "getting #edit" do
+    build_expenses_for_tests()
+    post login_path, params: { person_id: people(:administrator).id }
+    post paybacks_path, params: {
+      person: { id: people(:user_one).id },
+      payback: {
+        date: "2024-10-24",
+        dollar_amount_paid: "-447.61"
+      }
+    }
+    person_transfer = people(:administrator).person_transfers.last
+    get edit_payback_path(person_transfer.id)
+    assert_response :success
+  end
 end

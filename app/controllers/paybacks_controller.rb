@@ -22,6 +22,12 @@ class PaybacksController < ApplicationController
     end
   end
 
+  def edit
+    @payback = @current_user.person_transfers.find(params[:id]).transfer
+    @person_transfers = @current_user.get_amounts_owed
+    render layout: false
+  end
+
   private
     def create_payback_params
       params.require(:payback).permit(:dollar_amount_paid, :date)
