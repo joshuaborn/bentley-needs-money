@@ -78,6 +78,8 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     payback_after = Payback.find(payback.id)
     assert_equal (-445.46), payback_after.dollar_amount_paid
     assert_equal Date.new(2024, 10, 25), payback_after.date
+    assert_equal (-445.46), payback_after.person_transfers.first.dollar_amount
+    assert_equal 445.46, payback_after.person_transfers.last.dollar_amount
   end
   test "error when trying to #update an expense not associated with current user" do
     build_expenses_for_tests()
