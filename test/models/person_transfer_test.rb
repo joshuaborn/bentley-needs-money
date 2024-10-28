@@ -57,7 +57,7 @@ class PersonTransferTest < ActiveSupport::TestCase
     assert_equal 1, people(:user_two).person_transfers.count
     assert_equal (-326), people(:user_two).person_transfers.first.cumulative_sum
   end
-  test "when a PersonTransfer is saved, its cumulative_sum is set to the sum of the previous PersonTransfer's cumulative_sum and this PersonTransfer's amount" do
+  test "when a PersonTransfer is created, its cumulative_sum is set to the sum of the previous PersonTransfer's cumulative_sum and this PersonTransfer's amount" do
     srand(9192031)
     build_expenses_for_tests()
     person_transfers = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:user_two))
@@ -76,7 +76,7 @@ class PersonTransferTest < ActiveSupport::TestCase
     person_transfer = expense.person_transfers.where(person: people(:user_one)).first
     assert_equal (-55612), person_transfer.cumulative_sum
   end
-  test "when a PersonTransfer is saved before another, each's cumulative_sum is set appropriately" do
+  test "when a PersonTransfer is created before another, each's cumulative_sum is set appropriately" do
     srand(9192031)
     build_expenses_for_tests()
     Expense.split_between_two_people(
@@ -93,7 +93,7 @@ class PersonTransferTest < ActiveSupport::TestCase
     assert_equal (-3991), person_transfers[3].cumulative_sum
     assert_equal (-55612), person_transfers[4].cumulative_sum
   end
-  test "when a PersonTransfer is saved before all others, its cumulative_sum is set to its own amount" do
+  test "when a PersonTransfer is created before all others, its cumulative_sum is set to its own amount" do
     srand(9192031)
     build_expenses_for_tests()
     Expense.split_between_two_people(
@@ -109,6 +109,17 @@ class PersonTransferTest < ActiveSupport::TestCase
     assert_equal 870, person_transfers[2].cumulative_sum
     assert_equal (-4391), person_transfers[3].cumulative_sum
     assert_equal (-56012), person_transfers[4].cumulative_sum
+  end
+  test "when a PersonTransfer is updated, its cumulative_sum is set to the sum of the previous PersonTransfer's cumulative_sum and this PersonTransfer's amount" do
+    srand(9192031)
+    build_expenses_for_tests()
+    person_transfers = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:user_two))
+    assert_equal 326, person_transfers[0].cumulative_sum
+    assert_equal 770, person_transfers[1].cumulative_sum
+    assert_equal (-4491), person_transfers[2].cumulative_sum
+    assert_equal (-56112), person_transfers[3].cumulative_sum
+    person_transfers[2].update(dollar_amount: -42.61)
+    assert_equal (-3491), person_transfers[2].cumulative_sum
   end
   test "getting cumulative_sum in dollars" do
     srand(9192031)

@@ -51,13 +51,28 @@ class PersonTransfer < ApplicationRecord
     def set_cumulative_sums
       other_person = self.transfer.person_transfers.detect { |person_transfer| person_transfer.person_id != self.person_id }.person
       existing_person_transfers = PersonTransfer.find_for_person_with_other_person(self.person, other_person)
-      if existing_person_transfers.where("transfers.date <= ?", self.transfer.date).empty?
+      if existing_person_transfers.where(
+          "transfers.date < ? OR (transfers.date = ? AND transfers.updated_at < ?)",
+          self.transfer.date,
+          self.transfer.date,
+          self.transfer.updated_at
+        ).empty?
         self.cumulative_sum = self.amount
       else
-        previous_person_transfer = existing_person_transfers.where("transfers.date <= ?", self.transfer.date).last
+        previous_person_transfer = existing_person_transfers.where(
+          "transfers.date < ? OR (transfers.date = ? AND transfers.updated_at < ?)",
+          self.transfer.date,
+          self.transfer.date,
+          self.transfer.updated_at
+        ).last
         self.cumulative_sum = self.amount + previous_person_transfer.cumulative_sum
       end
-      existing_person_transfers.where("transfers.date > ?", self.transfer.date).inject(self.cumulative_sum) do |sum, person_transfer|
+      existing_person_transfers.where(
+        "transfers.date > ? OR (transfers.date = ? AND transfers.updated_at > ?)",
+        self.transfer.date,
+        self.transfer.date,
+        self.transfer.updated_at
+      ).inject(self.cumulative_sum) do |sum, person_transfer|
         person_transfer.update_columns(cumulative_sum: sum + person_transfer.amount)
         person_transfer.cumulative_sum
       end
