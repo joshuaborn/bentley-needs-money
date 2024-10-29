@@ -46,6 +46,15 @@ body.side-frame #contents {
 
 #action-bar .buttons .button {
   border: none;
+  flex-direction: column;
+}
+
+#action-bar .buttons .button .icon {
+  margin: 0;
+}
+
+#action-bar .buttons .button .text {
+  font-size: 0.75rem;
 }
 
 .card-header {
@@ -175,6 +184,18 @@ body.side-frame #contents {
 
   #action-bar .buttons {
     justify-content: start;
+  }
+  
+  #action-bar .buttons .button {
+    flex-direction: row;
+  }
+
+  #action-bar .buttons .button .icon {
+    margin: 0 0.25rem 0 -0.5rem;
+  }
+
+  #action-bar .buttons .button .text {
+    font-size: 1rem;
   }
 
   #contents {
