@@ -1,13 +1,4 @@
 <% content_for :title, 'Transactions' %>
-<% content_for :navbar_action do %>
-  <div class="navbar-item is-hidden-desktop">
-    <%= link_to new_expense_path, "data-turbo-frame": "side_panel_contents" do %>
-      <span class="icon">
-        <i class="fa-solid fa-plus fa-lg has-text-link"></i>
-      </span>
-    <% end %>
-  </div>
-<% end %>
 <% content_for :action_bar do %>
   <div class="container buttons">
     <%= link_to new_expense_path,
