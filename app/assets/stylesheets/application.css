@@ -111,22 +111,24 @@ body.side-frame #contents {
 }
 
 @media screen and (max-width: 1023px) {
-  #side-panel {
+  #side-panel .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     left: 0;
     padding: 0;
     position: fixed;
-    top: 53px;
+    top: 0;
     width: 100%;
     z-index: 100;
   }
 
-  #side-panel .card {
-    height: 100%;
-    width: 100%;
-  }
-
   #side-panel .card .card-header {
     height: 52px;
+  }
+
+  #side-panel .card .card-content {
+    flex-grow: 1;
   }
 
   #side-panel .card .card-footer {

@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "side_panel_contents" do %>
-  <div class="card">
-    <%= form_with model: @payback do |form| %>
+  <%= form_with model: @payback do |form| %>
+    <div class="card">
       <header class="card-header">
         <p class="card-header-title">Pay Back</p>
         <a href="#" class="card-header-icon" data-action="click->action-bar#enablePayback">
@@ -57,5 +57,5 @@
         <a href="#" class="card-footer-item" data-action="click->action-bar#enablePayback">Cancel</a>
       </footer>
     <% end %>
-  </div>
-<% end %>
+  <% end %>
+</div>

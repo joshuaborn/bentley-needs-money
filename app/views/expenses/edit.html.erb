@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "side_panel_contents" do %>
-  <div class="card" data-controller="card">
-    <%= form_with model: @expense do |form| %>
+  <%= form_with model: @expense do |form| %>
+    <div class="card" data-controller="card">
       <header class="card-header">
         <p class="card-header-title">Edit Transaction</p>
         <a href="#" class="card-header-icon">
@@ -64,6 +64,6 @@
         %>
         <a href="#" class="card-footer-item">Cancel</a>
       </footer>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 <% end %>
