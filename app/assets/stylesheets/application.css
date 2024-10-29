@@ -61,6 +61,11 @@ body.side-frame #contents {
   margin: 1rem;
 }
 
+.notification .delete {
+  right: 0.25rem;
+  top: 0.25rem;
+}
+
 .expenses .expenses-headings, .person-transfer.grid {
   margin-bottom: 0;
 }
