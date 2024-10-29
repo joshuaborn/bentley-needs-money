@@ -8,7 +8,8 @@ class PersonTransfer < ApplicationRecord
   validates :transfer, presence: true
   validates :amount, presence: true
 
-  before_save :set_cumulative_sums
+  before_save :set_cumulative_sums_before_save
+  after_destroy :set_cumulative_sums_after_destroy
 
   def dollar_amount
     self.amount.to_f / 100
@@ -48,7 +49,7 @@ class PersonTransfer < ApplicationRecord
   end
 
   private
-    def set_cumulative_sums
+    def set_cumulative_sums_before_save
       other_person = self.transfer.person_transfers.detect { |person_transfer| person_transfer.person_id != self.person_id }.person
       existing_person_transfers = PersonTransfer.find_for_person_with_other_person(self.person, other_person)
       if existing_person_transfers.where(
@@ -73,6 +74,35 @@ class PersonTransfer < ApplicationRecord
         self.transfer.date,
         self.transfer.updated_at
       ).inject(self.cumulative_sum) do |sum, person_transfer|
+        person_transfer.update_columns(cumulative_sum: sum + person_transfer.amount)
+        person_transfer.cumulative_sum
+      end
+    end
+
+    def set_cumulative_sums_after_destroy
+      other_person = self.transfer.person_transfers.detect { |person_transfer| person_transfer.person_id != self.person_id }.person
+      existing_person_transfers = PersonTransfer.find_for_person_with_other_person(self.person, other_person)
+      if existing_person_transfers.where(
+          "transfers.date < ? OR (transfers.date = ? AND transfers.updated_at < ?)",
+          self.transfer.date,
+          self.transfer.date,
+          self.transfer.updated_at
+        ).empty?
+        starting_sum = 0
+      else
+        starting_sum = existing_person_transfers.where(
+          "transfers.date < ? OR (transfers.date = ? AND transfers.updated_at < ?)",
+          self.transfer.date,
+          self.transfer.date,
+          self.transfer.updated_at
+        ).last.cumulative_sum
+      end
+      existing_person_transfers.where(
+        "transfers.date > ? OR (transfers.date = ? AND transfers.updated_at > ?)",
+        self.transfer.date,
+        self.transfer.date,
+        self.transfer.updated_at
+      ).inject(starting_sum) do |sum, person_transfer|
         person_transfer.update_columns(cumulative_sum: sum + person_transfer.amount)
         person_transfer.cumulative_sum
       end

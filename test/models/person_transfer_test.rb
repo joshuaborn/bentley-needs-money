@@ -121,6 +121,20 @@ class PersonTransferTest < ActiveSupport::TestCase
     person_transfers[2].update(dollar_amount: -42.61)
     assert_equal (-3491), person_transfers[2].cumulative_sum
   end
+  test "when a PersonTransfer is destroyed, subsequent PersonTransfers' cumulative_sums are updated" do
+    srand(9192031)
+    build_expenses_for_tests()
+    person_transfers = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:user_two))
+    assert_equal 326, person_transfers[0].cumulative_sum
+    assert_equal 770, person_transfers[1].cumulative_sum
+    assert_equal (-4491), person_transfers[2].cumulative_sum
+    assert_equal (-56112), person_transfers[3].cumulative_sum
+    person_transfers[1].destroy
+    person_transfers = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:user_two))
+    assert_equal 326, person_transfers[0].cumulative_sum
+    assert_equal (-4935), person_transfers[1].cumulative_sum
+    assert_equal (-56556), person_transfers[2].cumulative_sum
+  end
   test "getting cumulative_sum in dollars" do
     srand(9192031)
     expense = Expense.split_between_two_people(
