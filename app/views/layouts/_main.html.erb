@@ -28,18 +28,20 @@
             <%= image_tag "bentley-153x153.png" %>
             Bentley Needs Money
           <% end %>
-          <a class="navbar-burger" role="button" aria-label="menu" aria-expanded="false" data-burger-target="burger" data-action="click->burger#toggle">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
+          <% if person_signed_in? %>
+            <a class="navbar-burger" role="button" aria-label="menu" aria-expanded="false" data-burger-target="burger" data-action="click->burger#toggle">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+          <% end %>
         </div>
-        <div class="navbar-menu" data-burger-target="menu">
-          <div class="navbar-start">
-          </div>
-          <div class="navbar-end">
-            <% if person_signed_in? %>
+        <% if person_signed_in? %>
+          <div class="navbar-menu" data-burger-target="menu">
+            <div class="navbar-start">
+            </div>
+            <div class="navbar-end">
               <div class="navbar-item has-dropdown is-hoverable dropdown">
                 <a class="navbar-link dropdown-trigger">
                   <%= current_person.name %>
@@ -48,9 +50,9 @@
                     <%= button_to 'Logout', destroy_person_session_path, method: 'delete', class: 'navbar-item dropdown-item' %>
                 </div>
               </div>
-            <% end %>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
     </nav>
     <%= yield :content %>
