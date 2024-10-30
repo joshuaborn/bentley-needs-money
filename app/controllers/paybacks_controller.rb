@@ -2,14 +2,14 @@ class PaybacksController < ApplicationController
   def new
     @payback = Payback.new
     @payback.date = Date.today
-    @person_transfers = @current_user.get_amounts_owed
+    @person_transfers = current_person.get_amounts_owed
     render layout: false
   end
 
   def create
     other_person = Person.find(params[:person][:id])
     @payback = Payback.new_from_parameters(
-      @current_user,
+      current_person,
       other_person,
       create_payback_params()
     )
@@ -17,19 +17,19 @@ class PaybacksController < ApplicationController
       flash[:info] = "Payback was successfully created."
       render turbo_stream: turbo_stream.action(:refresh, "")
     else
-      @person_transfers = @current_user.get_amounts_owed
+      @person_transfers = current_person.get_amounts_owed
       render :new, status: 422, layout: false
     end
   end
 
   def edit
-    @payback = @current_user.person_transfers.find(params[:id]).transfer
-    @other_person = @payback.people.find { |person| person != @current_user }
+    @payback = current_person.person_transfers.find(params[:id]).transfer
+    @other_person = @payback.people.find { |person| person != current_person }
     render layout: false
   end
 
   def update
-    @payback = @current_user.paybacks.find(params[:id])
+    @payback = current_person.paybacks.find(params[:id])
     if @payback.update(update_payback_params)
       flash[:info] = "Payback was successfully updated."
       render turbo_stream: turbo_stream.action(:refresh, "")
@@ -39,7 +39,7 @@ class PaybacksController < ApplicationController
   end
 
   def destroy
-    @current_user.paybacks.find(params[:id]).destroy!
+    current_person.paybacks.find(params[:id]).destroy!
     flash[:info] = "Payback was successfully deleted."
     render turbo_stream: turbo_stream.action(:refresh, "")
   end
