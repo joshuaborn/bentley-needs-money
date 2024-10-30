@@ -76,12 +76,16 @@ body.side-frame #contents {
 }
 
 .notification {
-  margin: 1rem;
+  margin: 1rem 0 0;
 }
 
 .notification .delete {
   right: 0.25rem;
   top: 0.25rem;
+}
+
+body.side-frame .notification {
+  margin-top: 0;
 }
 
 .expenses .expenses-headings, .person-transfer.grid {
@@ -115,6 +119,10 @@ body.side-frame #contents {
 }
 
 @media screen and (max-width: 1023px) {
+  body > .container  {
+    padding: 0 1rem;
+  }
+
   #side-panel .card {
     display: flex;
     flex-direction: column;
