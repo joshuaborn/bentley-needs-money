@@ -123,6 +123,10 @@ body.side-frame .notification {
     padding: 0 1rem;
   }
 
+  #side-panel {
+    position: absolute;
+  }
+
   #side-panel .card {
     display: flex;
     flex-direction: column;
