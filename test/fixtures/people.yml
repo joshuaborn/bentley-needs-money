@@ -3,11 +3,14 @@
 administrator:
   name: Administrator
   is_administrator: true
+  email: admin@example.com
 
 user_one:
   name: User1
   is_administrator: false
+  email: user1@example.com
 
 user_two:
   name: User2
   is_administrator: false
+  email: user2@example.com

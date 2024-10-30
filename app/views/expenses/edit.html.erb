@@ -13,7 +13,7 @@
         <div class="content">
           <%= form.bulma_form_element :number_field, :dollar_amount_paid, step: 0.01, min: 0, icon_left: "fa-solid fa-dollar-sign" %>
           <%= form.fields_for :person_transfers do |subform| %>
-            <% if subform.object.person == @current_user %>
+            <% if subform.object.person == current_person %>
               <div class="field">
                 <%= subform.label :dollar_amount, "Your Contribution", class: "label" %>
                 <div class="control has-icons-left">

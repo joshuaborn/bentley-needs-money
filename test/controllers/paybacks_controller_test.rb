@@ -1,14 +1,15 @@
 require "test_helper"
 
 class PaybacksControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
   test "getting #new" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     get new_payback_path
     assert_response :success
   end
   test "#create in which the current_user is paying someone else back" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     parameters = {
       person: { id: people(:administrator).id },
       payback: {
@@ -25,7 +26,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
   end
   test "#create in which the current_user is being paid back by someone else" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:administrator).id }
+    sign_in people(:administrator)
     parameters = {
       person: { id: people(:user_one).id },
       payback: {
@@ -42,7 +43,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
   end
   test "getting #edit" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:administrator).id }
+    sign_in people(:administrator)
     post paybacks_path, params: {
       person: { id: people(:user_one).id },
       payback: {
@@ -56,7 +57,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
   end
   test "#update payback and associated person_transfers" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:administrator).id }
+    sign_in people(:administrator)
     post paybacks_path, params: {
       person: { id: people(:user_one).id },
       payback: {
@@ -83,7 +84,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
   end
   test "error when trying to #update an expense not associated with current user" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:administrator).id }
+    sign_in people(:administrator)
     post paybacks_path, params: {
       person: { id: people(:user_one).id },
       payback: {
@@ -93,7 +94,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     }
     payback = people(:administrator).paybacks.last
     attributes_before = payback.attributes.to_yaml
-    post login_path, params: { person_id: people(:user_two).id }
+    sign_in people(:user_two)
     assert_no_difference("Payback.count") do
       patch payback_path(payback), params: {
         payback: {
@@ -107,7 +108,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
   end
   test "#destroy" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:administrator).id }
+    sign_in people(:administrator)
     post paybacks_path, params: {
       person: { id: people(:user_one).id },
       payback: {
@@ -124,7 +125,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
   end
   test "#destroy of transaction not associated with current_user" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:administrator).id }
+    sign_in people(:administrator)
     post paybacks_path, params: {
       person: { id: people(:user_one).id },
       payback: {
@@ -133,7 +134,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
       }
     }
     payback = people(:administrator).paybacks.last
-    post login_path, params: { person_id: people(:user_two).id }
+    sign_in people(:user_two)
     assert_no_difference("Payback.count") do
       delete payback_path(payback)
     end

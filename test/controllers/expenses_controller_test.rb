@@ -1,13 +1,14 @@
 require "test_helper"
 
 class ExpensesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
   test "getting #new" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     get new_expense_path
     assert_response :success
   end
   test "#new has a list of people with which to create a new transaction who aren't the current user" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     get new_expense_path
     assert_select "select#person_id option" do |elements|
       Person.where.not(id: people(:user_one)).all.each_with_index do |person, i|
@@ -17,7 +18,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
   end
   test "#create when current_user paid and is splitting with other person" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     parameters = {
       person_paid: "current",
       person: { id: people(:user_two).id },
@@ -39,7 +40,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-stream[action="refresh"]'
   end
   test "#create when other person paid and is splitting with current_user" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     parameters = {
       person_paid: "other",
       person: { id: people(:user_two).id },
@@ -61,7 +62,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-stream[action="refresh"]'
   end
   test "#create re-renders new when there are validation errors" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     parameters = {
       person_paid: "other",
       person: { id: people(:user_two).id },
@@ -79,7 +80,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "p.help.is-danger", "can't be blank"
   end
   test "#create raises an error person_paid parameter is invalid on create" do
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     parameters = {
       person_paid: "foobar",
       person: { id: people(:user_two).id },
@@ -98,21 +99,21 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
   test "getting #edit" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     person_transfer = people(:user_one).person_transfers.first
     get edit_expense_path(person_transfer.id)
     assert_response :success
   end
   test "error when trying to #edit a person_transfer that is not of the current user's" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     person_transfer = people(:user_two).person_transfers.first
     get edit_expense_path(person_transfer.id)
     assert_response :missing
   end
   test "#update expenses and associated person_transfers" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
     assert_no_difference("Expense.count") do
       patch expense_path(expense), params: {
@@ -149,7 +150,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
   test "#update re-rendering edit when there are validation errors" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
     attributes_before = expense.attributes.to_yaml
     assert_no_difference("Expense.count") do
@@ -177,7 +178,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
   test "error when trying to #update an expense not associated with current user" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:administrator), people(:user_two)).last
     attributes_before = expense.attributes.to_yaml
     assert_no_difference("Expense.count") do
@@ -203,7 +204,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
   test "#destroy" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
     assert_difference("Expense.count", -1) do
       delete expense_path(expense)
@@ -213,7 +214,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
   test "#destroy of transaction not associated with current_user" do
     build_expenses_for_tests()
-    post login_path, params: { person_id: people(:user_one).id }
+    sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:administrator), people(:user_two)).last
     assert_no_difference("Expense.count") do
       delete expense_path(expense)

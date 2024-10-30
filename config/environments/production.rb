@@ -103,4 +103,6 @@ Rails.application.configure do
     "bentleyneeds.money",
     /.*\.bentleyneeds\.money/
   ]
+
+  config.action_mailer.default_url_options = { host: "bentleyneeds.money", port: 80 }
 end
