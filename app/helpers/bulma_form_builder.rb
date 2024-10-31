@@ -1,7 +1,7 @@
 class BulmaFormBuilder < ActionView::Helpers::FormBuilder
   def bulma_form_element(form_method, attribute, options = {})
     label_text = options.delete(:label_text)
-    no_label= options.delete(:no_label)
+    no_label = options.delete(:no_label)
     class_list = @object.errors[attribute].present? ? [ "input", "is-danger", options[:class] ] : [ "input", options[:class] ]
     options[:class] = class_list.reject(&:nil?).join(" ")
     contents = control_helper(form_method, attribute, options)
@@ -9,6 +9,9 @@ class BulmaFormBuilder < ActionView::Helpers::FormBuilder
       contents = @object.errors[attribute].inject(contents) do |contents, error|
         contents + @template.content_tag(:p, error, class: "help is-danger")
       end
+    end
+    if options[:help_text]
+      contents = contents + @template.content_tag(:p, options[:help_text], class: "help")
     end
     @template.content_tag(:div, class: "field") do
       unless no_label
