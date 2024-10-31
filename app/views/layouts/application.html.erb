@@ -2,7 +2,7 @@
   <div class="container">
     <% if flash.any? %>
         <% flash.each do |type, msg| %>
-          <div class="notification is-<%= type %>" data-turbo-temporary>
+          <div class="notification is-<%= bulma_notification_name(type) %>" data-turbo-temporary>
             <%= msg %>
           </div>
         <% end %>
