@@ -11,16 +11,16 @@ html, body {
   margin-top: 1rem;
 }
 
-body.side-frame {
+body.side-panel {
   display: flex;
   flex-direction: column;
 }
 
-body.side-frame #navigation-bar, body.side-frame #action-bar {
+body.side-panel #navigation-bar, body.side-panel #action-bar {
   flex: 0 0 auto;
 }
 
-body.side-frame #contents {
+body.side-panel #contents {
   flex: 1 1 auto;
   margin-bottom: 0;
   min-height: 0;
