@@ -8,4 +8,8 @@ export default class extends Controller {
         event.preventDefault()
         this.containerTarget.replaceChildren()
     }
+
+    clearSelf() {
+        this.element.remove()
+    }
 }
