@@ -1,13 +1,15 @@
 <h2 class="title">Resend Unlock Instructions</h2>
 
-<%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
-  <%= f.bulma_form_element :email_field, :email, autofocus: true, autocomplete: "email" %>
+<div class="block">
+  <%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
+    <%= f.bulma_form_element :email_field, :email, autofocus: true, autocomplete: "email" %>
 
-  <div class="field">
-    <div class="control">
-      <%= f.submit "Resend Unlock Instructions", class: "button is-link" %>
+    <div class="field">
+      <div class="control">
+        <%= f.submit "Resend Unlock Instructions", class: "button is-link" %>
+      </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>
 
 <%= render "devise/shared/links" %>
