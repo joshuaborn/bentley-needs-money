@@ -3,7 +3,7 @@
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">New Transaction</p>
-        <a href="#" class="card-header-icon" data-action="click->action-bar#enableNewTransaction">
+        <a href="#" class="card-header-icon" data-action="click->action-bar#enableNewTransaction click->clearing#clearChildren">
           <span class="icon">
             <i class="fa-solid fa-xmark fa-lg has-text-link"></i>
           </span>
@@ -43,7 +43,7 @@
       </div>
       <footer class="card-footer buttons has-addons">
         <%= form.submit "Create", class: "card-footer-item button is-link" %>
-        <a href="#" class="card-footer-item" data-action="click->action-bar#enableNewTransaction">Cancel</a>
+        <a href="#" class="card-footer-item" data-action="click->action-bar#enableNewTransaction click->clearing#clearChildren">Cancel</a>
       </footer>
     </div>
   <% end %>

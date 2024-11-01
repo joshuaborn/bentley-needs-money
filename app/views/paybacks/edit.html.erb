@@ -3,7 +3,7 @@
     <div class="card" data-controller="card">
       <header class="card-header">
         <p class="card-header-title">Edit Payback</p>
-        <a href="#" class="card-header-icon">
+        <a href="#" class="card-header-icon" data-action="click->clearing#clearChildren">
           <span class="icon">
             <i class="fa-solid fa-xmark fa-lg has-text-link"></i>
           </span>
@@ -33,7 +33,7 @@
             turbo_confirm: "Are you sure you want to delete this payback?"
           }
         %>
-        <a href="#" class="card-footer-item">Cancel</a>
+        <a href="#" class="card-footer-item" data-action="click->clearing#clearChildren">Cancel</a>
       </footer>
     </div>
   <% end %>

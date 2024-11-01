@@ -1,12 +1,12 @@
 <% content_for :body_attributes, 'class=side-frame' %>
 <% content_for :content do %>
   <div id="contents" class="columns is-gapless">
-    <div id="side-panel" class="column is-one-quarter-desktop">
-      <turbo-frame id="side_panel_contents">
+    <div id="side-panel" class="column is-one-quarter-desktop" data-controller="clearing">
+      <turbo-frame id="side_panel_contents" data-clearing-target="container">
         <% if flash.any? %>
           <% flash.each do |type, msg| %>
             <div class="notification is-<%= bulma_notification_name(type) %>" data-turbo-temporary>
-              <a href="#" class="delete"></a>
+              <a href="#" class="delete" data-action="click->clearing#clearChildren"></a>
               <%= msg %>
             </div>
           <% end %>
