@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  devise_for :people, controllers: { registrations: "registrations" }
+  devise_for :people, controllers: {
+    registrations: "people/registrations",
+    confirmations: "people/confirmations"
+  }
   resources :transfers, only: [ :index ]
   resources :expenses, except: [ :index, :show ]
   resources :paybacks, except: [ :index, :show ]
