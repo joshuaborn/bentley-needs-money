@@ -1,6 +1,6 @@
 class Person < ApplicationRecord
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :confirmable
   has_many :person_transfers
   has_many :transfers, through: :person_transfers, dependent: :destroy
   has_many :expenses, through: :person_transfers, source: :transfer

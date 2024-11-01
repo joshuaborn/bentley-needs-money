@@ -2,6 +2,11 @@ require "test_helper"
 
 class PaybacksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  setup do
+    people(:administrator).confirm
+    people(:user_one).confirm
+    people(:user_two).confirm
+  end
   test "getting #new" do
     sign_in people(:user_one)
     get new_payback_path

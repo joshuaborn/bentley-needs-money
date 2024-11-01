@@ -2,6 +2,9 @@ require "test_helper"
 
 class ExpensesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  setup do
+    people(:user_one).confirm
+  end
   test "getting #new" do
     sign_in people(:user_one)
     get new_expense_path
