@@ -10,7 +10,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     get new_expense_path
     assert_response :success
   end
-  test "#new has a list of people with which to create a new transaction who aren't the current user" do
+  test "#new has a list of people with which to create a new expense who aren't the current user" do
     sign_in people(:user_one)
     get new_expense_path
     assert_select "select#person_id option" do |elements|
@@ -35,7 +35,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Expense.count") do
       post expenses_path, params: parameters
     end
-    assert_equal "Transaction was successfully created.", flash[:info]
+    assert_equal "Expense was successfully created.", flash[:info]
     parameters[:expense].each do |key, val|
       assert_equal val, Expense.last.send(key).to_s
     end
@@ -57,7 +57,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Expense.count") do
       post expenses_path, params: parameters
     end
-    assert_equal "Transaction was successfully created.", flash[:info]
+    assert_equal "Expense was successfully created.", flash[:info]
     parameters[:expense].each do |key, val|
       assert_equal val, Expense.last.send(key).to_s
     end
@@ -215,7 +215,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'turbo-stream[action="refresh"]'
   end
-  test "#destroy of transaction not associated with current_user" do
+  test "#destroy of expense not associated with current_user" do
     build_expenses_for_tests()
     sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:administrator), people(:user_two)).last

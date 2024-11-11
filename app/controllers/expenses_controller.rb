@@ -15,7 +15,7 @@ class ExpensesController < ApplicationController
       raise StandardError.new("Unrecognized person_paid parameter")
     end
     if @expense.save
-      flash[:info] = "Transaction was successfully created."
+      flash[:info] = "Expense was successfully created."
       render turbo_stream: turbo_stream.action(:refresh, "")
     else
       @people = Person.where.not(id: current_person).all
@@ -32,7 +32,7 @@ class ExpensesController < ApplicationController
   def update
     @expense = current_person.expenses.find(params[:id])
     if @expense.update(update_expense_params)
-      flash[:info] = "Transaction was successfully updated."
+      flash[:info] = "Expense was successfully updated."
       render turbo_stream: turbo_stream.action(:refresh, "")
     else
       render :edit, status: 422, layout: false
@@ -41,7 +41,7 @@ class ExpensesController < ApplicationController
 
   def destroy
     current_person.expenses.find(params[:id]).destroy!
-    flash[:info] = "Transaction was successfully deleted."
+    flash[:info] = "Expense was successfully deleted."
     render turbo_stream: turbo_stream.action(:refresh, "")
   end
 

@@ -2,7 +2,7 @@
   <%= form_with model: @expense do |form| %>
     <div class="card" data-controller="card">
       <header class="card-header">
-        <p class="card-header-title">Edit Transaction</p>
+        <p class="card-header-title">Edit Expense</p>
         <a href="#" class="card-header-icon" data-action="click->clearing#clearChildren">
           <span class="icon">
             <i class="fa-solid fa-xmark fa-lg has-text-link"></i>
@@ -59,7 +59,7 @@
           class: "card-footer-item has-text-danger",
           data: {
             turbo_method: :delete,
-            turbo_confirm: "Are you sure you want to delete this transaction?"
+            turbo_confirm: "Are you sure you want to delete this expense?"
           }
         %>
         <a href="#" class="card-footer-item">Cancel</a>

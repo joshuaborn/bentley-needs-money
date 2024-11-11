@@ -3,19 +3,19 @@
     <%= link_to new_expense_path,
       class: "button",
       "data-turbo-frame": "side_panel_contents",
-      "data-action": "click->action-bar#disableNewTransaction",
+      "data-action": "click->action-bar#disableNewExpense",
       "data-action-bar-target": "enabledAdd" do
     %>
       <span class="icon is-medium">
         <i class="fa-solid fa-plus fa-lg"></i>
       </span>
-      <span class="text">New Transaction</span>
+      <span class="text">New Expense</span>
     <% end %>
     <button class="button" data-action-bar-target="disabledAdd" style="display: none;" disabled="disabled">
       <span class="icon is-medium">
         <i class="fa-solid fa-plus fa-lg"></i>
       </span>
-      <span class="text">New Transaction</span>
+      <span class="text">New Expense</span>
     </button>
     <%= link_to new_payback_path,
       class: "button",

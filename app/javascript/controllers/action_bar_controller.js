@@ -5,14 +5,14 @@ export default class extends Controller {
     static targets = [ "enabledAdd", "disabledAdd", "enabledSettle", "disabledSettle" ]
     static values = [ "link" ]
 
-    disableNewTransaction() {
+    disableNewExpense() {
         this.enabledAddTarget.style.display = "none"
         this.disabledAddTarget.style.display = ""
         this.enabledSettleTarget.style.display = ""
         this.disabledSettleTarget.style.display = "none"
     }
     
-    enableNewTransaction() {
+    enableNewExpense() {
         this.enabledAddTarget.style.display = ""
         this.disabledAddTarget.style.display = "none"
     }

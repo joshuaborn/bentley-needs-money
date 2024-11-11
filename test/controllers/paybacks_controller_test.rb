@@ -128,7 +128,7 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'turbo-stream[action="refresh"]'
   end
-  test "#destroy of transaction not associated with current_user" do
+  test "#destroy of expense not associated with current_user" do
     build_expenses_for_tests()
     sign_in people(:administrator)
     post paybacks_path, params: {
