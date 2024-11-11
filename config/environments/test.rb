@@ -50,6 +50,9 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  # Opt in to new behavior to remove deprecation warnings.
+  config.active_support.to_time_preserves_timezone = :zone
+
   # Raise exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise
 

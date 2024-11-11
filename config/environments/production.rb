@@ -105,6 +105,9 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
+  # Opt in to new behavior to remove deprecation warnings.
+  config.active_support.to_time_preserves_timezone = :zone
+
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
