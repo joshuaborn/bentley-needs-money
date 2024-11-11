@@ -88,25 +88,25 @@ body.side-panel #contents {
   margin: 0.5rem;
 }
 
-.expenses .expenses-headings, .person-transfer.grid {
+.transfers .transfers-headings, .person-transfer.grid {
   margin-bottom: 0;
 }
 
-.expenses {
+.transfers {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.expenses .expenses-headings {
+.transfers .transfers-headings {
   flex: 0 0 auto;
 }
 
-.expenses .expenses-content {
+.transfers .transfers-content {
   flex: 1 1 auto;
 }
 
-.expenses .person-transfer.person-payback {
+.transfers .person-transfer.person-payback {
   background-color: var(--bulma-border);
 }
 
@@ -173,7 +173,7 @@ body.side-panel #contents {
     min-height: 0;
   }
 
-  .expenses .date {
+  .transfers .date {
     background-color: var(--bulma-body-background-color);
     border-top: var(--main-border);
     color: var(--bulma-text-bold);
@@ -189,11 +189,11 @@ body.side-panel #contents {
     padding: 0.25rem 0.5rem;
   }
     
-  .person-transfer.grid .expense-payee, .person-transfer.grid .expense-dollar-amount-paid {
+  .person-transfer.grid .transfer-payee, .person-transfer.grid .transfer-dollar-amount-paid {
     color: var(--bulma-text-bold);
   }
 
-  .person-transfer.grid .expense-memo, .person-transfer.grid .person-transfer-dollar-amount {
+  .person-transfer.grid .transfer-memo, .person-transfer.grid .person-transfer-dollar-amount {
     font-size: 0.9rem;
   }
 
@@ -229,29 +229,29 @@ body.side-panel #contents {
     order: 2;
   }
 
-  .expenses {
+  .transfers {
     border-left: var(--main-border);
   }
     
-  .expenses .cell {
+  .transfers .cell {
     padding: 0.25rem 0.5rem;
   }
 
-  .expenses .expenses-headings, .expenses .person-transfer {
+  .transfers .transfers-headings, .transfers .person-transfer {
     padding: 0 0.5rem;
   }
    
-  .expenses .expenses-headings {
+  .transfers .transfers-headings {
     border-bottom: var(--main-border);
     font-size: 0.8rem;
     text-transform: uppercase;
   }
     
-  .expenses .expenses-headings div .cell:nth-last-child(n+2) {
+  .transfers .transfers-headings div .cell:nth-last-child(n+2) {
     border-right: var(--main-border);
   }
 
-  .expenses .person-transfer {
+  .transfers .person-transfer {
     border-bottom: var(--main-border);
     color: var(--bulma-text-bold);
   }

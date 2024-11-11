@@ -37,8 +37,8 @@
   </div>
 <% end %>
 
-<div class="expenses">
-  <div class="expenses-headings fixed-grid has-3-cols-mobile has-7-cols-tablet">
+<div class="transfers">
+  <div class="transfers-headings fixed-grid has-3-cols-mobile has-7-cols-tablet">
     <div class="grid is-gap-0 is-hidden-mobile">
       <div class="cell">Date</div>
       <div class="cell">Payee</div>
@@ -48,7 +48,7 @@
       <div class="cell has-text-right">Cumulative Sum</div>
     </div>
   </div>
-  <div class="expenses-content fixed-grid has-3-cols-mobile has-7-cols-tablet scroller">
+  <div class="transfers-content fixed-grid has-3-cols-mobile has-7-cols-tablet scroller">
     <% last_date = nil %>
     <% group_by_date(@person_transfers).each do |this_date, person_transfer_list| %>
       <% if this_date != last_date %>
