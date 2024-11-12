@@ -159,16 +159,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference("Expense.count") do
       patch expense_path(expense), params: {
         expense: {
-          dollar_amount_paid: 4.00,
+          dollar_amount_paid: 0.00,
           payee: "Expenses Splitting Software Company",
           person_transfers_attributes: {
             "0": {
               id: expense.person_transfers.first.id,
-              dollar_amount: -1.50
+              dollar_amount: -2.50
             },
             "1": {
               id: expense.person_transfers.last.id,
-              dollar_amount: 1.50
+              dollar_amount: 2.50
             }
           }
         }
@@ -176,7 +176,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response 422
     assert_select "input#expense_dollar_amount_paid.is-danger"
-    assert_select "p.help.is-danger", "should be the sum of the amounts split between people"
+    assert_select "p.help.is-danger", "must be greater than 0"
     assert_equal attributes_before, Expense.find(expense.id).attributes.to_yaml
   end
   test "error when trying to #update an expense not associated with current user" do

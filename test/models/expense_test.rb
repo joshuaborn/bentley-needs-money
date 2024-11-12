@@ -87,7 +87,6 @@ class ExpenseTest < ActiveSupport::TestCase
     assert expense.valid?
     expense.person_transfers.first.amount = 1
     assert_not expense.valid?
-    assert_includes expense.errors.messages[:dollar_amount_paid], "should be the sum of the amounts split between people"
     assert_includes expense.errors.messages[:person_transfers], "amounts should sum to zero"
   end
 end

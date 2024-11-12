@@ -1,5 +1,4 @@
 class Expense < Transfer
-  validate :amounts_sum_to_amount_paid
   validates :dollar_amount_paid, comparison: { greater_than: 0 }
 
   class << self
@@ -26,14 +25,4 @@ class Expense < Transfer
         where("pe1.person_id = ? AND pe2.person_id = ?", first_person, second_person)
     end
   end
-
-  private
-    def amounts_sum_to_amount_paid
-      amount_sum = self.person_transfers.inject(0) do |cumulative_sum, person_transfer|
-        cumulative_sum + person_transfer.try(&:amount).to_i.abs
-      end
-      if amount_sum != self.amount_paid
-        self.errors.add(:dollar_amount_paid, "should be the sum of the amounts split between people")
-      end
-    end
 end
