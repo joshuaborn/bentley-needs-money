@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "welcome/index"
   devise_for :people, controllers: {
     registrations: "people/registrations",
     confirmations: "people/confirmations"
@@ -7,5 +8,5 @@ Rails.application.routes.draw do
   resources :expenses, except: [ :index, :show ]
   resources :paybacks, except: [ :index, :show ]
   resources :people, except: [ :show ]
-  root "transfers#index"
+  root "welcome#index"
 end

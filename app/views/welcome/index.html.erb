@@ -1,0 +1,54 @@
+<div class="hero-head">
+  <nav class="navbar">
+    <div class="navbar-menu is-active">
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <%= link_to "Log in", new_session_path(Person.new), class: "button is-link" %>
+                <%= link_to "Sign up", new_registration_path(Person.new), class: "button is-link" %>
+                <a class="button is-dark" href="https://github.com/joshuaborn/bentley-needs-money" target="_blank">
+                    <span class="icon">
+                        <i class="fab fa-github"></i>
+                    </span>
+                    <span>GitHub</span>
+                </a>
+            </div>
+      </div>
+    </div>
+  </nav>
+</div>
+<div class="hero-body">
+    <div class="container content">
+        <p class="has-text-centered"><%= image_tag asset_path("bentley-raw-960x960.png"), width: 480, height: 480 %></p>
+        <p class="title has-text-centered">Bentley Needs Money</p>
+        <p class="subtitle has-text-centered mb-6">An app for splitting expenses</p>
+        <div class="columns">
+            <div class="column content">
+                <h6>
+                    Current Features
+                </h6>
+                <ul>
+                    <li>Automatically splits expenses in half</li>
+                    <li>Calculates a running cumulative sum of how much each person owes another</li>
+                    <li>Keeps track of when people pay each other back</li>
+                    <li>Uses a responsive, mobile-friendly user experience</li>
+                    <li>Available at no cost &ndash; Bentley Needs Money is provided free of charge!</li>
+                </ul>
+            </div>
+            <div class="column content">
+                <h6>
+                    Planned Future Development
+                </h6>
+                <ul>
+                    <li><a href="https://www.ynab.com/" target="_blank">You Need a Budget (YNAB)</a> integration</li>
+                    <li>Splitting between more than two people</li>
+                </ul>
+            </div>
+        </div>
+        <h6>
+            Author's Note
+        </h6>
+        <p>
+            Bentley Needs Money is an <a href="https://github.com/joshuaborn/bentley-needs-money" target="_blank">open source</a> web application that I developed in the spirit of <a href="https://en.wikipedia.org/wiki/Eating_your_own_dog_food" target="_blank">"eating your own dog food"</a> as a way to refresh my software engineering skills and to fulfill a use case I myself frequently use. It is named after Bentley the dog, because many of the expenses split in my household pertain to taking care of Bentley, who is known for his underbite, freckles, floppy ears, and for being a very, very good boy.
+        </p>
+    </div>
+</div>

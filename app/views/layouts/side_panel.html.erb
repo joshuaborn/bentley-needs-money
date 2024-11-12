@@ -1,24 +1,26 @@
-<% content_for :body_attributes, 'class=side-panel' %>
-<% content_for :content do %>
-  <div id="contents" class="columns is-gapless">
-    <div id="side-panel" class="column is-one-quarter-desktop" data-controller="clearing">
-      <turbo-frame id="side_panel_contents" data-clearing-target="container">
-        <% if flash.any? %>
-          <% flash.each do |type, msg| %>
-            <div class="notification is-<%= bulma_notification_name(type) %>" data-turbo-temporary>
-              <a href="#" class="delete" data-action="click->clearing#clearChildren"></a>
-              <%= msg %>
-            </div>
+<% content_for :body do %>
+  <body data-controller="action-bar" class="side-panel">
+    <%= render partial: "layouts/navigation" %>
+    <div id="contents" class="columns is-gapless">
+      <div id="side-panel" class="column is-one-quarter-desktop" data-controller="clearing">
+        <turbo-frame id="side_panel_contents" data-clearing-target="container">
+          <% if flash.any? %>
+            <% flash.each do |type, msg| %>
+              <div class="notification is-<%= bulma_notification_name(type) %>" data-turbo-temporary>
+                <a href="#" class="delete" data-action="click->clearing#clearChildren"></a>
+                <%= msg %>
+              </div>
+            <% end %>
           <% end %>
-        <% end %>
-      </turbo-frame>
+        </turbo-frame>
+      </div>
+      <div id="main-panel" class="column is-three-quarters-desktop">
+        <%= yield %>
+      </div>
     </div>
-    <div id="main-panel" class="column is-three-quarters-desktop">
-      <%= yield %>
-    </div>
-  </div>
-  <div id="action-bar" class="my-0">
+    <div id="action-bar" class="my-0">
       <%= yield :action_bar %>
-  </div>
+    </div>
+  </body>
 <% end %>
-<%= render template: "layouts/_main" %>
+<%= render template: "layouts/html_head" %>

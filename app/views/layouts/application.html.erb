@@ -1,14 +1,17 @@
-<% content_for :content do %>
-  <div class="container">
-    <% if flash.any? %>
-        <% flash.each do |type, msg| %>
-          <div class="notification is-<%= bulma_notification_name(type) %>" data-turbo-temporary data-controller="clearing">
-            <button class="delete" data-action="click->clearing#clearSelf"></button>
-            <%= msg %>
-          </div>
-        <% end %>
-    <% end %>
-    <%= yield %>
-  </div>
+<% content_for :body do %>
+  <body data-controller="action-bar">
+    <%= render partial: "layouts/navigation" %>
+    <div class="container">
+      <% if flash.any? %>
+          <% flash.each do |type, msg| %>
+            <div class="notification is-<%= bulma_notification_name(type) %>" data-turbo-temporary data-controller="clearing">
+              <button class="delete" data-action="click->clearing#clearSelf"></button>
+              <%= msg %>
+            </div>
+          <% end %>
+      <% end %>
+      <%= yield %>
+    </div>
+  </body>
 <% end %>
-<%= render template: "layouts/_main" %>
+<%= render template: "layouts/html_head" %>
