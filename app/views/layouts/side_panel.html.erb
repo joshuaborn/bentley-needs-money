@@ -2,7 +2,7 @@
   <body data-controller="action-bar" class="side-panel">
     <%= render partial: "layouts/navigation" %>
     <div id="contents" class="columns is-gapless">
-      <div id="side-panel" class="column is-one-quarter-desktop" data-controller="clearing">
+      <div id="side-panel" class="column is-one-quarter-desktop scroller" data-controller="clearing">
         <turbo-frame id="side_panel_contents" data-clearing-target="container">
           <% if flash.any? %>
             <% flash.each do |type, msg| %>
