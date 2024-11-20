@@ -13,7 +13,7 @@ class Transfer < ApplicationRecord
   end
 
   def dollar_amount_paid=(dollars)
-    self.amount_paid = (100 * dollars.to_f).to_i
+    self.amount_paid = (100 * dollars.to_f).round(0)
   end
 
   class << self

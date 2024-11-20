@@ -159,4 +159,9 @@ class PersonTransferTest < ActiveSupport::TestCase
      assert_equal people(:user_two).name, amounts_owed[1].name
      assert_equal 561.11, amounts_owed[1].dollar_cumulative_sum
   end
+  test "rounding errors when setting dollar_amount" do
+    person_transfer = PersonTransfer.new(dollar_amount: "17.24")
+    assert_equal 1724, person_transfer.amount
+    assert_equal 17.24, person_transfer.dollar_amount
+  end
 end

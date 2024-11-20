@@ -16,7 +16,7 @@ class PersonTransfer < ApplicationRecord
   end
 
   def dollar_amount=(dollars)
-    self.amount = (100 * dollars.to_f).to_i
+    self.amount = (100 * dollars.to_f).round(0)
   end
 
   def other_person_transfer
