@@ -9,6 +9,7 @@ services:
       - bundle:/usr/local/bundle
     ports:
       - "3000:3000"
+      - "12345:12345"
     env_file:
       - .env
     environment:
