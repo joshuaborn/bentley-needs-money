@@ -31,7 +31,9 @@ class ExpensesController < ApplicationController
 
   def update
     @expense = current_person.expenses.find(params[:id])
-    if @expense.update(update_expense_params)
+    if @expense.people.any? { |person| !person.is_connected_with?(current_person) }
+      render :edit, status: 404, layout: false
+    elsif @expense.update(update_expense_params)
       flash[:info] = "Expense was successfully updated."
       render turbo_stream: turbo_stream.action(:refresh, "")
     else

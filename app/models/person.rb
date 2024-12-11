@@ -30,4 +30,8 @@ class Person < ApplicationRecord
       self.signup_requests.create(to: email)
     end
   end
+
+  def is_connected_with?(other_person)
+    self == other_person or self.connected_people.where(id: other_person.id).present?
+  end
 end

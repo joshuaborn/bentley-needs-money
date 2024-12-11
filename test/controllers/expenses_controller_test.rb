@@ -154,6 +154,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   test "#update expenses and associated person_transfers" do
     build_expenses_for_tests()
     sign_in people(:user_one)
+    Connection.create(from: people(:user_one), to: people(:user_two))
+    Connection.create(from: people(:user_two), to: people(:user_one))
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
     assert_no_difference("Expense.count") do
       patch expense_path(expense), params: {
@@ -190,6 +192,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
   test "#update re-rendering edit when there are validation errors" do
     build_expenses_for_tests()
+    Connection.create(from: people(:user_one), to: people(:user_two))
+    Connection.create(from: people(:user_two), to: people(:user_one))
     sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
     attributes_before = expense.attributes.to_yaml
@@ -216,7 +220,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "p.help.is-danger", "must be greater than 0"
     assert_equal attributes_before, Expense.find(expense.id).attributes.to_yaml
   end
-  test "error when trying to #update an expense not associated with current user" do
+  test "missing response when trying to #update an expense not associated with current user" do
     build_expenses_for_tests()
     sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:administrator), people(:user_two)).last
@@ -239,8 +243,34 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    assert_response :missing
     assert_equal attributes_before, Expense.find(expense.id).attributes.to_yaml
+    assert_response :missing
+  end
+  test "missing response when trying to #update an expense with a person without a connection" do
+    build_expenses_for_tests()
+    sign_in people(:user_one)
+    expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
+    attributes_before = expense.attributes.to_yaml
+    assert_no_difference("Expense.count") do
+      patch expense_path(expense), params: {
+        expense: {
+          dollar_amount_paid: 3.00,
+          payee: "Expenses Splitting Software Company",
+          person_transfers_attributes: {
+            "0": {
+              id: expense.person_transfers.first.id,
+              dollar_amount: -1.50
+            },
+            "1": {
+              id: expense.person_transfers.last.id,
+              dollar_amount: 1.50
+            }
+          }
+        }
+      }
+    end
+    assert_equal attributes_before, Expense.find(expense.id).attributes.to_yaml
+    assert_response :missing
   end
   test "#destroy" do
     build_expenses_for_tests()

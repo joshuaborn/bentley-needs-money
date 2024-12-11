@@ -29,4 +29,11 @@ class PersonTest < ActiveSupport::TestCase
       assert_equal person, return_value.from
       assert_equal "unregistered.email@example.com", return_value.to
    end
+
+   test "is_connected_with?" do
+      Connection.create(from: people(:user_one), to: people(:user_two))
+      assert people(:user_one).is_connected_with?(people(:user_one))
+      assert people(:user_one).is_connected_with?(people(:user_two))
+      assert_not people(:user_one).is_connected_with?(people(:user_three))
+   end
 end
