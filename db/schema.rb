@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_01_153329) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_11_144042) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "connection_requests", force: :cascade do |t|
+    t.integer "from_id"
+    t.integer "to_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "connections", force: :cascade do |t|
+    t.integer "from_id"
+    t.integer "to_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "people", force: :cascade do |t|
     t.string "name"
@@ -42,6 +56,13 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_01_153329) do
     t.boolean "in_ynab"
   end
 
+  create_table "signup_requests", force: :cascade do |t|
+    t.integer "from_id"
+    t.string "to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "transfers", force: :cascade do |t|
     t.string "payee"
     t.string "memo"
@@ -54,6 +75,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_01_153329) do
     t.index ["date"], name: "index_transfers_on_date"
   end
 
+  add_foreign_key "connection_requests", "people", column: "from_id"
+  add_foreign_key "connection_requests", "people", column: "to_id"
+  add_foreign_key "connections", "people", column: "from_id"
+  add_foreign_key "connections", "people", column: "to_id"
   add_foreign_key "person_transfers", "people"
   add_foreign_key "person_transfers", "transfers"
+  add_foreign_key "signup_requests", "people", column: "from_id"
 end
