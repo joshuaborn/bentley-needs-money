@@ -14,4 +14,18 @@ class Person < ApplicationRecord
   def get_amounts_owed
     PersonTransfer.get_amounts_owed_for(self)
   end
+
+  def request_connection(email)
+    other_person = Person.where(email: email).first
+    if other_person.present?
+      preexisting_connection = self.connections.where(to: other_person).first
+      if preexisting_connection.present?
+        preexisting_connection
+      else
+        ConnectionRequest.create!(from: self, to: other_person)
+      end
+    else
+      SignupRequest.create!(from: self, to: email)
+    end
+  end
 end
