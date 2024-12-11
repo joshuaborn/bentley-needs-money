@@ -118,6 +118,25 @@ body.side-panel #contents {
   padding: 0;
 }
 
+.connection {
+  align-items: center;
+  display: flex;
+  flex-flow: row ;
+  padding-bottom: 0.5rem;
+}
+
+.connection .description {
+  flex-grow: 1;
+}
+
+.connection .description .name  {
+  color: var(--bulma-text-bold);
+}
+
+.connection .date {
+  white-space: nowrap;
+}
+
 @media screen and (max-width: 1023px) {
   body > .container  {
     padding: 0 1rem;
@@ -163,6 +182,15 @@ body.side-panel #contents {
 }
 
 @media screen and (max-width: 768px) {
+  .columns {
+    margin-top: 0;
+  }
+
+  .column {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
   #contents {
     display: flex;
     flex-direction: column-reverse;
@@ -173,7 +201,7 @@ body.side-panel #contents {
     min-height: 0;
   }
 
-  .transfers .date {
+  .transfers .date, .connection-title {
     background-color: var(--bulma-body-background-color);
     border-top: var(--main-border);
     color: var(--bulma-text-bold);
@@ -181,7 +209,7 @@ body.side-panel #contents {
     padding: 0.25rem 1rem;
   }
 
-  .person-transfer.grid {
+  .person-transfer.grid, .connection {
     background-color: var(--bulma-background);
     border-top: var(--main-border);
     color: inherit;
@@ -193,8 +221,12 @@ body.side-panel #contents {
     color: var(--bulma-text-bold);
   }
 
-  .person-transfer.grid .transfer-memo, .person-transfer.grid .person-transfer-dollar-amount {
+  .person-transfer.grid .transfer-memo, .person-transfer.grid .person-transfer-dollar-amount, .connection .email {
     font-size: 0.9rem;
+  }
+
+  .container:has(.connection) {
+    padding: 0;
   }
 
   .card-footer.buttons .button {
@@ -254,5 +286,26 @@ body.side-panel #contents {
   .transfers .person-transfer {
     border-bottom: var(--main-border);
     color: var(--bulma-text-bold);
+  }
+
+  .connection-title {
+    color: var(--bulma-text-strong);
+    font-size: 1.25rem;
+    font-weight: var(--bulma-weight-extrabold);
+    margin-top: var(--bulma-block-spacing);
+  }
+
+  .connection {
+    border-bottom: var(--main-border);
+    max-width: 384px;
+    padding: 0.5rem 0;
+  }
+
+  .connection:last-child {
+    border-bottom: none;
+  }
+
+  .connection .description .name {
+    margin-right: 0.5rem;
   }
 }

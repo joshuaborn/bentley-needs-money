@@ -1,0 +1,86 @@
+<div class="columns">
+    <div class="column">
+        <% if current_person.connected_people.present? %>
+            <h2 class="connection-title">Connections</h1>
+            <% current_person.connected_people.each do |person| %>
+                <div class="connection">
+                    <div class="description">
+                        <div class="name"><%= person.name %></div>
+                        <div class="email"><%= person.email %></div>
+                    </div>
+                </div>
+            <% end %>
+        <% end %>
+    </div>
+    <div class="column">
+        <% if current_person.inbound_connection_requests.present? %>
+            <h2 class="connection-title">Connection Requests Received</h1>
+            <% current_person.inbound_connection_requests.each do |connection_request| %>
+                <div class="connection">
+                    <div class="description">
+                        <div class="name"><%= connection_request.from.name %></div>
+                        <div class="email"><%= connection_request.from.email %></div>
+                    </div>
+                    <div class="actions">
+                        <%=
+                            link_to 'Accept',
+                            connection_request_path(connection_request),
+                            class: 'button is-small is-primary',
+                            data: {
+                              turbo_method: :post
+                            }
+                        %>
+                        <%=
+                            link_to "Deny",
+                            connection_request_path(connection_request),
+                            class: "button is-small is-danger",
+                            data: {
+                              turbo_method: :delete,
+                              turbo_confirm: "Are you sure you want to deny this connection?"
+                            }
+                        %>
+                    </div>
+                </div>
+            <% end %>
+        <% end %>
+
+        <% if current_person.outbound_connection_requests.present? %>
+            <h2 class="connection-title">Requests Sent and Waiting for Acceptance</h1>
+            <% current_person.outbound_connection_requests.each do |connection_request| %>
+                <div class="connection">
+                    <div class="description">
+                        <div class="name"><%= connection_request.to.name %></div>
+                        <div class="email"><%= connection_request.to.email %></div>
+                    </div>
+                    <div class="date">
+                        <% if connection_request.created_at.year == DateTime.now.year %>
+                            <%= connection_request.created_at.strftime("%b %e") %>
+                        <% else %>
+                            <%= connection_request.created_at.strftime("%b %e, %Y") %>
+                        <% end %>
+                        at <%= connection_request.created_at.strftime("%l:%M %p") %>
+                    </div>
+                </div>
+            <% end %>
+        <% end %>
+
+        <% if current_person.signup_requests.present? %>
+            <h2 class="connection-title">Requests Sent and Waiting for Account Creation</h1>
+            <% current_person.signup_requests.each do |connection_request| %>
+                <div class="connection">
+                    <div class="description">
+                        <div class="email"><%= connection_request.to %></div>
+                    </div>
+                    <div class="date">
+                        <% if connection_request.created_at.year == DateTime.now.year %>
+                            <%= connection_request.created_at.strftime("%b %e") %>
+                        <% else %>
+                            <%= connection_request.created_at.strftime("%b %e, %Y") %>
+                        <% end %>
+                        at <%= connection_request.created_at.strftime("%l:%M %p") %>
+                    </div>
+                </div>
+            <% end %>
+        <% end %>
+    </div>
+</div>
