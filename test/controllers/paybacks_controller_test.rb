@@ -13,6 +13,8 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
   test "#create in which the current_user is paying someone else back" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:user_one)
     parameters = {
@@ -30,6 +32,8 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-stream[action="refresh"]'
   end
   test "#create in which the current_user is being paid back by someone else" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
     parameters = {
@@ -46,6 +50,22 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'turbo-stream[action="refresh"]'
   end
+  test "#create with someone the user is not connected to" do
+    build_expenses_for_tests()
+    sign_in people(:administrator)
+    assert_not people(:administrator).is_connected_with?(people(:user_one))
+    parameters = {
+      person: { id: people(:user_one).id },
+      payback: {
+        date: "2024-10-24",
+        dollar_amount_paid: "-447.61"
+      }
+    }
+    assert_no_difference("Payback.count") do
+      post paybacks_path, params: parameters
+    end
+    assert_response :missing
+  end
   test "getting #edit" do
     build_expenses_for_tests()
     sign_in people(:administrator)
@@ -61,6 +81,8 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
   test "#update payback and associated person_transfers" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
     post paybacks_path, params: {
@@ -88,6 +110,8 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal 445.46, payback_after.person_transfers.last.dollar_amount
   end
   test "error when trying to #update an expense not associated with current user" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
     post paybacks_path, params: {
@@ -112,6 +136,8 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal attributes_before, Payback.find(payback.id).attributes.to_yaml
   end
   test "#destroy" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
     post paybacks_path, params: {
@@ -128,7 +154,9 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'turbo-stream[action="refresh"]'
   end
-  test "#destroy of expense not associated with current_user" do
+  test "#destroy of payback not associated with current_user" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
     post paybacks_path, params: {
