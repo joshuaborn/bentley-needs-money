@@ -26,6 +26,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
   end
   test "#create when current_user paid and is splitting with other person" do
+    Connection.create(from: people(:user_one), to: people(:user_two))
     sign_in people(:user_one)
     parameters = {
       person_paid: "current",
@@ -48,6 +49,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-stream[action="refresh"]'
   end
   test "#create when other person paid and is splitting with current_user" do
+    Connection.create(from: people(:user_one), to: people(:user_two))
     sign_in people(:user_one)
     parameters = {
       person_paid: "other",
@@ -70,6 +72,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-stream[action="refresh"]'
   end
   test "#create re-renders new when there are validation errors" do
+    Connection.create(from: people(:user_one), to: people(:user_two))
     person = people(:user_one)
     sign_in person
     connected_people = [ people(:administrator), people(:user_three), people(:user_five) ]
@@ -99,6 +102,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
   end
   test "#create raises an error person_paid parameter is invalid on create" do
+    Connection.create(from: people(:user_one), to: people(:user_two))
     sign_in people(:user_one)
     parameters = {
       person_paid: "foobar",
@@ -115,6 +119,23 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         post expenses_path, params: parameters
       end
     end
+  end
+  test "#create returns a 404 not found response when hte other perosn is not one of the connected_people" do
+    sign_in people(:user_one)
+    parameters = {
+      person_paid: "other",
+      person: { id: people(:user_two).id },
+      expense: {
+        payee: "Acme, Inc.",
+        memo: "widgets",
+        date: "2024-09-25",
+        dollar_amount_paid: "4.3"
+      }
+    }
+    assert_no_difference("Expense.count") do
+      post expenses_path, params: parameters
+    end
+    assert_response :missing
   end
   test "getting #edit" do
     build_expenses_for_tests()

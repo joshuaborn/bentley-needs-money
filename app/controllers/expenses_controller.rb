@@ -6,7 +6,7 @@ class ExpensesController < ApplicationController
   end
 
   def create
-    other_person = Person.find(params[:person][:id])
+    other_person = current_person.connected_people.find(params[:person][:id])
     if params[:person_paid] == "current"
       @expense = Expense.split_between_two_people(current_person, other_person, create_expense_params())
     elsif params[:person_paid] == "other"
