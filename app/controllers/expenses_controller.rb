@@ -1,7 +1,7 @@
 class ExpensesController < ApplicationController
   def new
     @expense = Expense.new
-    @people = Person.where.not(id: current_person).all
+    @people = current_person.connected_people
     render layout: false
   end
 
@@ -18,7 +18,7 @@ class ExpensesController < ApplicationController
       flash[:info] = "Expense was successfully created."
       render turbo_stream: turbo_stream.action(:refresh, "")
     else
-      @people = Person.where.not(id: current_person).all
+      @people = current_person.connected_people
       render :new, status: 422, layout: false
     end
   end

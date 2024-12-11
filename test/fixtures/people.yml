@@ -11,3 +11,15 @@ user_one:
 user_two:
   name: User2
   email: user2@example.com
+
+user_three:
+  name: User3
+  email: user3@example.com
+
+user_four:
+  name: User4
+  email: user4@example.com
+
+user_five:
+  name: User5
+  email: user5@example.com

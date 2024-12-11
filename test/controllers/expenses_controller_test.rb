@@ -10,11 +10,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     get new_expense_path
     assert_response :success
   end
-  test "#new has a list of people with which to create a new expense who aren't the current user" do
-    sign_in people(:user_one)
+  test "#new has a list of connected_people with whom to create a new expense" do
+    person = people(:user_one)
+    sign_in person
+    connected_people = [ people(:administrator), people(:user_three), people(:user_five) ]
+    connected_people.each do |other_person|
+      Connection.create(from: person, to: other_person)
+    end
     get new_expense_path
     assert_select "select#person_id option" do |elements|
-      Person.where.not(id: people(:user_one)).all.each_with_index do |person, i|
+      connected_people.each_with_index do |person, i|
         assert_equal elements[i].text, person.name
         assert_equal elements[i].attribute("value").value, person.id.to_s
       end
@@ -65,7 +70,12 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-stream[action="refresh"]'
   end
   test "#create re-renders new when there are validation errors" do
-    sign_in people(:user_one)
+    person = people(:user_one)
+    sign_in person
+    connected_people = [ people(:administrator), people(:user_three), people(:user_five) ]
+    connected_people.each do |other_person|
+      Connection.create(from: person, to: other_person)
+    end
     parameters = {
       person_paid: "other",
       person: { id: people(:user_two).id },
@@ -81,6 +91,12 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response 422
     assert_select "input#expense_payee.is-danger"
     assert_select "p.help.is-danger", "can't be blank"
+    assert_select "select#person_id option" do |elements|
+      people(:user_one).connected_people.each_with_index do |person, i|
+        assert_equal elements[i].text, person.name
+        assert_equal elements[i].attribute("value").value, person.id.to_s
+      end
+    end
   end
   test "#create raises an error person_paid parameter is invalid on create" do
     sign_in people(:user_one)
