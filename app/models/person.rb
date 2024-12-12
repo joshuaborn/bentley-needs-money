@@ -13,6 +13,8 @@ class Person < ApplicationRecord
 
   validates :name, presence: true
 
+  after_create :convert_signup_requests
+
   def get_amounts_owed
     PersonTransfer.get_amounts_owed_for(self)
   end
@@ -34,4 +36,12 @@ class Person < ApplicationRecord
   def is_connected_with?(other_person)
     self == other_person or self.connected_people.where(id: other_person.id).present?
   end
+
+  private
+    def convert_signup_requests
+      SignupRequest.where(to: self.email).all.each do |request|
+        ConnectionRequest.create(from: request.from, to: self)
+        request.destroy
+      end
+    end
 end

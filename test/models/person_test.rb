@@ -36,4 +36,20 @@ class PersonTest < ActiveSupport::TestCase
       assert people(:user_one).is_connected_with?(people(:user_two))
       assert_not people(:user_one).is_connected_with?(people(:user_three))
    end
+
+   test "conversion of SignupRequest to ConnectionRequest on account creation" do
+      email_address = "joe.schmoe@example.com"
+      sr1 = SignupRequest.create(from: people(:user_one), to: email_address)
+      sr2 = SignupRequest.create(from: people(:user_three), to: email_address)
+      sr3 = SignupRequest.create(from: people(:user_two), to: "jill.bill@example.com")
+      new_person = Person.new(name: "Joe Schmoe", email: email_address, password: "password")
+      assert new_person.confirm
+      assert new_person.save!
+      assert SignupRequest.where(id: sr1.id).empty?
+      assert SignupRequest.where(id: sr2.id).empty?
+      assert SignupRequest.where(id: sr3.id).exists?
+      assert ConnectionRequest.where(from: people(:user_one), to: new_person).exists?
+      assert ConnectionRequest.where(from: people(:user_three), to: new_person).exists?
+      assert ConnectionRequest.where(from: people(:user_two), to: new_person).empty?
+   end
 end
