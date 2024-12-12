@@ -24,10 +24,10 @@
                     <div class="actions">
                         <%=
                             link_to 'Accept',
-                            connection_request_path(connection_request),
+                            connections_path(connection_request),
                             class: 'button is-small is-primary',
                             data: {
-                              turbo_method: :post
+                              turbo_method: :put
                             }
                         %>
                         <%=
