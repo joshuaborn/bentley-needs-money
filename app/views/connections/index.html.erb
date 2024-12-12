@@ -1,5 +1,8 @@
 <div class="columns">
     <div class="column">
+        <div class="connection-buttons">
+            <%= link_to "Request New Connection", new_connection_request_path, class: "button is-link" %>
+        </div>
         <% if current_person.connected_people.present? %>
             <h2 class="connection-title">Connections</h1>
             <% current_person.connected_people.each do |person| %>

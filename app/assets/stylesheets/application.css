@@ -118,6 +118,10 @@ body.side-panel #contents {
   padding: 0;
 }
 
+.connection-buttons {
+  margin: 0.5rem;
+}
+
 .connection {
   align-items: center;
   display: flex;
@@ -286,6 +290,10 @@ body.side-panel #contents {
   .transfers .person-transfer {
     border-bottom: var(--main-border);
     color: var(--bulma-text-bold);
+  }
+
+  .connection-buttons {
+    margin: 1rem 0 0 0;
   }
 
   .connection-title {

@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     confirmations: "people/confirmations"
   }
   resources :connections, only: [ :index, :create ]
-  resources :connection_requests, only: [ :destroy ]
+  resources :connection_requests, only: [ :new, :create, :destroy ]
   resources :transfers, only: [ :index ]
   resources :expenses, except: [ :index, :show ]
   resources :paybacks, except: [ :index, :show ]
