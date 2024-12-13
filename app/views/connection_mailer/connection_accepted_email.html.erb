@@ -1,0 +1,9 @@
+<p>Dear <%= @from.name %>,</p>
+
+<p><%= @to.name %> &lt;<%= @to.email %>&gt; has accepted your connection request on the Bentley Needs Money app.</p>
+
+You can <%= link_to 'start splitting expenses', transfers_url %> with <%= @to.name %>.
+
+<p>Yours truly,</p>
+
+<p>The Bentley Needs Money Crew</p>

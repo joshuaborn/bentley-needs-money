@@ -15,4 +15,13 @@ class ConnectionMailer < ApplicationMailer
       subject: "Request from #{@from.name} to Connect"
     )
   end
+
+  def connection_accepted_email(from, to)
+    @from = from
+    @to = to
+    mail(
+      to: @from.email,
+      subject: "Connection with #{to.name} Accepted"
+    )
+  end
 end
