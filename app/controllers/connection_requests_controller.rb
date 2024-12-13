@@ -15,7 +15,7 @@ class ConnectionRequestsController < ApplicationController
     if return_value.kind_of?(Connection)
       flash[:warning] = "You are already connected to #{return_value.to.name} (#{return_value.to.email})."
     elsif return_value.kind_of?(ConnectionRequest)
-      flash[:info] = "Connection with #{return_value.to.name} (#{return_value.to.email}) requested."
+      flash[:info] = "Connection with #{return_value.to.name} <#{return_value.to.email}> requested."
       ConnectionMailer.connection_request_email(current_person, return_value.to).deliver_now
     elsif return_value.kind_of?(SignupRequest)
       flash[:info] = "There is no account associated with the email address " + return_value.to + " in the system. An email was sent to this address requesting account creation."
