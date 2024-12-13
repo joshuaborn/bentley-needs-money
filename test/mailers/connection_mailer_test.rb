@@ -3,7 +3,7 @@ require "test_helper"
 class ConnectionMailerTest < ActionMailer::TestCase
   include Rails.application.routes.url_helpers
   test "signup_request_email" do
-    mail = ConnectionMailer.with(from: people(:user_one), to: "joe@example.com").signup_request_email
+    mail = ConnectionMailer.signup_request_email(people(:user_one), "joe@example.com")
     assert_equal "Request from #{people(:user_one).name} to Connect", mail.subject
     assert_equal [ "joe@example.com" ], mail.to
     assert_equal [ "administrator@bentleyneeds.money" ], mail.from
@@ -11,7 +11,7 @@ class ConnectionMailerTest < ActionMailer::TestCase
   end
 
   test "connection_request_email" do
-    mail = ConnectionMailer.with(from: people(:user_one), to: people(:user_two)).connection_request_email
+    mail = ConnectionMailer.connection_request_email(people(:user_one), people(:user_two))
     assert_equal "Request from #{people(:user_one).name} to Connect", mail.subject
     assert_equal [ people(:user_two).email ], mail.to
     assert_equal [ "administrator@bentleyneeds.money" ], mail.from

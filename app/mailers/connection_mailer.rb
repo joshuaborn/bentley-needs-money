@@ -1,15 +1,15 @@
 class ConnectionMailer < ApplicationMailer
-  def signup_request_email
-    @from = params[:from]
+  def signup_request_email(from, to)
+    @from = from
     mail(
-      to: params[:to],
+      to: to,
       subject: "Request from #{@from.name} to Connect"
     )
   end
 
-  def connection_request_email
-    @from = params[:from]
-    @to = params[:to]
+  def connection_request_email(from, to)
+    @from = from
+    @to = to
     mail(
       to: @to.email,
       subject: "Request from #{@from.name} to Connect"

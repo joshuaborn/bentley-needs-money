@@ -1,4 +1,5 @@
 require "test_helper"
+require "minitest/mock"
 
 class ConnectionRequestsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -35,15 +36,41 @@ class ConnectionRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to connections_path
   end
   test "connection request when the to person has an account" do
-    post connection_requests_path, params: { connection_request: { to: { email: people(:user_two).email } } }
-    assert ConnectionRequest.where(from: people(:user_one), to: people(:user_two)).exists?
-    assert_match (/Connection with.*requested/), flash[:info]
-    assert_redirected_to connections_path
+    connection_request_email_spy_was_called = false
+    connection_request_email_mock = Minitest::Mock.new
+    connection_request_email_mock.expect :deliver_now, true
+    connection_request_email_spy = lambda do |from, to|
+      connection_request_email_spy_was_called = true
+      assert_equal people(:user_one), from
+      assert_equal people(:user_two), to
+      connection_request_email_mock
+    end
+    ConnectionMailer.stub :connection_request_email, connection_request_email_spy do
+      post connection_requests_path, params: { connection_request: { to: { email: people(:user_two).email } } }
+      assert ConnectionRequest.where(from: people(:user_one), to: people(:user_two)).exists?
+      assert_match (/Connection with.*requested/), flash[:info]
+      assert_redirected_to connections_path
+      assert connection_request_email_spy_was_called
+      connection_request_email_mock.verify
+    end
   end
   test "connection request when the to person doesn't have an account" do
-    post connection_requests_path, params: { connection_request: { to: { email: "other.person@example.com" } } }
-    assert SignupRequest.where(from: people(:user_one), to: "other.person@example.com").exists?
-    assert_match "There is no account associated with", flash[:info]
-    assert_redirected_to connections_path
+    signup_request_email_spy_was_called = false
+    signup_request_email_mock = Minitest::Mock.new
+    signup_request_email_mock.expect :deliver_now, true
+    signup_request_email_spy = lambda do |from, to|
+      signup_request_email_spy_was_called = true
+      assert_equal people(:user_one), from
+      assert_equal "other.person@example.com", to
+      signup_request_email_mock
+    end
+    ConnectionMailer.stub :signup_request_email, signup_request_email_spy do
+      post connection_requests_path, params: { connection_request: { to: { email: "other.person@example.com" } } }
+      assert SignupRequest.where(from: people(:user_one), to: "other.person@example.com").exists?
+      assert_match "There is no account associated with", flash[:info]
+      assert_redirected_to connections_path
+      assert signup_request_email_spy_was_called
+      signup_request_email_mock.verify
+    end
   end
 end
