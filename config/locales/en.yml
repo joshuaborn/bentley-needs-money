@@ -28,7 +28,6 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
   date:
     formats:
       ynab: "%m/%d/%Y"

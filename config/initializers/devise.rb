@@ -13,7 +13,7 @@ Devise.setup do |config|
   # config.parent_controller = 'DeviseController'
 
   # ==> Mailer Configuration
-  config.mailer_sender = "admin@bentleyneeds.money"
+  config.mailer_sender = "administrator@bentleyneeds.money"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
