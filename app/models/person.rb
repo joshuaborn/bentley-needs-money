@@ -22,14 +22,12 @@ class Person < ApplicationRecord
   def request_connection(email)
     other_person = Person.where(email: email).first
     if other_person.present?
-      preexisting_connection = self.connections.where(to: other_person).first
-      if preexisting_connection.present?
-        preexisting_connection
-      else
+      self.connections.where(to: other_person).first ||
+        self.outbound_connection_requests.where(to: other_person).first ||
         self.outbound_connection_requests.create(to: other_person)
-      end
     else
-      self.signup_requests.create(to: email)
+      self.signup_requests.where(to: email).first ||
+        self.signup_requests.create(to: email)
     end
   end
 

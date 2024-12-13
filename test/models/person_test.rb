@@ -22,12 +22,34 @@ class PersonTest < ActiveSupport::TestCase
       assert_equal people(:user_two), return_value.to
    end
 
+   test "don't create duplicate ConnectionRequests" do
+      person = people(:user_one)
+      ConnectionRequest.create(from: person, to: people(:user_two))
+      assert_no_difference "ConnectionRequest.count" do
+         return_value = person.request_connection(people(:user_two).email)
+         assert_equal ConnectionRequest, return_value.class
+         assert_equal person, return_value.from
+         assert_equal people(:user_two), return_value.to
+      end
+   end
+
    test "request_connection to email not associated with an account creates and returns a SignupRequest" do
       person = people(:user_one)
       return_value = person.request_connection("unregistered.email@example.com")
       assert_equal SignupRequest, return_value.class
       assert_equal person, return_value.from
       assert_equal "unregistered.email@example.com", return_value.to
+   end
+
+   test "don't create duplicate SignupRequests" do
+      person = people(:user_one)
+      SignupRequest.create(from: person, to: "unregistered.email@example.com")
+      assert_no_difference "SignupRequest.count" do
+         return_value = person.request_connection("unregistered.email@example.com")
+         assert_equal SignupRequest, return_value.class
+         assert_equal person, return_value.from
+         assert_equal "unregistered.email@example.com", return_value.to
+      end
    end
 
    test "is_connected_with?" do
