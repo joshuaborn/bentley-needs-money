@@ -1,3 +1,4 @@
+/* eslint no-undef: "off" */
 import { Application } from "@hotwired/stimulus"
 
 const application = Application.start()
