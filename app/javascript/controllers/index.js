@@ -7,9 +7,6 @@ import { application } from "./application"
 import ActionBarController from "./action_bar_controller"
 application.register("action-bar", ActionBarController)
 
-import BurgerController from "./burger_controller"
-application.register("burger", BurgerController)
-
 import ClearingController from "./clearing_controller"
 application.register("clearing", ClearingController)
 
