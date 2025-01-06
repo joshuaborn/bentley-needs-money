@@ -1,0 +1,14 @@
+{
+  "name": "app",
+  "private": true,
+  "scripts": {
+    "build": "bun bun.config.js"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.12"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.14"
+  }
+}

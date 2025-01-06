@@ -28,8 +28,13 @@ FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config && \
+    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config bash unzip && \
+    curl -fsSL https://bun.sh/install | bash && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Update PATH for Bun
+ENV BUN_INSTALL="/root/.bun"
+ENV PATH="$BUN_INSTALL/bin:$PATH"
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -64,7 +69,7 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 HEALTHCHECK --interval=15s --timeout=3s --start-period=0s --start-interval=5s --retries=3 \
-  CMD curl -f http://localhost:3000/up || exit 1
+    CMD curl -f http://localhost:3000/up || exit 1
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 

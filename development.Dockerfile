@@ -12,16 +12,23 @@ RUN --mount=type=cache,target=/var/cache/apt \
   echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
   apt-get update -qq \
   && apt-get install -yq --no-install-recommends \
-    build-essential \
-    gnupg2 \
-    less \
-    git \
-    libpq-dev \
-    postgresql-client \
-    libvips \
-    curl \
-    libjemalloc2 \
-    pkg-config
+  build-essential \
+  gnupg2 \
+  less \
+  git \
+  libpq-dev \
+  postgresql-client \
+  libvips \
+  curl \
+  libjemalloc2 \
+  pkg-config \
+  bash \
+  unzip \
+  && curl -fsSL https://bun.sh/install | bash
+
+# Update PATH for Bun
+ENV BUN_INSTALL="/root/.bun"
+ENV PATH="$BUN_INSTALL/bin:$PATH"
 
 ENV LANG=C.UTF-8 \
   BUNDLE_JOBS=4 \
@@ -35,4 +42,4 @@ ENTRYPOINT ["./bin/docker-entrypoint-development"]
 
 EXPOSE 3000
 
-CMD ["./bin/rails", "server"]
+CMD ["./bin/dev"]
