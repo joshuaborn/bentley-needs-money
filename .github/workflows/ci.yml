@@ -22,20 +22,7 @@ jobs:
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
-  scan_js:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-  lint:
+  lint_ruby:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -49,6 +36,21 @@ jobs:
 
       - name: Lint code for consistent style
         run: bin/rubocop -f github
+
+  lint_js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install JavaScript libraries
+        run: bun install
+
+      - name: Run ESLint using configuration files
+        run: bunx eslint
 
   test:
     runs-on: ubuntu-latest
