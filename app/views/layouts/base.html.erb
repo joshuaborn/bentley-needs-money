@@ -18,5 +18,7 @@
     <%= javascript_include_tag "application", defer: true %>
   </head>
 
-  <%= yield :body %>
+  <body>
+    <%= content_for?(:base_content) ? yield(:base_content) : yield %>
+  </body>
 </html>

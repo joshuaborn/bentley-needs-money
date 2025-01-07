@@ -2,25 +2,21 @@
   --main-border: 1px solid var(--bulma-border);
 }
 
-html, body {
+html:has(#side-panel), body:has(#side-panel) {
   height: 100%;
   overflow: hidden;
 }
 
-.container > .title {
-  margin-top: 1rem;
-}
-
-body.side-panel {
+body:has(#side-panel) {
   display: flex;
   flex-direction: column;
 }
 
-body.side-panel #navigation-bar, body.side-panel #action-bar {
+body:has(#side-panel) #navigation-bar, body:has(#side-panel) #action-bar {
   flex: 0 0 auto;
 }
 
-body.side-panel #contents {
+body:has(#side-panel) #contents {
   flex: 1 1 auto;
   margin-bottom: 0;
   min-height: 0;
@@ -86,6 +82,10 @@ body.side-panel #contents {
 
 #side-panel .notification {
   margin: 0.5rem;
+}
+
+.container > .title {
+  margin-top: 1rem;
 }
 
 .transfers .transfers-headings, .person-transfer.grid {
