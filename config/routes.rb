@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   resources :connections, only: [ :index, :create ]
   resources :connection_requests, only: [ :new, :create, :destroy ]
   resources :transfers, only: [ :index ]
-  resources :expenses, except: [ :index, :show ]
-  resources :paybacks, except: [ :index, :show ]
+  resources :expenses, only: [ :create, :update, :destroy ]
+  resources :paybacks, only: [ :create, :update, :destroy ]
   resources :people, except: [ :show ]
   root "welcome#index"
 end

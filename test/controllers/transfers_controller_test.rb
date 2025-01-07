@@ -6,11 +6,20 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     people(:user_one).confirm
     people(:user_five).confirm
   end
-  test "getting #index" do
+  test "#index" do
     build_expenses_for_tests()
     sign_in people(:user_one)
     get transfers_path
     assert_response :success
+  end
+  test "#index has a list of connected_people with the current people" do
+    build_expenses_for_tests()
+    person = people(:user_one)
+    sign_in person
+    connected_people = [ people(:administrator), people(:user_three), people(:user_five) ]
+    connected_people.each do |other_person|
+      Connection.create(from: person, to: other_person)
+    end
   end
   test "flash message when there are connection requests to accept or deny" do
     build_expenses_for_tests()
