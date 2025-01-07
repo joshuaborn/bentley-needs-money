@@ -1,58 +1,34 @@
-import js from "@eslint/js";
+import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
+import tseslint from 'typescript-eslint';
 
 export default [
-    js.configs.recommended,
+    eslint.configs.recommended,
+    ...tseslint.configs.strictTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
     {
-        ignores: ["app/assets/builds/*"]
+        ignores: ["app/assets/builds/*", "bun.config.js"]
     },
     {
         plugins: {
-          '@stylistic': stylistic
+            '@stylistic': stylistic
         },
-        rules: {
-            "no-unused-vars": "warn",
-            "no-undef": "warn"
-        }
+        languageOptions: {
+            parserOptions: {
+                project: true
+            }
+        },
     },
+    // ESLint
     {
-        files: ["bun.config.js"],
-        rules: {
-            "no-undef": "off"
-        }
+        rules: {}
+    },
+    // TypeScript
+    {
+        rules: {}
+    },
+    // Stylistic
+    {
+        rules: {}
     }
 ];
-
-//
-// Switch to the below configuration when moving to TypeScript.
-//
-
-// import eslint from '@eslint/js';
-// import stylistic from '@stylistic/eslint-plugin';
-// import tseslint from 'typescript-eslint';
-// 
-// export default eslint.config(
-    // eslint.configs.recommended,
-    // ...tseslint.configs.strictTypeChecked,
-    // ...tseslint.configs.stylisticTypeChecked,
-    // {
-        // plugins: {
-            // '@stylistic': stylistic
-        // },
-        // languageOptions: {
-            // parserOptions: {
-                // project: true
-            // }
-        // },
-        // ESLint
-        // rules: {}
-    // },
-    // TypeScript
-    // {
-        // rules: {}
-    // },
-    // Stylistic
-    // {
-        // rules: {}
-    // }
-// );

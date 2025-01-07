@@ -8,7 +8,8 @@
     "@stylistic/eslint-plugin": "^2.12.1",
     "@types/bun": "latest",
     "@types/eslint__js": "^8.42.3",
-    "eslint": "^9.17.0"
+    "eslint": "^9.17.0",
+    "typescript-eslint": "^8.19.1"
   },
   "private": true,
   "scripts": {
