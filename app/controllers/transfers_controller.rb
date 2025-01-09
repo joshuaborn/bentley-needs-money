@@ -1,4 +1,5 @@
 class TransfersController < ApplicationController
+  layout "navigable"
   def index
     if current_person.person_transfers.empty? and current_person.connections.empty?
       if current_person.inbound_connection_requests.any?

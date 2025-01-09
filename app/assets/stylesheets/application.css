@@ -2,21 +2,21 @@
   --main-border: 1px solid var(--bulma-border);
 }
 
-html:has(#side-panel), body:has(#side-panel) {
+html:has(.outer-flex), body:has(.outer-flex) {
   height: 100%;
   overflow: hidden;
 }
 
-body:has(#side-panel) {
+.outer-flex {
   display: flex;
   flex-direction: column;
 }
 
-body:has(#side-panel) #navigation-bar, body:has(#side-panel) #action-bar {
+.outer-flex .action-bar {
   flex: 0 0 auto;
 }
 
-body:has(#side-panel) #contents {
+.outer-flex .inner-flex {
   flex: 1 1 auto;
   margin-bottom: 0;
   min-height: 0;
@@ -36,24 +36,24 @@ body:has(#side-panel) #contents {
   margin: 0;
 }
 
-#action-bar {
+.action-bar {
   border-top: var(--main-border);
 }
 
-#action-bar .buttons {
+.action-bar .buttons {
   justify-content: center;
 }
 
-#action-bar .buttons .button {
+.action-bar .buttons .button {
   border: none;
   flex-direction: column;
 }
 
-#action-bar .buttons .button .icon {
+.action-bar .buttons .button .icon {
   margin: 0;
 }
 
-#action-bar .buttons .button .text {
+.action-bar .buttons .button .text {
   font-size: 0.75rem;
 }
 
@@ -80,7 +80,7 @@ body:has(#side-panel) #contents {
   top: 0.25rem;
 }
 
-#side-panel .notification {
+.side-panel .notification {
   margin: 0.5rem;
 }
 
@@ -146,11 +146,11 @@ body:has(#side-panel) #contents {
     padding: 0 1rem;
   }
 
-  #side-panel {
+  .side-panel {
     position: absolute;
   }
 
-  #side-panel .notification {
+  .side-panel .notification {
     top: 0.5rem;
     left: 0.5rem;
     margin: 0;
@@ -159,7 +159,7 @@ body:has(#side-panel) #contents {
     z-index: 100;
   }
 
-  #side-panel .card {
+  .side-panel .card {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -171,15 +171,15 @@ body:has(#side-panel) #contents {
     z-index: 100;
   }
 
-  #side-panel .card .card-header {
+  .side-panel .card .card-header {
     height: 52px;
   }
 
-  #side-panel .card .card-content {
+  .side-panel .card .card-content {
     flex-grow: 1;
   }
 
-  #side-panel .card .card-footer {
+  .side-panel .card .card-footer {
     bottom: 0;
     width: 100%;
   }
@@ -195,12 +195,12 @@ body:has(#side-panel) #contents {
     padding-top: 0;
   }
 
-  #contents {
+  .inner-flex {
     display: flex;
     flex-direction: column-reverse;
   }
 
-  #contents #main-panel {
+  .inner-flex .main-panel {
     flex: 0 1 auto;
     min-height: 0;
   }
@@ -239,29 +239,29 @@ body:has(#side-panel) #contents {
 }
 
 @media screen and (min-width: 769px) {
-  #action-bar {
+  .action-bar {
     border-bottom: var(--main-border);
     border-top: none;
     order: 1;
   }
 
-  #action-bar .buttons {
+  .action-bar .buttons {
     justify-content: start;
   }
   
-  #action-bar .buttons .button {
+  .action-bar .buttons .button {
     flex-direction: row;
   }
 
-  #action-bar .buttons .button .icon {
+  .action-bar .buttons .button .icon {
     margin: 0 0.25rem 0 -0.5rem;
   }
 
-  #action-bar .buttons .button .text {
+  .action-bar .buttons .button .text {
     font-size: 1rem;
   }
 
-  #contents {
+  .inner-flex {
     order: 2;
   }
 
