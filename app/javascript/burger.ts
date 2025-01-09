@@ -1,5 +1,3 @@
-/* eslint no-undef: "off" */
-
 document.addEventListener('DOMContentLoaded', () => {
 
   // Get all "navbar-burger" elements
@@ -8,14 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add a click event on each of them
   $navbarBurgers.forEach(function(element: HTMLElement) {
     element.addEventListener('click', () => {
-
-      // Get the target from the "data-target" attribute
       const target = element.dataset.target;
-      const $target = document.getElementById(target);
-
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
       element.classList.toggle('is-active');
-      $target.classList.toggle('is-active');
+      if (target) document.getElementById(target)?.classList.toggle('is-active');
     });
   });
 

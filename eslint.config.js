@@ -7,7 +7,11 @@ export default [
     ...tseslint.configs.strictTypeChecked,
     ...tseslint.configs.stylisticTypeChecked,
     {
-        ignores: ["app/assets/builds/*", "bun.config.js"]
+        ignores: [
+            "app/assets/builds/**",
+            "app/views/pwa/**",
+            "*.js"
+        ]
     },
     {
         plugins: {
@@ -15,16 +19,18 @@ export default [
         },
         languageOptions: {
             parserOptions: {
-                project: true
+                project: true,
             }
         },
     },
     // ESLint
     {
+        files: ["app/javascript/**.js"],
         rules: {}
     },
     // TypeScript
     {
+        files: ["app/javascript/**.ts"],
         rules: {}
     },
     // Stylistic
