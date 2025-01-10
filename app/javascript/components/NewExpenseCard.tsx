@@ -1,10 +1,11 @@
-import type { SyntheticEvent } from "react";
+import type { SyntheticEvent, ReactNode } from "react";
 
 interface NewExpenseCardProps {
-    handleCloseCard: (event:SyntheticEvent) => void
+    handleCloseCard: (event:SyntheticEvent) => void,
+    peopleOptions: ReactNode
 };
 
-export default function NewExpenseCard({handleCloseCard}:NewExpenseCardProps) {
+export default function NewExpenseCard({handleCloseCard, peopleOptions}:NewExpenseCardProps) {
     return (
         <form action={(formData) => { console.log(formData) }}>
             <div className="card">
@@ -40,7 +41,7 @@ export default function NewExpenseCard({handleCloseCard}:NewExpenseCardProps) {
                         <div className="field">
                             <div className="control has-icons-left has-icons-right">
                                 <select className="input" name="person[id]" id="person_id">
-                                    <option value="3">Jeanne K</option>
+                                    {peopleOptions}
                                 </select>
                                 <span className="icon is-small is-left">
                                     <i className="fas fa-user" aria-hidden="true"></i>

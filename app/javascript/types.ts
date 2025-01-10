@@ -9,3 +9,8 @@ export type ModeState =
     | { mode: 'edit pabyack', paybackId: number }
     | { mode: 'update payback', paybackId: number }
 ;
+
+export interface Person {
+    id: number,
+    name: string
+}

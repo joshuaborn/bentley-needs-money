@@ -9,17 +9,19 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
   test "#index" do
     build_expenses_for_tests()
     sign_in people(:user_one)
-    get transfers_path
-    assert_response :success
-  end
-  test "#index has a list of connected_people with the current people" do
-    build_expenses_for_tests()
-    person = people(:user_one)
-    sign_in person
     connected_people = [ people(:administrator), people(:user_three), people(:user_five) ]
     connected_people.each do |other_person|
-      Connection.create(from: person, to: other_person)
+      Connection.create(from: people(:user_one), to: other_person)
     end
+    react_json = {
+      "connected.people": connected_people.map do |person|
+        { "id": person.id, "name": person.name }
+      end
+    }.to_json
+    get transfers_path
+    assert_response :success
+    dom_element = css_select("#transfers-index-app").first
+    assert_equal react_json, dom_element["data-for-react"]
   end
   test "flash message when there are connection requests to accept or deny" do
     build_expenses_for_tests()
