@@ -6,7 +6,7 @@ interface NewExpenseCardProps {
 
 export default function NewExpenseCard({handleCloseCard}:NewExpenseCardProps) {
     return (
-        <form action="/expenses" method="post">
+        <form action={(formData) => { console.log(formData) }}>
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">New Expense</p>
@@ -20,14 +20,14 @@ export default function NewExpenseCard({handleCloseCard}:NewExpenseCardProps) {
                     <div className="content">
                         <div className="field">
                             <div className="control has-icons-left">
-                                <input step="0.01" min="0" className="input" type="number" value="0.0" name="expense[dollar_amount_paid]" id="expense_dollar_amount_paid" />
+                                <input step="0.01" min="0" className="input" type="number" defaultValue="0.0" name="expense[dollar_amount_paid]" id="expense_dollar_amount_paid" />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
                         </div>
                         <div className="field">
                             <div className="control">
                                 <label className="radio">
-                                    <input type="radio" name="person_paid" value="current" checked={true} />
+                                    <input type="radio" name="person_paid" value="current" defaultChecked={true} />
                                     paid by you and split with...
                                 </label>
                                 <br/>

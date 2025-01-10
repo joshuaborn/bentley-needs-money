@@ -6,7 +6,7 @@ interface NewPaybackCardProps {
 
 export default function NewPaybackCard({handleCloseCard}:NewPaybackCardProps) {
     return (
-        <form action="/paybacks" method="post">
+        <form action={(formData) => { console.log(formData) }}>
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">Pay Back</p>
@@ -35,7 +35,7 @@ export default function NewPaybackCard({handleCloseCard}:NewPaybackCardProps) {
                         <div className="field amount" id="payback_amount_3">
                             <label className="label" htmlFor="payback_dollar_amount_paid">Amount</label>
                             <div className="control has-icons-left">
-                                <input step="0.01" value="-487.09" className="input" type="number" name="payback[dollar_amount_paid]" id="payback_dollar_amount_paid" />
+                                <input step="0.01" defaultValue="-487.09" className="input" type="number" name="payback[dollar_amount_paid]" id="payback_dollar_amount_paid" />
                                 <span className="icon is-small is-left">
                                     <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>
                                 </span>
@@ -44,7 +44,7 @@ export default function NewPaybackCard({handleCloseCard}:NewPaybackCardProps) {
                         <div className="field">
                             <label className="label" htmlFor="payback_date">Date</label>
                             <div className="control">
-                                <input className="input" value="2025-01-07" type="date" name="payback[date]" id="payback_date" />
+                                <input className="input" defaultValue={new Date().toISOString().slice(0, 10)} type="date" name="payback[date]" id="payback_date" />
                             </div>
                         </div>
                     </div>
