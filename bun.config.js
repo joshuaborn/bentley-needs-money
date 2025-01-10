@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 
 const config = {
-  sourcemap: "external",
+  sourcemap: "linked",
   entrypoints: ["app/javascript/application.js"],
   outdir: path.join(process.cwd(), "app/assets/builds"),
   format: 'iife'
