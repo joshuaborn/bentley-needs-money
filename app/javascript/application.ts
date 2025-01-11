@@ -4,10 +4,11 @@ import "./vanilla.ts";
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import TransfersIndex from './components/TransfersIndex';
-import type { Person } from './types';
+import type { Person, Transfer } from './types';
 
 interface DataForReact {
-    "connected.people": Person[]
+    "connected.people": Person[],
+    "person.transfers": Transfer[]
 }
 
 document.addEventListener('turbo:load', () => {
@@ -18,7 +19,10 @@ document.addEventListener('turbo:load', () => {
         if (dataForReactString) {
             const dataForReact = JSON.parse(dataForReactString) as DataForReact;
             const connectedPeople = dataForReact['connected.people'];
-            root.render(createElement(TransfersIndex, {connectedPeople: connectedPeople}));
+            const personTransfers = dataForReact['person.transfers'];
+            root.render(createElement(TransfersIndex, {
+                connectedPeople: connectedPeople, initialPersonTransfers: personTransfers
+            }));
         } else {
             root.render(createElement(TransfersIndex));
         }

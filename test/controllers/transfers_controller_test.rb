@@ -16,12 +16,31 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     react_json = {
       "connected.people": connected_people.map do |person|
         { "id": person.id, "name": person.name }
-      end
+      end,
+      "person.transfers": people(:user_one).person_transfers.
+        includes(:transfer, :person_transfers, :people).
+        order(transfers: { date: :desc, created_at: :asc }). map do |person_transfer|
+          {
+            "id" => person_transfer.id,
+            "transfer_id" => person_transfer.transfer_id,
+            "cumulative_sum" => person_transfer.cumulative_sum,
+            "amount" => person_transfer.amount,
+            "in_ynab" => person_transfer.in_ynab?,
+            "person_id" => person_transfer.other_person.id,
+            "name" => person_transfer.other_person.name,
+            "date" => person_transfer.transfer.date,
+            "amount_paid" => person_transfer.transfer.amount_paid,
+            "payee" => person_transfer.transfer.payee,
+            "memo" => person_transfer.transfer.memo,
+            "type" => person_transfer.transfer.type
+          }
+        end
     }.to_json
     get transfers_path
     assert_response :success
     dom_element = css_select("#transfers-index-app").first
-    assert_equal react_json, dom_element["data-for-react"]
+    assert_equal JSON.parse(react_json)["connected.people"], JSON.parse(dom_element["data-for-react"])["connected.people"]
+    assert_equal JSON.parse(react_json)["person.transfers"], JSON.parse(dom_element["data-for-react"])["person.transfers"]
   end
   test "flash message when there are connection requests to accept or deny" do
     build_expenses_for_tests()
