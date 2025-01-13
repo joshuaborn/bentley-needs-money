@@ -15,6 +15,13 @@ export interface Person {
     name: string
 }
 
+export interface PersonOwed {
+    id: number,
+    name: string,
+    cumulativeSum: number,
+    mostRecent: string
+}
+
 export interface Transfer {
     id: number,
     transfer_id: number,

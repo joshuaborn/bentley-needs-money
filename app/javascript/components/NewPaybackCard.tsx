@@ -1,11 +1,23 @@
-import type { SyntheticEvent, ReactNode } from "react";
+import AmountField from './AmountField';
+import { useState } from 'react';
+import type { SyntheticEvent } from "react";
+import type { PersonOwed } from '../types';
 
 interface NewPaybackCardProps {
     handleCloseCard: (event:SyntheticEvent) => void,
-    peopleOptions: ReactNode
+    peopleOwed: PersonOwed[]
 };
 
-export default function NewPaybackCard({handleCloseCard, peopleOptions}:NewPaybackCardProps) {
+export default function NewPaybackCard({handleCloseCard, peopleOwed}:NewPaybackCardProps) {
+    const peopleOptions = peopleOwed.map((person) => {
+        return <option key={person.id} value={person.id}>{person.name}</option>;
+    });
+    const [personState, setPersonState] = useState<PersonOwed>(peopleOwed[0]);
+    const handlePersonChange = (event:SyntheticEvent): void => {
+        const newPersonId = parseInt((event.target as HTMLInputElement).value);
+        const newPerson = peopleOwed.find((person) => person.id === newPersonId);
+        if (newPerson) setPersonState(newPerson);
+    };
     return (
         <form action={(formData) => { console.log(formData) }}>
             <div className="card">
@@ -22,7 +34,7 @@ export default function NewPaybackCard({handleCloseCard, peopleOptions}:NewPayba
                         <div className="field">
                             <label className="label" htmlFor="person_id">Person</label>
                             <div className="control has-icons-left has-icons-right">
-                                <select className="input" name="person[id]" id="person_id">
+                                <select className="input" name="person[id]" id="person_id" onChange={handlePersonChange}>
                                     {peopleOptions}
                                 </select>
                                 <span className="icon is-small is-left">
@@ -33,15 +45,7 @@ export default function NewPaybackCard({handleCloseCard, peopleOptions}:NewPayba
                                 </span>
                             </div>
                         </div>
-                        <div className="field amount" id="payback_amount_3">
-                            <label className="label" htmlFor="payback_dollar_amount_paid">Amount</label>
-                            <div className="control has-icons-left">
-                                <input step="0.01" defaultValue="-487.09" className="input" type="number" name="payback[dollar_amount_paid]" id="payback_dollar_amount_paid" />
-                                <span className="icon is-small is-left">
-                                    <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>
-                                </span>
-                            </div>
-                        </div>
+                        <AmountField key={"amount-" + personState.id.toString()} defaultAmount={personState.cumulativeSum} />
                         <div className="field">
                             <label className="label" htmlFor="payback_date">Date</label>
                             <div className="control">
