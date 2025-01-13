@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Transfer } from '../types';
 import TransferRow from './TransferRow';
 
@@ -7,17 +8,18 @@ interface MainPanelProps {
 
 export default function MainPanel({transfers}:MainPanelProps) {
     let lastDate = "";
-    const transfersContent = transfers.map((transfer) => {
+    const transfersContent = transfers.reduce((accumulator, transfer) => {
         if (transfer.date === lastDate) {
-            return <TransferRow key={transfer.id} transfer={transfer} />;
+            accumulator.push(<TransferRow key={transfer.id} transfer={transfer} />);
         } else {
             lastDate = transfer.date;
-            return <>
-                <div className="date is-hidden-tablet">{lastDate}</div>
+            accumulator.push(
+                <div key={"date-" + lastDate.toString()} className="date is-hidden-tablet">{lastDate}</div>,
                 <TransferRow key={transfer.id} transfer={transfer} />
-            </>;
+            );
         }
-    });
+        return accumulator;
+    }, new Array<ReactNode>());
 
     return (
         <div className="main-panel column is-three-quarters-desktop">
