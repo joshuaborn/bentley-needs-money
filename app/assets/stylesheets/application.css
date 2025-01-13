@@ -2,7 +2,7 @@
   --main-border: 1px solid var(--bulma-border);
 }
 
-html:has(.outer-flex), body:has(.outer-flex) {
+html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex {
   height: 100%;
   overflow: hidden;
 }
