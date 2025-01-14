@@ -6,10 +6,11 @@ import MainPanel from './MainPanel';
 
 interface TransfersIndexProps {
     connectedPeople: Person[],
-    initialPersonTransfers: Transfer[]
+    initialPersonTransfers: Transfer[],
+    flash: string[][]
 };
 
-export default function TransfersIndex({connectedPeople, initialPersonTransfers}:TransfersIndexProps) {
+export default function TransfersIndex({connectedPeople, initialPersonTransfers, flash}:TransfersIndexProps) {
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
     const [transfersState] = useState<Transfer[]>(initialPersonTransfers);
     const peopleOwedMap = transfersState.reduce(
@@ -35,7 +36,13 @@ export default function TransfersIndex({connectedPeople, initialPersonTransfers}
     return (
         <div className="outer-flex">
             <div className="inner-flex columns is-gapless">
-                <SidePanel modeState={modeState} setModeState={setModeState} connectedPeople={connectedPeople} peopleOwed={peopleOwed} />
+                <SidePanel
+                    modeState={modeState}
+                    setModeState={setModeState}
+                    connectedPeople={connectedPeople}
+                    peopleOwed={peopleOwed}
+                    flash={flash}
+                />
                 <MainPanel transfers={transfersState} />
             </div>
             <ActionBar modeState={modeState} setModeState={setModeState} />

@@ -8,7 +8,8 @@ import type { Person, Transfer } from './types';
 
 interface DataForReact {
     "connected.people": Person[],
-    "person.transfers": Transfer[]
+    "person.transfers": Transfer[],
+    "flash": string[][]
 }
 
 document.addEventListener('turbo:load', () => {
@@ -21,7 +22,9 @@ document.addEventListener('turbo:load', () => {
             const connectedPeople = dataForReact['connected.people'];
             const personTransfers = dataForReact['person.transfers'];
             root.render(createElement(TransfersIndex, {
-                connectedPeople: connectedPeople, initialPersonTransfers: personTransfers
+                connectedPeople: connectedPeople,
+                initialPersonTransfers: personTransfers,
+                flash: dataForReact.flash
             }));
         } else {
             root.render(createElement(TransfersIndex));

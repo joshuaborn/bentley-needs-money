@@ -2,21 +2,26 @@ import type { Dispatch, SetStateAction, SyntheticEvent } from "react";
 import type { ModeState, Person, PersonOwed } from '../types';
 import NewExpenseCard from './NewExpenseCard';
 import NewPaybackCard from './NewPaybackCard';
+import FlashNotification from './FlashNotification';
 
 interface SidePanelProps {
     modeState: ModeState,
     setModeState: Dispatch<SetStateAction<ModeState>>,
     connectedPeople: Person[],
-    peopleOwed: PersonOwed[]
+    peopleOwed: PersonOwed[],
+    flash: string[][]
 }
 
-export default function SidePanel({modeState, setModeState, connectedPeople, peopleOwed}:SidePanelProps) {
+export default function SidePanel({modeState, setModeState, connectedPeople, peopleOwed, flash}:SidePanelProps) {
     const handleCloseCard = (event:SyntheticEvent): void => {
         event.preventDefault();
         setModeState({ mode: 'idle' });
     }
     const peopleOptions = connectedPeople.map((person) => {
         return <option key={person.id} value={person.id}>{person.name}</option>;
+    });
+    const flashMessages = flash.map((message) => {
+        return <FlashNotification key={message[1].replace(/[^\w]|/g, "").toLowerCase()} kind={message[0]} message={message[1]} />;
     });
     let contents = null;
     switch (modeState.mode) {
@@ -29,6 +34,7 @@ export default function SidePanel({modeState, setModeState, connectedPeople, peo
     }
     return (
         <div className="side-panel column is-one-quarter-desktop scroller">
+            {flashMessages}
             {contents}
         </div>
     );

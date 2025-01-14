@@ -1,0 +1,35 @@
+import { useState } from "react";
+import type { SyntheticEvent } from "react";
+
+interface FlashNotificationProps {
+    kind: string,
+    message: string
+};
+
+export default function FlashNotification({kind, message}:FlashNotificationProps) {
+    const [visibleState, setVisibleState] = useState(true);
+    const handleCloseNotification = (event:SyntheticEvent): void => {
+        event.preventDefault();
+        setVisibleState(false);
+    }
+    let className = kind;
+    switch (className) {
+        case "notice":
+            className = "info";
+            break;
+        case "alert":
+            className = "warning";
+            break;
+        case "error":
+            className = "danger";
+    }
+    if (!visibleState) {
+        return null;
+    }
+    return (
+        <div className={"notification is-" + className}>
+            <a href="#" className="delete" onClick={handleCloseNotification}></a>
+            {message}
+        </div>
+    );
+}
