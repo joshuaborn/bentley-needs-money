@@ -43,7 +43,10 @@ export default function TransfersIndex({connectedPeople, initialPersonTransfers,
                     peopleOwed={peopleOwed}
                     flash={flash}
                 />
-                <MainPanel transfers={transfersState} />
+                <MainPanel
+                    transfers={transfersState}
+                    setModeState={setModeState}
+                />
             </div>
             <ActionBar modeState={modeState} setModeState={setModeState} />
         </div>

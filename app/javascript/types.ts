@@ -6,7 +6,7 @@ export type ModeState =
     | { mode: 'update expense', expenseId: number }
     | { mode: 'new payback' }
     | { mode: 'create payback' }
-    | { mode: 'edit pabyack', paybackId: number }
+    | { mode: 'edit payback', paybackId: number }
     | { mode: 'update payback', paybackId: number }
 ;
 

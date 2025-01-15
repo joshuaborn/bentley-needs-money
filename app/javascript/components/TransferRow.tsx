@@ -1,11 +1,28 @@
-import type { Transfer } from '../types';
+import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
+import type { Transfer, ModeState } from '../types';
 import Currency from './Currency';
 
 interface TransferRowProps {
-    transfer: Transfer
+    transfer: Transfer,
+    setModeState: Dispatch<SetStateAction<ModeState>>
 };
 
-export default function TransferRow({transfer}:TransferRowProps) {
+export default function TransferRow({transfer, setModeState}:TransferRowProps) {
+    const handleClick = (event:SyntheticEvent): void => {
+        event.preventDefault();
+        if (transfer.type === "Expense") {
+            setModeState({
+                mode: "edit expense",
+                expenseId: transfer.id
+            });
+        }
+        if (transfer.type === "Payback") {
+            setModeState({
+                mode: "edit payback",
+                paybackId: transfer.id
+            });
+        }
+    };
     const byOrTo = transfer.amount < 0 ? 'by ' : 'to ';
     let checkYNAB = transfer.in_ynab ? <i className="fa-regular fa-square-check" aria-hidden="true"></i> : <></>;
     let classes = "person-transfer grid is-gap-0";
@@ -19,7 +36,7 @@ export default function TransferRow({transfer}:TransferRowProps) {
         checkYNAB = <></>;
     }
     return (
-        <a key={transfer.id} className={classes}>
+        <a key={transfer.id} className={classes} onClick={handleClick}>
             <div className="cell transfer-date is-hidden-mobile">
                 {transfer.date}
             </div>

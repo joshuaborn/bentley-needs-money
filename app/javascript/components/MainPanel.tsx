@@ -1,21 +1,22 @@
-import type { ReactNode } from 'react';
-import type { Transfer } from '../types';
+import type { Dispatch, SetStateAction, ReactNode } from 'react';
+import type { Transfer, ModeState } from '../types';
 import TransferRow from './TransferRow';
 
 interface MainPanelProps {
-    transfers: Transfer[]
+    transfers: Transfer[],
+    setModeState: Dispatch<SetStateAction<ModeState>>
 };
 
-export default function MainPanel({transfers}:MainPanelProps) {
+export default function MainPanel({transfers, setModeState}:MainPanelProps) {
     let lastDate = "";
     const transfersContent = transfers.reduce((accumulator, transfer) => {
         if (transfer.date === lastDate) {
-            accumulator.push(<TransferRow key={transfer.id} transfer={transfer} />);
+            accumulator.push(<TransferRow key={transfer.id} transfer={transfer} setModeState={setModeState} />);
         } else {
             lastDate = transfer.date;
             accumulator.push(
                 <div key={"date-" + lastDate.toString()} className="date is-hidden-tablet">{lastDate}</div>,
-                <TransferRow key={transfer.id} transfer={transfer} />
+                <TransferRow key={transfer.id} transfer={transfer} setModeState={setModeState} />
             );
         }
         return accumulator;
