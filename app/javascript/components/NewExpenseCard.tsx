@@ -21,7 +21,7 @@ export default function NewExpenseCard({handleCloseCard, peopleOptions}:NewExpen
                     <div className="content">
                         <div className="field">
                             <div className="control has-icons-left">
-                                <input step="0.01" min="0" className="input" type="number" defaultValue="0.0" name="expense[dollar_amount_paid]" id="expense_dollar_amount_paid" />
+                                <input step="0.01" min="0" className="input" type="number" defaultValue="0.00" name="expense[dollar_amount_paid]" id="expense_dollar_amount_paid" />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
                         </div>

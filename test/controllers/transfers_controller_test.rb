@@ -21,17 +21,23 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
         includes(:transfer, :person_transfers, :people).
         order(transfers: { date: :desc, created_at: :asc }). map do |person_transfer|
           {
-            "id" => person_transfer.id,
-            "transfer_id" => person_transfer.transfer_id,
-            "cumulative_sum" => person_transfer.cumulative_sum,
-            "amount" => person_transfer.amount,
-            "in_ynab" => person_transfer.in_ynab?,
-            "person_id" => person_transfer.other_person.id,
-            "name" => person_transfer.other_person.name,
             "date" => person_transfer.transfer.date,
-            "amount_paid" => person_transfer.transfer.amount_paid,
-            "payee" => person_transfer.transfer.payee,
+            "dollarAmount" => person_transfer.dollar_amount,
+            "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
+            "id" => person_transfer.id,
+            "inYnab" => person_transfer.in_ynab?,
             "memo" => person_transfer.transfer.memo,
+            "otherPeople" => [
+              {
+                "cumulativeSum" => person_transfer.dollar_cumulative_sum,
+                "date" => person_transfer.transfer.date,
+                "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
+                "id" => person_transfer.other_person.id,
+                "name" => person_transfer.other_person.name
+              }
+            ],
+            "payee" => person_transfer.transfer.payee,
+            "transferId" => person_transfer.transfer_id,
             "type" => person_transfer.transfer.type
           }
         end

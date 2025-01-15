@@ -12,8 +12,28 @@ class TransfersController < ApplicationController
       @person_transfers = current_person.person_transfers.
         includes(:transfer, :person_transfers, :people).
         order(transfers: { date: :desc, created_at: :asc }).
-        select(person_transfers: [ :id, :transfer_id, :cumulative_sum, :amount, :in_ynab ], people: { id: :person_id, name: :name }, transfers: [ :date, :payee, :memo, :type, :amount_paid ]).
-        where([ "people.id <> ?", current_person ])
+        where([ "people.id <> ?", current_person ]).map do |person_transfer|
+          {
+            "date" => person_transfer.transfer.date,
+            "dollarAmount" => person_transfer.dollar_amount,
+            "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
+            "id" => person_transfer.id,
+            "inYnab" => person_transfer.in_ynab?,
+            "memo" => person_transfer.transfer.memo,
+            "otherPeople" => [
+              {
+                "cumulativeSum" => person_transfer.dollar_cumulative_sum,
+                "date" => person_transfer.transfer.date,
+                "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
+                "id" => person_transfer.other_person.id,
+                "name" => person_transfer.other_person.name
+              }
+           ],
+            "payee" => person_transfer.transfer.payee,
+            "transferId" => person_transfer.transfer_id,
+            "type" => person_transfer.transfer.type
+          }
+        end
       @connected_people = current_person.connected_people.select(:id, :name)
       if current_person.inbound_connection_requests.any?
         flash.now[:info] = "You have one or more connection requests. Navigate to the <a href='#{url_for connections_path}' target='_top'>Connections page</a> to approve or deny connection requests.".html_safe

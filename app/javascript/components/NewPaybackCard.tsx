@@ -45,7 +45,11 @@ export default function NewPaybackCard({handleCloseCard, peopleOwed}:NewPaybackC
                                 </span>
                             </div>
                         </div>
-                        <AmountField key={"amount-" + personState.id.toString()} defaultAmount={personState.cumulativeSum} />
+                        <AmountField
+                            key={"amount-" + personState.id.toString()}
+                            defaultAmount={personState.cumulativeSum} 
+                            fieldName={"amount"}
+                        />
                         <div className="field">
                             <label className="label" htmlFor="payback_date">Date</label>
                             <div className="control">

@@ -12,27 +12,26 @@ export type ModeState =
 
 export interface Person {
     id: number,
-    name: string
+    name: string,
 }
 
 export interface PersonOwed {
+    cumulativeSum: number,
+    date: string,
+    dollarAmount: number,
     id: number,
     name: string,
-    cumulativeSum: number,
-    mostRecent: string
 }
 
 export interface Transfer {
-    id: number,
-    transfer_id: number,
-    cumulative_sum: number,
-    amount: number,
-    in_ynab: boolean,
-    person_id: number,
-    name: string,
     date: string,
-    amount_paid: number,
-    payee: string,
+    dollarAmount: number,
+    dollarAmountPaid: number,
+    id: number,
+    inYnab: boolean,
     memo: string,
-    type: "Expense" | "Payback"
+    otherPeople: PersonOwed[],
+    payee: string,
+    transferId: number,
+    type: "Expense" | "Payback",
 }

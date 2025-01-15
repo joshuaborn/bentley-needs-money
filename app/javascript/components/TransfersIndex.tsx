@@ -15,18 +15,12 @@ export default function TransfersIndex({connectedPeople, initialPersonTransfers,
     const [transfersState] = useState<Transfer[]>(initialPersonTransfers);
     const peopleOwedMap = transfersState.reduce(
         function(accumulator, transfer) {
-            const currentEntry = accumulator.get(transfer.person_id);
-            if (typeof currentEntry === "undefined" || (currentEntry.mostRecent < transfer.date)) {
-                accumulator.set(
-                    transfer.person_id,
-                    {
-                        id: transfer.person_id,
-                        name: transfer.name,
-                        cumulativeSum: transfer.cumulative_sum,
-                        mostRecent: transfer.date
-                    }
-                );
-            }
+            transfer.otherPeople.forEach((personOwed) => {
+                const currentEntry = accumulator.get(personOwed.id);
+                if (typeof currentEntry === "undefined" || (currentEntry.date < transfer.date)) {
+                    accumulator.set(personOwed.id, personOwed);
+                }
+            });
             return accumulator;
         },
         new Map<number,PersonOwed>()
@@ -42,6 +36,7 @@ export default function TransfersIndex({connectedPeople, initialPersonTransfers,
                     connectedPeople={connectedPeople}
                     peopleOwed={peopleOwed}
                     flash={flash}
+                    transfers={transfersState}
                 />
                 <MainPanel
                     transfers={transfersState}
