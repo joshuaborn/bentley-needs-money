@@ -1,7 +1,7 @@
 // Entry point for the build script in your package.json
 import "@hotwired/turbo-rails";
 import "./vanilla.ts";
-import { createElement } from 'react';
+import { createElement, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import TransfersIndex from './components/TransfersIndex';
 import type { Person, Transfer } from './types';
@@ -21,13 +21,28 @@ document.addEventListener('turbo:load', () => {
             const dataForReact = JSON.parse(dataForReactString) as DataForReact;
             const connectedPeople = dataForReact['connected.people'];
             const personTransfers = dataForReact['person.transfers'];
-            root.render(createElement(TransfersIndex, {
-                connectedPeople: connectedPeople,
-                initialPersonTransfers: personTransfers,
-                flash: dataForReact.flash
-            }));
+            root.render(
+                createElement(
+                    StrictMode,
+                    {},
+                    createElement(
+                        TransfersIndex,
+                        {
+                            connectedPeople: connectedPeople,
+                            initialPersonTransfers: personTransfers,
+                            flash: dataForReact.flash
+                        }
+                    )
+                )
+            );
         } else {
-            root.render(createElement(TransfersIndex));
+            root.render(
+                createElement(
+                    StrictMode,
+                    {},
+                    createElement(TransfersIndex)
+                )
+            );
         }
     }
 });
