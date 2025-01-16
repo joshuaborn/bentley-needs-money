@@ -1,18 +1,19 @@
-import type { Dispatch, SetStateAction, SyntheticEvent } from "react";
+import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
+
 import type { ModeState, Person, PersonOwed, Transfer } from '../types';
-import NewExpenseCard from './NewExpenseCard';
-import NewPaybackCard from './NewPaybackCard';
-import FlashNotification from './FlashNotification';
 import EditExpenseCard from './EditExpenseCard';
 import EditPaybackCard from './EditPaybackCard';
+import FlashNotification from './FlashNotification';
+import NewExpenseCard from './NewExpenseCard';
+import NewPaybackCard from './NewPaybackCard';
 
 interface SidePanelProps {
-    modeState: ModeState,
-    setModeState: Dispatch<SetStateAction<ModeState>>,
     connectedPeople: Person[],
-    peopleOwed: PersonOwed[],
     flash: string[][],
-    transfers: Transfer[]
+    modeState: ModeState,
+    peopleOwed: PersonOwed[],
+    setModeState: Dispatch<SetStateAction<ModeState>>,
+    transfers: Transfer[],
 }
 
 export default function SidePanel({modeState, setModeState, connectedPeople, peopleOwed, flash, transfers}:SidePanelProps) {

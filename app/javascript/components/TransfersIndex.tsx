@@ -1,13 +1,14 @@
 import { useState }  from 'react';
+
 import type { ModeState, Person, Transfer, PersonOwed } from '../types';
 import ActionBar from './ActionBar';
-import SidePanel from './SidePanel';
 import MainPanel from './MainPanel';
+import SidePanel from './SidePanel';
 
 interface TransfersIndexProps {
     connectedPeople: Person[],
+    flash: string[][],
     initialPersonTransfers: Transfer[],
-    flash: string[][]
 };
 
 export default function TransfersIndex({connectedPeople, initialPersonTransfers, flash}:TransfersIndexProps) {

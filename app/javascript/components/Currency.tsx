@@ -1,5 +1,5 @@
 interface CurrencyProps {
-    dollarAmount: number
+    dollarAmount: number,
 };
 
 export default function Currency({dollarAmount}:CurrencyProps) {

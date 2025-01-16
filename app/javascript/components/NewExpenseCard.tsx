@@ -1,8 +1,8 @@
-import type { SyntheticEvent, ReactNode } from "react";
+import type { SyntheticEvent, ReactNode } from 'react';
 
 interface NewExpenseCardProps {
     handleCloseCard: (event:SyntheticEvent) => void,
-    peopleOptions: ReactNode
+    peopleOptions: ReactNode,
 };
 
 export default function NewExpenseCard({handleCloseCard, peopleOptions}:NewExpenseCardProps) {

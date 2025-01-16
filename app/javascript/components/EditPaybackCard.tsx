@@ -1,9 +1,10 @@
-import type { SyntheticEvent } from "react";
-import type { Transfer } from "../types";
+import type { SyntheticEvent } from 'react';
+
+import type { Transfer } from '../types';
 
 interface EditPaybackCardProps {
     handleCloseCard: (event:SyntheticEvent) => void,
-    payback: Transfer
+    payback: Transfer,
 };
 
 export default function EditPaybackCard({handleCloseCard, payback}:EditPaybackCardProps) {

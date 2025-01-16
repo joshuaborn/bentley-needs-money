@@ -1,9 +1,9 @@
-import { useState } from "react";
-import type { SyntheticEvent } from "react";
+import type { SyntheticEvent } from 'react';
+import { useState } from 'react';
 
 interface FlashNotificationProps {
     kind: string,
-    message: string
+    message: string,
 };
 
 export default function FlashNotification({kind, message}:FlashNotificationProps) {

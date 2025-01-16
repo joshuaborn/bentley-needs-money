@@ -1,10 +1,11 @@
 import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
+
 import type { Transfer, ModeState } from '../types';
 import Currency from './Currency';
 
 interface TransferRowProps {
+    setModeState: Dispatch<SetStateAction<ModeState>>,
     transfer: Transfer,
-    setModeState: Dispatch<SetStateAction<ModeState>>
 };
 
 export default function TransferRow({transfer, setModeState}:TransferRowProps) {

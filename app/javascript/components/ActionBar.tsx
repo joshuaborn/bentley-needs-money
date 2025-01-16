@@ -1,9 +1,10 @@
-import type { Dispatch, SetStateAction, SyntheticEvent } from "react";
+import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
+
 import type { ModeState } from '../types';
 
 interface ActionBarProps {
     modeState: ModeState,
-    setModeState: Dispatch<SetStateAction<ModeState>>
+    setModeState: Dispatch<SetStateAction<ModeState>>,
 }
 
 export default function ActionBar({modeState, setModeState}:ActionBarProps) {

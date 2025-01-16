@@ -1,6 +1,6 @@
 interface AmountFieldProps {
     defaultAmount: number,
-    fieldName: string
+    fieldName: string,
 };
 
 export default function AmountField({defaultAmount, fieldName}:AmountFieldProps) {

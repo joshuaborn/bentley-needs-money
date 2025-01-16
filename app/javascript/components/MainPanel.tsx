@@ -1,10 +1,11 @@
 import type { Dispatch, SetStateAction, ReactNode } from 'react';
+
 import type { Transfer, ModeState } from '../types';
 import TransferRow from './TransferRow';
 
 interface MainPanelProps {
+    setModeState: Dispatch<SetStateAction<ModeState>>,
     transfers: Transfer[],
-    setModeState: Dispatch<SetStateAction<ModeState>>
 };
 
 export default function MainPanel({transfers, setModeState}:MainPanelProps) {

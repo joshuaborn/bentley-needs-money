@@ -1,11 +1,12 @@
-import AmountField from './AmountField';
+import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
-import type { SyntheticEvent } from "react";
+
 import type { PersonOwed } from '../types';
+import AmountField from './AmountField';
 
 interface NewPaybackCardProps {
     handleCloseCard: (event:SyntheticEvent) => void,
-    peopleOwed: PersonOwed[]
+    peopleOwed: PersonOwed[],
 };
 
 export default function NewPaybackCard({handleCloseCard, peopleOwed}:NewPaybackCardProps) {

@@ -1,9 +1,10 @@
-import type { SyntheticEvent } from "react";
-import type { Transfer } from "../types";
+import type { SyntheticEvent } from 'react';
+
+import type { Transfer } from '../types';
 
 interface EditExpenseCardProps {
+    expense: Transfer,
     handleCloseCard: (event:SyntheticEvent) => void,
-    expense: Transfer
 };
 
 export default function EditExpenseCard({handleCloseCard, expense}:EditExpenseCardProps) {
