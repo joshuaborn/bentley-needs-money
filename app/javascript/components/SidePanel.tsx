@@ -4,6 +4,7 @@ import NewExpenseCard from './NewExpenseCard';
 import NewPaybackCard from './NewPaybackCard';
 import FlashNotification from './FlashNotification';
 import EditExpenseCard from './EditExpenseCard';
+import EditPaybackCard from './EditPaybackCard';
 
 interface SidePanelProps {
     modeState: ModeState,
@@ -27,6 +28,7 @@ export default function SidePanel({modeState, setModeState, connectedPeople, peo
     });
     let contents = null;
     let expense = null;
+    let payback = null;
     switch (modeState.mode) {
         case 'new expense':
             contents = <NewExpenseCard handleCloseCard={handleCloseCard} peopleOptions={peopleOptions} />;
@@ -37,6 +39,10 @@ export default function SidePanel({modeState, setModeState, connectedPeople, peo
         case 'edit expense':
             expense = transfers.find((obj) => obj.id === modeState.expenseId);
             if (expense) contents = <EditExpenseCard key={expense.id} handleCloseCard={handleCloseCard} expense={expense} />;
+            break;
+        case 'edit payback':
+            payback = transfers.find((obj) => obj.id === modeState.paybackId);
+            if (payback) contents = <EditPaybackCard key={payback.id} handleCloseCard={handleCloseCard} payback={payback} />;
             break;
     }
     return (
