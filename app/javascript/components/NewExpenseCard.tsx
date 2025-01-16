@@ -5,13 +5,13 @@ interface NewExpenseCardProps {
     peopleOptions: ReactNode,
 };
 
-export default function NewExpenseCard({handleCloseCard, peopleOptions}:NewExpenseCardProps) {
+export default function NewExpenseCard(props:NewExpenseCardProps) {
     return (
         <form action={(formData) => { console.log(formData) }}>
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">New Expense</p>
-                    <a href="#" className="card-header-icon" onClick={handleCloseCard}>
+                    <a href="#" className="card-header-icon" onClick={props.handleCloseCard}>
                         <span className="icon">
                             <i className="fa-solid fa-xmark fa-lg has-text-link" aria-hidden="true"></i>
                         </span>
@@ -41,7 +41,7 @@ export default function NewExpenseCard({handleCloseCard, peopleOptions}:NewExpen
                         <div className="field">
                             <div className="control has-icons-left has-icons-right">
                                 <select className="input" name="person[id]" id="person_id">
-                                    {peopleOptions}
+                                    {props.peopleOptions}
                                 </select>
                                 <span className="icon is-small is-left">
                                     <i className="fas fa-user" aria-hidden="true"></i>
@@ -73,7 +73,7 @@ export default function NewExpenseCard({handleCloseCard, peopleOptions}:NewExpen
                 </div>
                 <footer className="card-footer buttons has-addons">
                     <input type="submit" name="commit" value="Create" className="card-footer-item button is-link" />
-                    <a href="#" className="card-footer-item" onClick={handleCloseCard}>Cancel</a>
+                    <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
             </div>
         </form>

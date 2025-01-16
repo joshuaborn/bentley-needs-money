@@ -8,16 +8,16 @@ interface MainPanelProps {
     transfers: Transfer[],
 };
 
-export default function MainPanel({transfers, setModeState}:MainPanelProps) {
+export default function MainPanel(props:MainPanelProps) {
     let lastDate = "";
-    const transfersContent = transfers.reduce((accumulator, transfer) => {
+    const transfersContent = props.transfers.reduce((accumulator, transfer) => {
         if (transfer.date === lastDate) {
-            accumulator.push(<TransferRow key={transfer.id} transfer={transfer} setModeState={setModeState} />);
+            accumulator.push(<TransferRow key={transfer.id} transfer={transfer} setModeState={props.setModeState} />);
         } else {
             lastDate = transfer.date;
             accumulator.push(
                 <div key={"date-" + lastDate.toString()} className="date is-hidden-tablet">{lastDate}</div>,
-                <TransferRow key={transfer.id} transfer={transfer} setModeState={setModeState} />
+                <TransferRow key={transfer.id} transfer={transfer} setModeState={props.setModeState} />
             );
         }
         return accumulator;

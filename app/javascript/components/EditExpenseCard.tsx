@@ -7,8 +7,8 @@ interface EditExpenseCardProps {
     handleCloseCard: (event:SyntheticEvent) => void,
 };
 
-export default function EditExpenseCard({handleCloseCard, expense}:EditExpenseCardProps) {
-    const otherPersonFields = expense.otherPeople.map((personOwed) => {
+export default function EditExpenseCard(props:EditExpenseCardProps) {
+    const otherPersonFields = props.expense.otherPeople.map((personOwed) => {
         return (
             <div key={"other-person-" + personOwed.id.toString()} className="field">
                 <label className="label" htmlFor="other_person_amount">{personOwed.name}'s Contribution</label>
@@ -24,7 +24,7 @@ export default function EditExpenseCard({handleCloseCard, expense}:EditExpenseCa
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">Edit Expense</p>
-                    <a href="#" className="card-header-icon" onClick={handleCloseCard}>
+                    <a href="#" className="card-header-icon" onClick={props.handleCloseCard}>
                         <span className="icon">
                             <i className="fa-solid fa-xmark fa-lg has-text-link" aria-hidden="true"></i>
                         </span>
@@ -35,48 +35,48 @@ export default function EditExpenseCard({handleCloseCard, expense}:EditExpenseCa
                         <div className="field">
                             <label className="label" htmlFor="expense_dollar_amount_paid">Dollar Amount Paid</label>
                             <div className="control has-icons-left">
-                                <input step="0.01" min="0" className="input" type="number" defaultValue={expense.dollarAmountPaid.toFixed(2)} name="expense[dollar_amount_paid]" id="expense_dollar_amount_paid" />
+                                <input step="0.01" min="0" className="input" type="number" defaultValue={props.expense.dollarAmountPaid.toFixed(2)} name="expense[dollar_amount_paid]" id="expense_dollar_amount_paid" />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
                         </div>
                         <div className="field">
                             <label className="label" htmlFor="expense_person_transfers_attributes_0_dollar_amount">Your Contribution</label>
                             <div className="control has-icons-left">
-                                <input step="0.01" className="input" type="number" defaultValue={expense.dollarAmount.toFixed(2)} name="expense[person_transfers_attributes][0][dollar_amount]" id="expense_person_transfers_attributes_0_dollar_amount" />
+                                <input step="0.01" className="input" type="number" defaultValue={props.expense.dollarAmount.toFixed(2)} name="expense[person_transfers_attributes][0][dollar_amount]" id="expense_person_transfers_attributes_0_dollar_amount" />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
                         </div>
                         <div className="field">
                             <label className="label" htmlFor="expense_person_transfers_attributes_0_in_ynab">
                                 <input name="expense[person_transfers_attributes][0][in_ynab]" type="hidden" value="0" autoComplete="off" />
-                                <input type="checkbox" value="1" defaultChecked={expense.inYnab} name="expense[person_transfers_attributes][0][in_ynab]" id="expense_person_transfers_attributes_0_in_ynab" /> In YNAB?
+                                <input type="checkbox" value="1" defaultChecked={props.expense.inYnab} name="expense[person_transfers_attributes][0][in_ynab]" id="expense_person_transfers_attributes_0_in_ynab" /> In YNAB?
                             </label>
                         </div>
                         {otherPersonFields}
                         <div className="field">
                             <label className="label" htmlFor="expense_date">Date</label>
                             <div className="control">
-                                <input className="input" defaultValue={expense.date} type="date" name="expense[date]" id="expense_date" />
+                                <input className="input" defaultValue={props.expense.date} type="date" name="expense[date]" id="expense_date" />
                             </div>
                         </div>
                         <div className="field">
                             <label className="label" htmlFor="expense_payee">Payee</label>
                             <div className="control">
-                                <input className="input" type="text" defaultValue={expense.payee} name="expense[payee]" id="expense_payee" />
+                                <input className="input" type="text" defaultValue={props.expense.payee} name="expense[payee]" id="expense_payee" />
                             </div>
                         </div>
                         <div className="field">
                             <label className="label" htmlFor="expense_memo">Memo</label>
                             <div className="control">
-                                <input className="input" type="text" defaultValue={expense.memo} name="expense[memo]" id="expense_memo" />
+                                <input className="input" type="text" defaultValue={props.expense.memo} name="expense[memo]" id="expense_memo" />
                             </div>
                         </div>
                     </div>
                 </div>
                 <footer className="card-footer buttons has-addons">
                     <input type="submit" name="commit" value="Update" className="card-footer-item button is-link" />
-                    <a href={"/expenses/" + expense.id.toString()} className="card-footer-item has-text-danger">Delete</a>
-                    <a href="#" className="card-footer-item" onClick={handleCloseCard}>Cancel</a>
+                    <a href="#" className="card-footer-item has-text-danger">Delete</a>
+                    <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
             </div>
         </form>

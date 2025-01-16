@@ -9,14 +9,14 @@ interface NewPaybackCardProps {
     peopleOwed: PersonOwed[],
 };
 
-export default function NewPaybackCard({handleCloseCard, peopleOwed}:NewPaybackCardProps) {
-    const peopleOptions = peopleOwed.map((person) => {
+export default function NewPaybackCard(props:NewPaybackCardProps) {
+    const peopleOptions = props.peopleOwed.map((person) => {
         return <option key={person.id} value={person.id}>{person.name}</option>;
     });
-    const [personState, setPersonState] = useState<PersonOwed>(peopleOwed[0]);
+    const [personState, setPersonState] = useState<PersonOwed>(props.peopleOwed[0]);
     const handlePersonChange = (event:SyntheticEvent): void => {
         const newPersonId = parseInt((event.target as HTMLInputElement).value);
-        const newPerson = peopleOwed.find((person) => person.id === newPersonId);
+        const newPerson = props.peopleOwed.find((person) => person.id === newPersonId);
         if (newPerson) setPersonState(newPerson);
     };
     return (
@@ -24,7 +24,7 @@ export default function NewPaybackCard({handleCloseCard, peopleOwed}:NewPaybackC
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">Pay Back</p>
-                    <a href="#" className="card-header-icon" onClick={handleCloseCard}>
+                    <a href="#" className="card-header-icon" onClick={props.handleCloseCard}>
                         <span className="icon">
                             <i className="fa-solid fa-xmark fa-lg has-text-link" aria-hidden="true"></i>
                         </span>
@@ -61,7 +61,7 @@ export default function NewPaybackCard({handleCloseCard, peopleOwed}:NewPaybackC
                 </div>
                 <footer className="card-footer buttons has-addons">
                     <input type="submit" name="commit" value="Create" className="card-footer-item button is-link" />
-                    <a href="#" className="card-footer-item" onClick={handleCloseCard}>Cancel</a>
+                    <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
             </div>
         </form>

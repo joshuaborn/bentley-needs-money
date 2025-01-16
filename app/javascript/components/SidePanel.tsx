@@ -16,17 +16,18 @@ interface SidePanelProps {
     transfers: Transfer[],
 }
 
-export default function SidePanel({modeState, setModeState, connectedPeople, peopleOwed, flash, transfers}:SidePanelProps) {
+export default function SidePanel(props:SidePanelProps) {
     const handleCloseCard = (event:SyntheticEvent): void => {
         event.preventDefault();
-        setModeState({ mode: 'idle' });
+        props.setModeState({ mode: 'idle' });
     }
-    const peopleOptions = connectedPeople.map((person) => {
+    const peopleOptions = props.connectedPeople.map((person) => {
         return <option key={person.id} value={person.id}>{person.name}</option>;
     });
-    const flashMessages = flash.map((message) => {
+    const flashMessages = props.flash.map((message) => {
         return <FlashNotification key={message[1].replace(/[^\w]|/g, "").toLowerCase()} kind={message[0]} message={message[1]} />;
     });
+    const modeState = props.modeState;
     let contents = null;
     let expense = null;
     let payback = null;
@@ -35,14 +36,14 @@ export default function SidePanel({modeState, setModeState, connectedPeople, peo
             contents = <NewExpenseCard handleCloseCard={handleCloseCard} peopleOptions={peopleOptions} />;
             break;
         case 'new payback':
-            contents = <NewPaybackCard handleCloseCard={handleCloseCard} peopleOwed={peopleOwed} />;
+            contents = <NewPaybackCard handleCloseCard={handleCloseCard} peopleOwed={props.peopleOwed} />;
             break;
         case 'edit expense':
-            expense = transfers.find((obj) => obj.id === modeState.expenseId);
+            expense = props.transfers.find((obj) => obj.id === modeState.expenseId);
             if (expense) contents = <EditExpenseCard key={expense.id} handleCloseCard={handleCloseCard} expense={expense} />;
             break;
         case 'edit payback':
-            payback = transfers.find((obj) => obj.id === modeState.paybackId);
+            payback = props.transfers.find((obj) => obj.id === modeState.paybackId);
             if (payback) contents = <EditPaybackCard key={payback.id} handleCloseCard={handleCloseCard} payback={payback} />;
             break;
     }

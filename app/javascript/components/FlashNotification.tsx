@@ -6,13 +6,13 @@ interface FlashNotificationProps {
     message: string,
 };
 
-export default function FlashNotification({kind, message}:FlashNotificationProps) {
+export default function FlashNotification(props:FlashNotificationProps) {
     const [visibleState, setVisibleState] = useState(true);
     const handleCloseNotification = (event:SyntheticEvent): void => {
         event.preventDefault();
         setVisibleState(false);
     }
-    let className = kind;
+    let className = props.kind;
     switch (className) {
         case "notice":
             className = "info";
@@ -29,7 +29,7 @@ export default function FlashNotification({kind, message}:FlashNotificationProps
     return (
         <div className={"notification is-" + className}>
             <a href="#" className="delete" onClick={handleCloseNotification}></a>
-            {message}
+            {props.message}
         </div>
     );
 }
