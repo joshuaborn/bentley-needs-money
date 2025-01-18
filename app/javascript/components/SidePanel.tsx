@@ -12,14 +12,18 @@ interface SidePanelProps {
     flash: string[][],
     modeState: ModeState,
     peopleOwed: PersonOwed[],
+    setFlashState: Dispatch<SetStateAction<string[][]>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
+    setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
     transfers: Transfer[],
 }
 
 export default function SidePanel(props:SidePanelProps) {
     const handleCloseCard = (event:SyntheticEvent): void => {
         event.preventDefault();
-        props.setModeState({ mode: 'idle' });
+        if (!modeState.mode.includes('create') && !modeState.mode.includes('update')) {
+            props.setModeState({ mode: 'idle' });
+        }
     }
     const peopleOptions = props.connectedPeople.map((person) => {
         return <option key={person.id} value={person.id}>{person.name}</option>;
@@ -33,7 +37,15 @@ export default function SidePanel(props:SidePanelProps) {
     let payback = null;
     switch (modeState.mode) {
         case 'new expense':
-            contents = <NewExpenseCard handleCloseCard={handleCloseCard} peopleOptions={peopleOptions} />;
+        case 'create expense':
+            contents = <NewExpenseCard 
+                            handleCloseCard={handleCloseCard}
+                            modeState={props.modeState}
+                            peopleOptions={peopleOptions}
+                            setFlashState={props.setFlashState}
+                            setModeState={props.setModeState}
+                            setTransfersState={props.setTransfersState}
+                       />;
             break;
         case 'new payback':
             contents = <NewPaybackCard handleCloseCard={handleCloseCard} peopleOwed={props.peopleOwed} />;

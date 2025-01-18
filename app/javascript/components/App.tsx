@@ -7,13 +7,14 @@ import SidePanel from './SidePanel';
 
 interface AppProps {
     connectedPeople: Person[],
-    flash: string[][],
+    initialFlash: string[][],
     initialPersonTransfers: Transfer[],
 };
 
-export default function App({connectedPeople, initialPersonTransfers, flash}:AppProps) {
+export default function App({connectedPeople, initialPersonTransfers, initialFlash}:AppProps) {
+    const [flashState, setFlashState] = useState<string[][]>(initialFlash);
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
-    const [transfersState] = useState<Transfer[]>(initialPersonTransfers);
+    const [transfersState, setTransfersState] = useState<Transfer[]>(initialPersonTransfers);
     const peopleOwedMap = transfersState.reduce(
         function(accumulator, transfer) {
             transfer.otherPeople.forEach((personOwed) => {
@@ -32,19 +33,24 @@ export default function App({connectedPeople, initialPersonTransfers, flash}:App
         <div className="outer-flex">
             <div className="inner-flex columns is-gapless">
                 <SidePanel
-                    modeState={modeState}
-                    setModeState={setModeState}
                     connectedPeople={connectedPeople}
+                    flash={flashState}
+                    modeState={modeState}
                     peopleOwed={peopleOwed}
-                    flash={flash}
+                    setFlashState={setFlashState}
+                    setModeState={setModeState}
+                    setTransfersState={setTransfersState}
                     transfers={transfersState}
                 />
                 <MainPanel
-                    transfers={transfersState}
                     setModeState={setModeState}
+                    transfers={transfersState}
                 />
             </div>
-            <ActionBar modeState={modeState} setModeState={setModeState} />
+            <ActionBar
+                modeState={modeState}
+                setModeState={setModeState}
+            />
         </div>
     );
 }

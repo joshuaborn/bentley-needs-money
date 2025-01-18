@@ -30,7 +30,7 @@ document.addEventListener('turbo:load', () => {
                         {
                             connectedPeople: connectedPeople,
                             initialPersonTransfers: personTransfers,
-                            flash: dataForReact.flash
+                            initialFlash: dataForReact.flash
                         }
                     )
                 )

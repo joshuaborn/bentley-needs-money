@@ -18,7 +18,33 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "4.3"
       }
     }
-    # post expenses_path, params: parameters
+    post expenses_path, params: parameters, as: :json
+    assert_response :success
+    person_transfers = people(:user_one).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :asc }).map do |person_transfer|
+        {
+          "date" => person_transfer.transfer.date,
+          "dollarAmount" => person_transfer.dollar_amount,
+          "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
+          "id" => person_transfer.id,
+          "inYnab" => person_transfer.in_ynab?,
+          "memo" => person_transfer.transfer.memo,
+          "otherPeople" => [
+            {
+              "cumulativeSum" => person_transfer.dollar_cumulative_sum,
+              "date" => person_transfer.transfer.date,
+              "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
+              "id" => person_transfer.other_person.id,
+              "name" => person_transfer.other_person.name
+            }
+          ],
+          "payee" => person_transfer.transfer.payee,
+          "transferId" => person_transfer.transfer_id,
+          "type" => person_transfer.transfer.type
+        }
+      end
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create when other person paid and is splitting with current_user" do
     Connection.create(from: people(:user_one), to: people(:user_two))
@@ -33,7 +59,33 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "4.3"
       }
     }
-    # post expenses_path, params: parameters
+    post expenses_path, params: parameters, as: :json
+    assert_response :success
+    person_transfers = people(:user_one).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :asc }).map do |person_transfer|
+        {
+          "date" => person_transfer.transfer.date,
+          "dollarAmount" => person_transfer.dollar_amount,
+          "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
+          "id" => person_transfer.id,
+          "inYnab" => person_transfer.in_ynab?,
+          "memo" => person_transfer.transfer.memo,
+          "otherPeople" => [
+            {
+              "cumulativeSum" => person_transfer.dollar_cumulative_sum,
+              "date" => person_transfer.transfer.date,
+              "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
+              "id" => person_transfer.other_person.id,
+              "name" => person_transfer.other_person.name
+            }
+          ],
+          "payee" => person_transfer.transfer.payee,
+          "transferId" => person_transfer.transfer_id,
+          "type" => person_transfer.transfer.type
+        }
+      end
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create re-renders new when there are validation errors" do
     Connection.create(from: people(:user_one), to: people(:user_two))
@@ -52,7 +104,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "4.3"
       }
     }
-    # post expenses_path, params: parameters
+    post expenses_path, params: parameters
+    expected_response = { "expense.payee"=>[ "can't be blank" ] }
+    assert_equal JSON.parse(expected_response.to_json), @response.parsed_body["expense.errors"]
   end
   test "#create raises an error person_paid parameter is invalid on create" do
     Connection.create(from: people(:user_one), to: people(:user_two))
@@ -67,9 +121,13 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "4.3"
       }
     }
-    # post expenses_path, params: parameters
+    assert_no_difference("Expense.count") do
+      assert_raises(StandardError) do
+        post expenses_path, params: parameters
+      end
+    end
   end
-  test "#create returns a 404 not found response when hte other perosn is not one of the connected_people" do
+  test "#create returns a 404 not found response when the other perosn is not one of the connected_people" do
     sign_in people(:user_one)
     parameters = {
       person_paid: "other",
@@ -81,7 +139,10 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "4.3"
       }
     }
-    # post expenses_path, params: parameters
+    assert_no_difference("Expense.count") do
+      post expenses_path, params: parameters
+    end
+    assert_response :missing
   end
   test "#update expenses and associated person_transfers" do
     build_expenses_for_tests()
