@@ -3,7 +3,7 @@ import "@hotwired/turbo-rails";
 import "./vanilla.ts";
 import { createElement, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import TransfersIndex from './components/TransfersIndex';
+import App from './components/App';
 import type { Person, Transfer } from './types';
 
 interface DataForReact {
@@ -26,7 +26,7 @@ document.addEventListener('turbo:load', () => {
                     StrictMode,
                     {},
                     createElement(
-                        TransfersIndex,
+                        App,
                         {
                             connectedPeople: connectedPeople,
                             initialPersonTransfers: personTransfers,
@@ -40,7 +40,7 @@ document.addEventListener('turbo:load', () => {
                 createElement(
                     StrictMode,
                     {},
-                    createElement(TransfersIndex)
+                    createElement(App)
                 )
             );
         }

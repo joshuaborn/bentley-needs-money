@@ -5,13 +5,13 @@ import ActionBar from './ActionBar';
 import MainPanel from './MainPanel';
 import SidePanel from './SidePanel';
 
-interface TransfersIndexProps {
+interface AppProps {
     connectedPeople: Person[],
     flash: string[][],
     initialPersonTransfers: Transfer[],
 };
 
-export default function TransfersIndex({connectedPeople, initialPersonTransfers, flash}:TransfersIndexProps) {
+export default function App({connectedPeople, initialPersonTransfers, flash}:AppProps) {
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
     const [transfersState] = useState<Transfer[]>(initialPersonTransfers);
     const peopleOwedMap = transfersState.reduce(
