@@ -1,11 +1,12 @@
 import type { Dispatch, SetStateAction, SyntheticEvent, ReactNode } from 'react';
 import type { FieldValues } from 'react-hook-form';
 
-import type { ModeState, Transfer } from '../types';
+import type { ModeState, Transfer, ExpenseResponse } from '../types';
 
 import { useForm }  from 'react-hook-form';
 
 import { post } from '../server';
+import { setErrorsFromResponse } from '../form_helpers';
 
 interface NewExpenseCardProps {
     handleCloseCard: (event:SyntheticEvent) => void,
@@ -16,7 +17,7 @@ interface NewExpenseCardProps {
     setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
 };
 
-interface NewExpenseFormInputs extends FieldValues {
+export interface NewExpenseFormInputs extends FieldValues {
     expense: {
         date: string,
         dollar_amount_paid: number,
@@ -27,13 +28,6 @@ interface NewExpenseFormInputs extends FieldValues {
         id: number,
     }
     person_paid: string,
-};
-
-type NewExpenseValidatableField = "expense.date" | "expense.dollar_amount_paid" | "expense.payee";
-
-interface NewExpenseResponse {
-    "person.transfers"?: Transfer[],
-    "expense.errors"?: object
 };
 
 export default function NewExpenseCard(props:NewExpenseCardProps) {
@@ -48,17 +42,8 @@ export default function NewExpenseCard(props:NewExpenseCardProps) {
         props.setModeState({mode: 'create expense'});
         post('/expenses', formData)
             .then((response) => response.json())
-            .then((data:NewExpenseResponse) => {
-                if (data["expense.errors"]) {
-                    for (const [key, value] of Object.entries(data["expense.errors"])) {
-                        const messages = value as string[];
-                        for (const message of messages) {
-                            setError(
-                                key as NewExpenseValidatableField,
-                                { type: 'custom', message: message }
-                            );
-                        }
-                    }
+            .then((data:ExpenseResponse) => {
+                if (setErrorsFromResponse(data, setError)) {
                     props.setModeState({mode: 'new expense'});
                 } else if ("person.transfers" in data) {
                     clearErrors();

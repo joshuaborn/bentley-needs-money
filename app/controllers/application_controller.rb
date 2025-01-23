@@ -15,18 +15,22 @@ class ApplicationController < ActionController::Base
         where([ "people.id <> ?", current_person ]).map do |person_transfer|
           {
             "date" => person_transfer.transfer.date,
-            "dollarAmount" => person_transfer.dollar_amount,
             "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
-            "id" => person_transfer.id,
-            "inYnab" => person_transfer.in_ynab?,
             "memo" => person_transfer.transfer.memo,
-            "otherPeople" => [
+            "myPersonTransfer" => {
+              "dollarAmount" => person_transfer.dollar_amount,
+              "id" => person_transfer.id,
+              "inYnab" => person_transfer.in_ynab?,
+              "personId" => current_person.id
+            },
+            "otherPersonTransfers" => [
               {
                 "cumulativeSum" => person_transfer.dollar_cumulative_sum,
                 "date" => person_transfer.transfer.date,
                 "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
-                "id" => person_transfer.other_person.id,
-                "name" => person_transfer.other_person.name
+                "id" => person_transfer.other_person_transfer.id,
+                "name" => person_transfer.other_person.name,
+                "personId" => person_transfer.other_person.id
               }
            ],
             "payee" => person_transfer.transfer.payee,

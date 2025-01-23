@@ -26,7 +26,7 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
                                 Person
                             </div>
                             <div className="control">
-                                {props.payback.otherPeople[0].name}
+                                {props.payback.otherPersonTransfers[0].name}
                             </div>
                         </div>
                         <div className="field">

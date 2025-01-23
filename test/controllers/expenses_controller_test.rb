@@ -1,5 +1,32 @@
 require "test_helper"
 
+def person_transfer_mapping(person_transfer)
+  {
+    "date" => person_transfer.transfer.date,
+    "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
+    "memo" => person_transfer.transfer.memo,
+    "myPersonTransfer" => {
+      "dollarAmount" => person_transfer.dollar_amount,
+      "id" => person_transfer.id,
+      "inYnab" => person_transfer.in_ynab?,
+      "personId" => people(:user_one).id
+    },
+    "otherPersonTransfers" => [
+      {
+        "cumulativeSum" => person_transfer.dollar_cumulative_sum,
+        "date" => person_transfer.transfer.date,
+        "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
+        "id" => person_transfer.other_person_transfer.id,
+        "name" => person_transfer.other_person.name,
+        "personId" => person_transfer.other_person.id
+      }
+    ],
+    "payee" => person_transfer.transfer.payee,
+    "transferId" => person_transfer.transfer_id,
+    "type" => person_transfer.transfer.type
+  }
+end
+
 class ExpensesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
   setup do
@@ -22,28 +49,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     person_transfers = people(:user_one).person_transfers.
       includes(:transfer, :person_transfers, :people).
-      order(transfers: { date: :desc, created_at: :asc }).map do |person_transfer|
-        {
-          "date" => person_transfer.transfer.date,
-          "dollarAmount" => person_transfer.dollar_amount,
-          "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
-          "id" => person_transfer.id,
-          "inYnab" => person_transfer.in_ynab?,
-          "memo" => person_transfer.transfer.memo,
-          "otherPeople" => [
-            {
-              "cumulativeSum" => person_transfer.dollar_cumulative_sum,
-              "date" => person_transfer.transfer.date,
-              "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
-              "id" => person_transfer.other_person.id,
-              "name" => person_transfer.other_person.name
-            }
-          ],
-          "payee" => person_transfer.transfer.payee,
-          "transferId" => person_transfer.transfer_id,
-          "type" => person_transfer.transfer.type
-        }
-      end
+      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
     assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create when other person paid and is splitting with current_user" do
@@ -63,28 +69,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     person_transfers = people(:user_one).person_transfers.
       includes(:transfer, :person_transfers, :people).
-      order(transfers: { date: :desc, created_at: :asc }).map do |person_transfer|
-        {
-          "date" => person_transfer.transfer.date,
-          "dollarAmount" => person_transfer.dollar_amount,
-          "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
-          "id" => person_transfer.id,
-          "inYnab" => person_transfer.in_ynab?,
-          "memo" => person_transfer.transfer.memo,
-          "otherPeople" => [
-            {
-              "cumulativeSum" => person_transfer.dollar_cumulative_sum,
-              "date" => person_transfer.transfer.date,
-              "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
-              "id" => person_transfer.other_person.id,
-              "name" => person_transfer.other_person.name
-            }
-          ],
-          "payee" => person_transfer.transfer.payee,
-          "transferId" => person_transfer.transfer_id,
-          "type" => person_transfer.transfer.type
-        }
-      end
+      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
     assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create re-renders new when there are validation errors" do
@@ -145,96 +130,117 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :missing
   end
   test "#update expenses and associated person_transfers" do
-    build_expenses_for_tests()
     sign_in people(:user_one)
     Connection.create(from: people(:user_one), to: people(:user_two))
     Connection.create(from: people(:user_two), to: people(:user_one))
-    expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
-    # patch expense_path(expense), params: {
-    #  expense: {
-    #    dollar_amount_paid: 3.00,
-    #    payee: "Expenses Splitting Software Company",
-    #    person_transfers_attributes: {
-    #      "0": {
-    #        id: expense.person_transfers.first.id,
-    #        dollar_amount: -1.50
-    #      },
-    #      "1": {
-    #        id: expense.person_transfers.last.id,
-    #        dollar_amount: 1.50,
-    #        in_ynab: true
-    #      }
-    #    }
-    #  }
-    # }
+    build_expenses_for_tests()
+    person_transfer = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:user_two)).last
+    parameters = {
+      "expense": {
+        "date": "2025-01-24",
+        "dollar_amount_paid": 9,
+        "memo": "Memo 9",
+        "payee": "Payee 9"
+      },
+      "my_person_transfer": {
+        "dollar_amount": 4.5,
+        "id": person_transfer.id,
+        "in_ynab": true
+      },
+      "other_person_transfers": [
+        {
+          "dollar_amount": -4.5,
+          "id": person_transfer.other_person_transfer.id,
+          "in_ynab": true
+        }
+      ]
+    }
+    assert_no_difference("Expense.count") do
+      patch expense_path(person_transfer.transfer.id), params: parameters, as: :json
+    end
+    assert_response :success
+    person_transfers = people(:user_one).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
+    person_transfer.reload
+    assert_equal parameters[:expense][:date], person_transfer.transfer.date.to_s
+    assert_equal parameters[:expense][:dollar_amount_paid], person_transfer.transfer.dollar_amount_paid
+    assert_equal parameters[:expense][:memo], person_transfer.transfer.memo
+    assert_equal parameters[:expense][:payee], person_transfer.transfer.payee
+    assert_equal parameters[:my_person_transfer][:dollar_amount], person_transfer.dollar_amount
+    assert person_transfer.in_ynab
+    assert_equal parameters[:other_person_transfers][0][:dollar_amount], person_transfer.other_person_transfer.dollar_amount
+    assert person_transfer.other_person_transfer.in_ynab
   end
   test "#update re-rendering edit when there are validation errors" do
     build_expenses_for_tests()
     Connection.create(from: people(:user_one), to: people(:user_two))
     Connection.create(from: people(:user_two), to: people(:user_one))
     sign_in people(:user_one)
-    expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
-    attributes_before = expense.attributes.to_yaml
-    # patch expense_path(expense), params: {
-    #  expense: {
-    #    dollar_amount_paid: 0.00,
-    #    payee: "Expenses Splitting Software Company",
-    #    person_transfers_attributes: {
-    #      "0": {
-    #        id: expense.person_transfers.first.id,
-    #        dollar_amount: -2.50
-    #      },
-    #      "1": {
-    #        id: expense.person_transfers.last.id,
-    #        dollar_amount: 2.50
-    #      }
-    #    }
-    #  }
-    # }
-  end
-  test "missing response when trying to #update an expense not associated with current user" do
-    build_expenses_for_tests()
-    sign_in people(:user_one)
-    expense = Expense.find_between_two_people(people(:administrator), people(:user_two)).last
-    attributes_before = expense.attributes.to_yaml
-    # patch expense_path(expense), params: {
-    #  expense: {
-    #    dollar_amount_paid: 3.00,
-    #    payee: "Expenses Splitting Software Company",
-    #    person_transfers_attributes: {
-    #      "0": {
-    #        id: expense.person_transfers.first.id,
-    #        dollar_amount: -1.50
-    #      },
-    #      "1": {
-    #        id: expense.person_transfers.last.id,
-    #        dollar_amount: 1.50
-    #      }
-    #    }
-    #  }
-    # }
+    person_transfer = PersonTransfer.find_for_person_with_other_person(people(:user_one), people(:user_two)).last
+    parameters = {
+      "expense": {
+        "date": "2025-01-24",
+        "dollar_amount_paid": 0,
+        "memo": "Memo 9",
+        "payee": "Payee 9"
+      },
+      "my_person_transfer": {
+        "dollar_amount": 4.25,
+        "id": person_transfer.id,
+        "in_ynab": true
+      },
+      "other_person_transfers": [
+        {
+          "dollar_amount": -4.5,
+          "id": person_transfer.other_person_transfer.id,
+          "in_ynab": true
+        }
+      ]
+    }
+    assert_no_difference("Expense.count") do
+      patch expense_path(person_transfer.transfer.id), params: parameters, as: :json
+    end
+    assert_response :success
+    expected_response = {
+      "my_person_transfer.dollar_amount"=>[ "amounts should sum to zero" ],
+      "other_person_transfers.0.dollar_amount"=>[ "amounts should sum to zero" ],
+      "expense.dollar_amount_paid"=>[ "must be greater than 0" ]
+    }
+    assert_equal JSON.parse(expected_response.to_json), @response.parsed_body["expense.errors"]
   end
   test "missing response when trying to #update an expense with a person without a connection" do
     build_expenses_for_tests()
     sign_in people(:user_one)
-    expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
+    person_transfer = PersonTransfer.find_for_person_with_other_person(people(:administrator), people(:user_two)).last
+    expense = person_transfer.transfer
     attributes_before = expense.attributes.to_yaml
-    # patch expense_path(expense), params: {
-    #  expense: {
-    #    dollar_amount_paid: 3.00,
-    #    payee: "Expenses Splitting Software Company",
-    #    person_transfers_attributes: {
-    #      "0": {
-    #        id: expense.person_transfers.first.id,
-    #        dollar_amount: -1.50
-    #      },
-    #      "1": {
-    #        id: expense.person_transfers.last.id,
-    #        dollar_amount: 1.50
-    #      }
-    #    }
-    #  }
-    # }
+    parameters = {
+      "expense": {
+        "date": "2025-01-24",
+        "dollar_amount_paid": 9,
+        "memo": "Memo 9",
+        "payee": "Payee 9"
+      },
+      "my_person_transfer": {
+        "dollar_amount": 4.5,
+        "id": person_transfer.id,
+        "in_ynab": true
+      },
+      "other_person_transfers": [
+        {
+          "dollar_amount": -4.5,
+          "id": person_transfer.other_person_transfer.id,
+          "in_ynab": true
+        }
+      ]
+    }
+    assert_no_difference("Expense.count") do
+      patch expense_path(expense.id), params: parameters, as: :json
+    end
+    assert_response :missing
+    assert_equal attributes_before, expense.reload.attributes.to_yaml
   end
   test "#destroy" do
     build_expenses_for_tests()

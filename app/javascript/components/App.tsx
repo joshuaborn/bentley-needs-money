@@ -17,7 +17,7 @@ export default function App({connectedPeople, initialPersonTransfers, initialFla
     const [transfersState, setTransfersState] = useState<Transfer[]>(initialPersonTransfers);
     const peopleOwedMap = transfersState.reduce(
         function(accumulator, transfer) {
-            transfer.otherPeople.forEach((personOwed) => {
+            transfer.otherPersonTransfers.forEach((personOwed) => {
                 const currentEntry = accumulator.get(personOwed.id);
                 if (typeof currentEntry === "undefined" || (currentEntry.date < transfer.date)) {
                     accumulator.set(personOwed.id, personOwed);

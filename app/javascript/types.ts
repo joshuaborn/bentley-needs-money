@@ -15,23 +15,34 @@ export interface Person {
     name: string,
 }
 
-export interface PersonOwed {
+export interface PersonAmount extends Person {
+    dollarAmount: number,
+}
+
+export interface PersonOwed extends PersonAmount {
     cumulativeSum: number,
     date: string,
-    dollarAmount: number,
-    id: number,
-    name: string,
+}
+
+export interface PersonTransfer extends PersonOwed {
+    personId: number,
+    inYnab?: boolean,
 }
 
 export interface Transfer {
     date: string,
-    dollarAmount: number,
     dollarAmountPaid: number,
-    id: number,
-    inYnab: boolean,
     memo: string,
-    otherPeople: PersonOwed[],
+    myPersonTransfer: PersonTransfer,
     payee: string,
+    otherPersonTransfers: PersonTransfer[],
     transferId: number,
     type: "Expense" | "Payback",
 }
+
+export type ExpenseValidatableField = "expense.date" | "expense.dollar_amount_paid" | "expense.payee";
+
+export interface ExpenseResponse {
+    "person.transfers"?: Transfer[],
+    "expense.errors"?: object
+};

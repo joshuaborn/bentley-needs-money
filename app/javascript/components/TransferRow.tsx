@@ -14,22 +14,22 @@ export default function TransferRow(props:TransferRowProps) {
         if (props.transfer.type === "Expense") {
             props.setModeState({
                 mode: "edit expense",
-                expenseId: props.transfer.id
+                expenseId: props.transfer.transferId
             });
         }
         if (props.transfer.type === "Payback") {
             props.setModeState({
                 mode: "edit payback",
-                paybackId: props.transfer.id
+                paybackId: props.transfer.transferId
             });
         }
     };
-    const personOwed = props.transfer.otherPeople[0];
+    const personOwed = props.transfer.otherPersonTransfers[0];
     const byOrTo = personOwed.dollarAmount < 0 ? 'by ' : 'to ';
-    let checkYNAB = props.transfer.inYnab ? <i className="fa-regular fa-square-check" aria-hidden="true"></i> : <></>;
+    let checkYNAB = props.transfer.myPersonTransfer.inYnab ? <i className="fa-regular fa-square-check" aria-hidden="true"></i> : <></>;
     let classes = "person-transfer grid is-gap-0";
     let oweNodes = <>
-        <Currency key={props.transfer.id.toString() + "-amount"} dollarAmount={personOwed.dollarAmount} />
+        <Currency key={props.transfer.transferId.toString() + "-amount"} dollarAmount={personOwed.dollarAmount} />
         <span className="is-hidden-tablet"> owed </span> {byOrTo} {personOwed.name}
     </>;
     if (props.transfer.type === 'Payback') {
@@ -38,7 +38,7 @@ export default function TransferRow(props:TransferRowProps) {
         checkYNAB = <></>;
     }
     return (
-        <a key={props.transfer.id} className={classes} onClick={handleClick}>
+        <a key={props.transfer.transferId} className={classes} onClick={handleClick}>
             <div className="cell transfer-date is-hidden-mobile">
                 {props.transfer.date}
             </div>
@@ -49,13 +49,13 @@ export default function TransferRow(props:TransferRowProps) {
                 {checkYNAB} {props.transfer.memo}
             </div>
             <div className="cell transfer-dollar-amount-paid is-col-span-2-mobile has-text-right">
-                <Currency key={props.transfer.id.toString() + "-amount-paid"} dollarAmount={props.transfer.dollarAmountPaid} />
+                <Currency key={props.transfer.transferId.toString() + "-amount-paid"} dollarAmount={props.transfer.dollarAmountPaid} />
             </div>
             <div className="cell person-transfer-dollar-amount is-col-span-2 has-text-right">
                 {oweNodes}
             </div>
             <div className="cell person-transfer-dollar-cumulative-sum has-text-right is-hidden-mobile">
-                <Currency key={props.transfer.id.toString() + "-cumulative-sum"} dollarAmount={personOwed.cumulativeSum} />
+                <Currency key={props.transfer.transferId.toString() + "-cumulative-sum"} dollarAmount={personOwed.cumulativeSum} />
             </div>
         </a>
     );

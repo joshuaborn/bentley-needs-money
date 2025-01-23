@@ -51,12 +51,23 @@ export default function SidePanel(props:SidePanelProps) {
             contents = <NewPaybackCard handleCloseCard={handleCloseCard} peopleOwed={props.peopleOwed} />;
             break;
         case 'edit expense':
-            expense = props.transfers.find((obj) => obj.id === modeState.expenseId);
-            if (expense) contents = <EditExpenseCard key={expense.id} handleCloseCard={handleCloseCard} expense={expense} />;
+        case 'update expense':
+            expense = props.transfers.find((obj) => obj.transferId === modeState.expenseId);
+            if (expense) {
+                contents = <EditExpenseCard
+                    expense={expense}
+                    handleCloseCard={handleCloseCard}
+                    key={expense.transferId}
+                    modeState={props.modeState}
+                    setFlashState={props.setFlashState}
+                    setModeState={props.setModeState}
+                    setTransfersState={props.setTransfersState}
+                />;
+            }
             break;
         case 'edit payback':
-            payback = props.transfers.find((obj) => obj.id === modeState.paybackId);
-            if (payback) contents = <EditPaybackCard key={payback.id} handleCloseCard={handleCloseCard} payback={payback} />;
+            payback = props.transfers.find((obj) => obj.transferId === modeState.paybackId);
+            if (payback) contents = <EditPaybackCard key={payback.transferId} handleCloseCard={handleCloseCard} payback={payback} />;
             break;
     }
     return (

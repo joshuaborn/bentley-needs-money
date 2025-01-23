@@ -12,12 +12,12 @@ export default function MainPanel(props:MainPanelProps) {
     let lastDate = "";
     const transfersContent = props.transfers.reduce((accumulator, transfer) => {
         if (transfer.date === lastDate) {
-            accumulator.push(<TransferRow key={transfer.id} transfer={transfer} setModeState={props.setModeState} />);
+            accumulator.push(<TransferRow key={transfer.transferId} transfer={transfer} setModeState={props.setModeState} />);
         } else {
             lastDate = transfer.date;
             accumulator.push(
                 <div key={"date-" + lastDate.toString()} className="date is-hidden-tablet">{lastDate}</div>,
-                <TransferRow key={transfer.id} transfer={transfer} setModeState={props.setModeState} />
+                <TransferRow key={transfer.transferId} transfer={transfer} setModeState={props.setModeState} />
             );
         }
         return accumulator;
