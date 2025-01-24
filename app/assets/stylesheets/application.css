@@ -171,6 +171,10 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
     z-index: 100;
   }
 
+  .modal {
+    z-index: 101;
+  }
+
   .side-panel .card .card-header {
     height: 52px;
   }

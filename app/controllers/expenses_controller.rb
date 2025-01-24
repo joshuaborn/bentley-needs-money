@@ -44,6 +44,14 @@ class ExpensesController < ApplicationController
     end
   end
 
+  def destroy
+    expense = current_person.expenses.find(params[:id])
+    expense.destroy
+    render json: {
+      "person.transfers": person_transfers_json_mapping(current_person)
+    }
+  end
+
   private
     def prefix_errors(errors)
       {}.tap do |errors_hash|

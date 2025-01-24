@@ -3,9 +3,10 @@ import type { FieldValues } from 'react-hook-form';
 
 import type { Transfer, ModeState, ExpenseResponse } from '../types';
 
+import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
 
-import { patch }  from '../server';
+import { patch, destroy }  from '../server';
 import { setErrorsFromResponse } from '../form_helpers';
 
 interface EditExpenseCardProps {
@@ -89,6 +90,43 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
             </div>
         );
     });
+    const [deleteModalState, setDeleteModalState] = useState(false);
+    const handleDelete = (event:SyntheticEvent) => {
+        event.preventDefault();
+        setDeleteModalState(false);
+        props.setModeState({mode: 'idle'});
+        destroy('/expenses/' + props.expense.transferId.toString())
+           .then((response) => response.json())
+           .then((data:ExpenseResponse) => {
+                if ("person.transfers" in data) {
+                    props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
+                    props.setFlashState([["success", "Expense was successfully deleted."]])
+                    props.setModeState({mode: "idle"});
+                }
+           })
+           .catch((error:unknown) => {
+               console.log(error);
+               props.setFlashState([["danger", "There was an error with the deletion."]])
+           })
+
+    };
+    const deleteModal = deleteModalState && (
+        <div className="modal is-active">
+          <div className="modal-background" onClick={() => { setDeleteModalState(false) }}></div>
+          <div className="modal-card">
+            <header className="modal-card-head">
+              <p>Are you sure you want to delete this expense?</p>
+            </header>
+            <footer className="modal-card-foot">
+              <div className="buttons">
+                <button className="button is-danger" onClick={handleDelete}>Delete</button>
+                <button className="button" onClick={() => { setDeleteModalState(false) }}>Cancel</button>
+              </div>
+            </footer>
+          </div>
+          <button className="modal-close is-large" aria-label="close" onClick={() => { setDeleteModalState(false) }}></button>
+        </div>
+    );
     return (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -188,10 +226,11 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                     <button type="submit" className={"card-footer-item button is-link" + loadingClassName}>
                         Update
                     </button>
-                    <a href="#" className="card-footer-item has-text-danger">Delete</a>
+                    <a href="#" className="card-footer-item has-text-danger" onClick={(e) => { e.preventDefault(); setDeleteModalState(true) }}>Delete</a>
                     <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
             </div>
+            {deleteModal}
         </form>
     );
 }

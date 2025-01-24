@@ -246,12 +246,22 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     build_expenses_for_tests()
     sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:user_one), people(:user_two)).last
-    # delete expense_path(expense)
+    assert_difference("Expense.count", -1) do
+      delete expense_path(expense)
+    end
+    assert_response :success
+    person_transfers = people(:user_one).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#destroy of expense not associated with current_user" do
     build_expenses_for_tests()
     sign_in people(:user_one)
     expense = Expense.find_between_two_people(people(:administrator), people(:user_two)).last
-    # delete expense_path(expense)
+    assert_no_difference("Expense.count") do
+      delete expense_path(expense)
+    end
+    assert_response :missing
   end
 end

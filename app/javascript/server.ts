@@ -25,3 +25,7 @@ export async function post(url:string, parameters = {}):Promise<Response> {
 export async function patch(url:string, parameters = {}):Promise<Response> {
     return await fetchJSON(url, "PATCH", parameters);
 }
+
+export async function destroy(url:string, parameters = {}):Promise<Response> {
+    return await fetchJSON(url, "DELETE", parameters);
+}
