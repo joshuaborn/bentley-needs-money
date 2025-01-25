@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction, SyntheticEvent, ReactNode } from 'react';
 import type { FieldValues } from 'react-hook-form';
 
-import type { ModeState, Transfer, ExpenseResponse } from '../types';
+import type { ModeState, Transfer, ExpenseResponse, FlashState } from '../types';
 
 import { useForm }  from 'react-hook-form';
 
@@ -9,10 +9,11 @@ import { post } from '../server';
 import { setErrorsFromResponse } from '../form_helpers';
 
 interface NewExpenseCardProps {
+    flashState: FlashState,
     handleCloseCard: (event:SyntheticEvent) => void,
     modeState: ModeState,
     peopleOptions: ReactNode,
-    setFlashState: Dispatch<SetStateAction<string[][]>>,
+    setFlashState: Dispatch<SetStateAction<FlashState>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
     setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
 };
@@ -48,13 +49,19 @@ export default function NewExpenseCard(props:NewExpenseCardProps) {
                 } else if ("person.transfers" in data) {
                     clearErrors();
                     props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
-                    props.setFlashState([["success", "Expense was successfully created."]])
                     props.setModeState({mode: "idle"});
+                    props.setFlashState({
+                        counter: props.flashState.counter + 1,
+                        messages: [["success", "Expense was successfully created."]]
+                    });
                 }
             })
             .catch((error:unknown) => {
                 console.log(error);
-                props.setFlashState([["danger", "There was an error with the network request."]])
+                props.setFlashState({
+                    counter: props.flashState.counter + 1,
+                    messages: [["danger", "There was an error with the network request."]]
+                })
                 props.setModeState({mode: "idle"});
             })
     };

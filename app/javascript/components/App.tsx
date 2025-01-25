@@ -1,6 +1,6 @@
 import { useState }  from 'react';
 
-import type { ModeState, Person, Transfer, PersonOwed } from '../types';
+import type { ModeState, FlashState, Person, Transfer, PersonOwed } from '../types';
 import ActionBar from './ActionBar';
 import MainPanel from './MainPanel';
 import SidePanel from './SidePanel';
@@ -12,7 +12,10 @@ interface AppProps {
 };
 
 export default function App({connectedPeople, initialPersonTransfers, initialFlash}:AppProps) {
-    const [flashState, setFlashState] = useState<string[][]>(initialFlash);
+    const [flashState, setFlashState] = useState<FlashState>({
+        counter: 0,
+        messages: initialFlash
+    });
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
     const [transfersState, setTransfersState] = useState<Transfer[]>(initialPersonTransfers);
     const peopleOwedMap = transfersState.reduce(
@@ -34,7 +37,7 @@ export default function App({connectedPeople, initialPersonTransfers, initialFla
             <div className="inner-flex columns is-gapless">
                 <SidePanel
                     connectedPeople={connectedPeople}
-                    flash={flashState}
+                    flashState={flashState}
                     modeState={modeState}
                     peopleOwed={peopleOwed}
                     setFlashState={setFlashState}

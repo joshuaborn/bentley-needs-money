@@ -10,6 +10,11 @@ export type ModeState =
     | { mode: 'update payback', paybackId: number }
 ;
 
+export interface FlashState {
+    counter: number,
+    messages: string[][],
+}
+
 export interface Person {
     id: number,
     name: string,
@@ -45,4 +50,4 @@ export type ExpenseValidatableField = "expense.date" | "expense.dollar_amount_pa
 export interface ExpenseResponse {
     "person.transfers"?: Transfer[],
     "expense.errors"?: object
-};
+}

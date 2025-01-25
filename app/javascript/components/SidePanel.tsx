@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 
-import type { ModeState, Person, PersonOwed, Transfer } from '../types';
+import type { ModeState, FlashState, Person, PersonOwed, Transfer } from '../types';
 import EditExpenseCard from './EditExpenseCard';
 import EditPaybackCard from './EditPaybackCard';
 import FlashNotification from './FlashNotification';
@@ -9,10 +9,10 @@ import NewPaybackCard from './NewPaybackCard';
 
 interface SidePanelProps {
     connectedPeople: Person[],
-    flash: string[][],
+    flashState: FlashState,
     modeState: ModeState,
     peopleOwed: PersonOwed[],
-    setFlashState: Dispatch<SetStateAction<string[][]>>,
+    setFlashState: Dispatch<SetStateAction<FlashState>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
     setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
     transfers: Transfer[],
@@ -28,8 +28,9 @@ export default function SidePanel(props:SidePanelProps) {
     const peopleOptions = props.connectedPeople.map((person) => {
         return <option key={person.id} value={person.id}>{person.name}</option>;
     });
-    const flashMessages = props.flash.map((message) => {
-        return <FlashNotification key={message[1].replace(/[^\w]|/g, "").toLowerCase()} kind={message[0]} message={message[1]} />;
+    const flashMessages = props.flashState.messages.map((message) => {
+        const key = message[1].replace(/[^\w]|/g, "").toLowerCase() + props.flashState.counter.toString();
+        return <FlashNotification key={key} kind={message[0]} message={message[1]} />;
     });
     const modeState = props.modeState;
     let contents = null;
@@ -40,6 +41,7 @@ export default function SidePanel(props:SidePanelProps) {
         case 'create expense':
             contents = <NewExpenseCard 
                             handleCloseCard={handleCloseCard}
+                            flashState={props.flashState}
                             modeState={props.modeState}
                             peopleOptions={peopleOptions}
                             setFlashState={props.setFlashState}
@@ -56,6 +58,7 @@ export default function SidePanel(props:SidePanelProps) {
             if (expense) {
                 contents = <EditExpenseCard
                     expense={expense}
+                    flashState={props.flashState}
                     handleCloseCard={handleCloseCard}
                     key={expense.transferId}
                     modeState={props.modeState}

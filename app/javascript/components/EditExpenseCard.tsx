@@ -1,7 +1,7 @@
 import type { SyntheticEvent, Dispatch, SetStateAction } from 'react';
 import type { FieldValues } from 'react-hook-form';
 
-import type { Transfer, ModeState, ExpenseResponse } from '../types';
+import type { Transfer, ModeState, ExpenseResponse, FlashState } from '../types';
 
 import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
@@ -11,9 +11,10 @@ import { setErrorsFromResponse } from '../form_helpers';
 
 interface EditExpenseCardProps {
     expense: Transfer,
+    flashState: FlashState,
     handleCloseCard: (event:SyntheticEvent) => void,
     modeState: ModeState,
-    setFlashState: Dispatch<SetStateAction<string[][]>>,
+    setFlashState: Dispatch<SetStateAction<FlashState>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
     setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
 };
@@ -54,14 +55,20 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                 } else if ("person.transfers" in data) {
                     clearErrors();
                     props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
-                    props.setFlashState([["success", "Expense was successfully updated."]])
+                    props.setFlashState({
+                        counter: props.flashState.counter + 1,
+                        messages: [["success", "Expense was successfully updated."]]
+                    });
                     props.setModeState({mode: "idle"});
                 }
             })
            .catch((error:unknown) => {
-               console.log(error);
-               props.setFlashState([["danger", "There was an error with the network request."]])
-               props.setModeState({mode: "idle"});
+                console.log(error);
+                props.setFlashState({
+                    counter: props.flashState.counter,
+                    messages: [["danger", "There was an error with the network request."]]
+                });
+                props.setModeState({mode: "idle"});
            })
     };
     const loadingClassName = (props.modeState.mode === 'update expense') ? ' is-loading' : '';
@@ -100,15 +107,20 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
            .then((data:ExpenseResponse) => {
                 if ("person.transfers" in data) {
                     props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
-                    props.setFlashState([["success", "Expense was successfully deleted."]])
+                    props.setFlashState({
+                        counter: props.flashState.counter + 1,
+                        messages: [["success", "Expense was successfully deleted."]]
+                    })
                     props.setModeState({mode: "idle"});
                 }
            })
            .catch((error:unknown) => {
-               console.log(error);
-               props.setFlashState([["danger", "There was an error with the deletion."]])
-           })
-
+                console.log(error);
+                props.setFlashState({
+                    counter: props.flashState.counter + 1,
+                    messages:  [["danger", "There was an error with the deletion."]]
+                });
+           });
     };
     const deleteModal = deleteModalState && (
         <div className="modal is-active">
