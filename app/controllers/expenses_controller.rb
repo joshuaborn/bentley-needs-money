@@ -2,25 +2,25 @@ class ExpensesController < ApplicationController
   def create
     other_person = current_person.connected_people.find(params[:person][:id])
     if params[:person_paid] == "current"
-      @expense = Expense.split_between_two_people(current_person, other_person, create_expense_params())
+      expense = Expense.split_between_two_people(current_person, other_person, create_expense_params())
     elsif params[:person_paid] == "other"
-      @expense = Expense.split_between_two_people(other_person, current_person, create_expense_params())
+      expense = Expense.split_between_two_people(other_person, current_person, create_expense_params())
     else
       raise StandardError.new("Unrecognized person_paid parameter")
     end
-    if @expense.save
+    if expense.save
       render json: {
         "person.transfers": person_transfers_json_mapping(current_person)
       }
     else
       render json: {
-        "expense.errors": prefix_errors(@expense.errors)
+        "expense.errors": prefix_errors(expense.errors)
       }
     end
   end
 
   def update
-    @expense = Expense.find(params[:id])
+    expense = Expense.find(params[:id])
     person_transfers_attributes = params[:other_person_transfers].map do |pt|
      {
        id: pt["id"],
@@ -31,15 +31,15 @@ class ExpensesController < ApplicationController
     attributes = params[:expense]
     attributes[:person_transfers_attributes] = person_transfers_attributes
     attributes.permit!
-    if @expense.people.any? { |person| !person.is_connected_with?(current_person) }
+    if expense.people.any? { |person| !person.is_connected_with?(current_person) }
       render status: 404, json: {}
-    elsif @expense.update(attributes)
+    elsif expense.update(attributes)
       render json: {
         "person.transfers": person_transfers_json_mapping(current_person)
       }
     else
       render json: {
-        "expense.errors": prefix_errors(@expense.errors)
+        "expense.errors": prefix_errors(expense.errors)
       }
     end
   end
