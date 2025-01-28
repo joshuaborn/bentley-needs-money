@@ -27,13 +27,13 @@ class ExpensesController < ApplicationController
        dollar_amount: pt["dollar_amount"]
      }
     end
+    params.delete(:other_person_transfers)
     person_transfers_attributes.append(params[:my_person_transfer])
-    attributes = params[:expense]
-    attributes[:person_transfers_attributes] = person_transfers_attributes
-    attributes.permit!
+    params.delete(:my_person_transfer)
+    params[:expense][:person_transfers_attributes] = person_transfers_attributes
     if expense.people.any? { |person| !person.is_connected_with?(current_person) }
       render status: 404, json: {}
-    elsif expense.update(attributes)
+    elsif expense.update(update_expense_params(params))
       render json: {
         "person.transfers": person_transfers_json_mapping(current_person)
       }
@@ -68,5 +68,17 @@ class ExpensesController < ApplicationController
 
     def create_expense_params
       params.require(:expense).permit(:dollar_amount_paid, :date, :payee, :memo)
+    end
+
+    def update_expense_params(parameters)
+      parameters.permit(
+        expense: [
+            :date,
+            :dollar_amount_paid,
+            :memo,
+            :payee,
+            person_transfers_attributes: [ [ :id, :dollar_amount, :in_ynab ] ]
+        ]
+      )[:expense]
     end
 end
