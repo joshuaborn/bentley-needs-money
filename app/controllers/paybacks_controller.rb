@@ -36,6 +36,14 @@ class PaybacksController < ApplicationController
     end
   end
 
+  def destroy
+    payback = current_person.paybacks.find(params[:id])
+    payback.destroy
+    render json: {
+      "person.transfers": person_transfers_json_mapping(current_person)
+    }
+  end
+
   private
     def prefix_errors(errors)
       {}.tap do |errors_hash|

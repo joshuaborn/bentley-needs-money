@@ -13,10 +13,12 @@ import type {
     Transfer,
 } from '../types';
 
+import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
 
-import { patch } from '../server';
+import { patch, destroy } from '../server';
 import { setPaybackErrors } from '../form_helpers';
+import DeleteModal from './DeleteModal';
 
 interface EditPaybackCardProps {
     flashState: FlashState,
@@ -80,6 +82,33 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
             })
     };
 
+    const [deleteModalState, setDeleteModalState] = useState(false);
+
+    const handleDelete = (event:SyntheticEvent) => {
+        event.preventDefault();
+        setDeleteModalState(false);
+        props.setModeState({mode: 'idle'});
+        destroy('/paybacks/' + props.payback.transferId.toString())
+           .then((response) => response.json())
+           .then((data:PaybackResponse) => {
+                if ("person.transfers" in data) {
+                    props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
+                    props.setFlashState({
+                        counter: props.flashState.counter + 1,
+                        messages: [["success", "Payback was successfully deleted."]]
+                    })
+                    props.setModeState({mode: "idle"});
+                }
+           })
+           .catch((error:unknown) => {
+                console.log(error);
+                props.setFlashState({
+                    counter: props.flashState.counter + 1,
+                    messages:  [["danger", "There was an error with the deletion."]]
+                });
+           });
+    };
+
     return (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -134,10 +163,15 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
                 </div>
                 <footer className="card-footer buttons has-addons">
                     <input type="submit" name="commit" value="Update" className="card-footer-item button is-link" />
-                    <a href="#" className="card-footer-item has-text-danger">Delete</a>
+                    <a href="#" className="card-footer-item has-text-danger" onClick={(e) => { e.preventDefault(); setDeleteModalState(true) }}>Delete</a>
                     <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
             </div>
+            {deleteModalState && <DeleteModal
+                onCancel={() => { setDeleteModalState(false) }}
+                onDelete={handleDelete}
+                label="expense"
+            />}
         </form>
     );
 

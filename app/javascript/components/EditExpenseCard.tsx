@@ -8,6 +8,7 @@ import { useForm }  from 'react-hook-form';
 
 import { patch, destroy }  from '../server';
 import { setExpenseErrors } from '../form_helpers';
+import DeleteModal from './DeleteModal';
 
 interface EditExpenseCardProps {
     expense: Transfer,
@@ -127,24 +128,6 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
            });
     };
 
-    const deleteModal = deleteModalState && (
-        <div className="modal is-active">
-          <div className="modal-background" onClick={() => { setDeleteModalState(false) }}></div>
-          <div className="modal-card">
-            <header className="modal-card-head">
-              <p>Are you sure you want to delete this expense?</p>
-            </header>
-            <footer className="modal-card-foot">
-              <div className="buttons">
-                <button className="button is-danger" onClick={handleDelete}>Delete</button>
-                <button className="button" onClick={() => { setDeleteModalState(false) }}>Cancel</button>
-              </div>
-            </footer>
-          </div>
-          <button className="modal-close is-large" aria-label="close" onClick={() => { setDeleteModalState(false) }}></button>
-        </div>
-    );
-
     return (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -248,7 +231,11 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                     <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
             </div>
-            {deleteModal}
+            {deleteModalState && <DeleteModal
+                onCancel={() => { setDeleteModalState(false) }}
+                onDelete={handleDelete}
+                label="expense"
+            />}
         </form>
     );
 }

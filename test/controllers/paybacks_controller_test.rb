@@ -135,7 +135,6 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     sign_in people(:administrator)
     payback = Payback.new_from_parameters(people(:user_one), people(:user_two), { date: "2024-10-24", dollar_amount_paid: -447.61 })
     payback.save!
-    sign_in people(:user_two)
     assert_no_difference("Payback.count") do
       patch payback_path(payback), params: {
         payback: {
@@ -149,35 +148,32 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "2024-10-24", payback.date.to_s
     assert_equal (-447.61), payback.dollar_amount_paid
   end
-  test "#destroy" do
+  test "#destroy of payback" do
     Connection.create(from: people(:user_one), to: people(:administrator))
     Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
-    # post paybacks_path, params: {
-    #  person: { id: people(:user_one).id },
-    #  payback: {
-    #    date: "2024-10-24",
-    #    dollar_amount_paid: "-447.61"
-    #  }
-    # }
-    payback = people(:administrator).paybacks.last
-    # delete payback_path(payback)
+    payback = Payback.new_from_parameters(people(:administrator), people(:user_one), { date: "2024-10-24", dollar_amount_paid: -447.61 })
+    payback.save!
+    assert_difference("Payback.count", -1) do
+      delete payback_path(payback)
+    end
+    assert_response :success
+    person_transfers = people(:administrator).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#destroy of payback not associated with current_user" do
     Connection.create(from: people(:user_one), to: people(:administrator))
     Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
-    # post paybacks_path, params: {
-    #  person: { id: people(:user_one).id },
-    #  payback: {
-    #    date: "2024-10-24",
-    #    dollar_amount_paid: "-447.61"
-    #  }
-    # }
-    payback = people(:administrator).paybacks.last
-    sign_in people(:user_two)
-    # delete payback_path(payback)
+    payback = Payback.new_from_parameters(people(:user_one), people(:user_two), { date: "2024-10-24", dollar_amount_paid: -447.61 })
+    payback.save!
+    assert_no_difference("Payback.count") do
+      delete payback_path(payback)
+    end
+    assert_response :missing
   end
 end
