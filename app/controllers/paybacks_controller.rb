@@ -21,6 +21,21 @@ class PaybacksController < ApplicationController
     end
   end
 
+  def update
+    @payback = current_person.paybacks.find(params[:id])
+    if @payback.people.any? { |person| !person.is_connected_with?(current_person) }
+      render status: 404, json: {}
+    elsif @payback.update(update_payback_params)
+      render json: {
+        "person.transfers": person_transfers_json_mapping(current_person)
+      }
+    else
+      render json: {
+        "payback.errors": prefix_errors(@payback.errors)
+      }
+    end
+  end
+
   private
     def prefix_errors(errors)
       {}.tap do |errors_hash|

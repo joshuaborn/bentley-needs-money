@@ -80,7 +80,16 @@ export default function SidePanel(props:SidePanelProps) {
         case 'edit payback':
         case 'update payback':
             payback = props.transfers.find((obj) => obj.transferId === modeState.paybackId);
-            if (payback) contents = <EditPaybackCard key={payback.transferId} handleCloseCard={handleCloseCard} payback={payback} />;
+            if (payback) contents = <EditPaybackCard
+                flashState={props.flashState}
+                handleCloseCard={handleCloseCard}
+                key={payback.transferId}
+                modeState={props.modeState}
+                payback={payback}
+                setFlashState={props.setFlashState}
+                setModeState={props.setModeState}
+                setTransfersState={props.setTransfersState}
+            />;
             break;
     }
     return (

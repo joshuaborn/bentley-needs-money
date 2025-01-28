@@ -89,41 +89,65 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
     Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
-    # post paybacks_path, params: {
-    #  person: { id: people(:user_one).id },
-    #  payback: {
-    #    date: "2024-10-24",
-    #    dollar_amount_paid: "-447.61"
-    #  }
-    # }
-    # patch payback_path(payback), params: {
-    #  payback: {
-    #    date: "2024-10-25",
-    #    dollar_amount_paid: "-445.46"
-    #  }
-    # }
+    payback = Payback.new_from_parameters(people(:administrator), people(:user_one), { date: "2024-10-24", dollar_amount_paid: -447.61 })
+    payback.save!
+    assert_no_difference("Payback.count") do
+      patch payback_path(payback), params: {
+        payback: {
+          date: "2024-10-25",
+          dollar_amount_paid: "-445.46"
+        }
+      }
+    end
+    assert_response :success
+    payback.reload
+    assert_equal "2024-10-25", payback.date.to_s
+    assert_equal (-445.46), payback.dollar_amount_paid
+    person_transfers = people(:administrator).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
-  test "error when trying to #update an expense not associated with current user" do
+  test "#update with validation errors" do
     Connection.create(from: people(:user_one), to: people(:administrator))
     Connection.create(from: people(:administrator), to: people(:user_one))
     build_expenses_for_tests()
     sign_in people(:administrator)
-    # post paybacks_path, params: {
-    #  person: { id: people(:user_one).id },
-    #  payback: {
-    #    date: "2024-10-24",
-    #    dollar_amount_paid: "-447.61"
-    #  }
-    # }
-    payback = people(:administrator).paybacks.last
-    attributes_before = payback.attributes.to_yaml
+    payback = Payback.new_from_parameters(people(:administrator), people(:user_one), { date: "2024-10-24", dollar_amount_paid: -447.61 })
+    payback.save!
+    assert_no_difference("Payback.count") do
+      patch payback_path(payback), params: {
+        payback: {
+          date: ""
+        }
+      }
+    end
+    assert_response :success
+    payback.reload
+    assert_equal "2024-10-24", payback.date.to_s
+    expected_response = { "payback.date"=>[ "can't be blank" ] }
+    assert_equal JSON.parse(expected_response.to_json), @response.parsed_body["payback.errors"]
+  end
+  test "#update a payback not associated with current user" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
+    build_expenses_for_tests()
+    sign_in people(:administrator)
+    payback = Payback.new_from_parameters(people(:user_one), people(:user_two), { date: "2024-10-24", dollar_amount_paid: -447.61 })
+    payback.save!
     sign_in people(:user_two)
-    # patch payback_path(payback), params: {
-    #  payback: {
-    #    date: "2024-10-25",
-    #    dollar_amount_paid: "-445.46"
-    #  }
-    # }
+    assert_no_difference("Payback.count") do
+      patch payback_path(payback), params: {
+        payback: {
+          date: "2024-10-25",
+          dollar_amount_paid: "-445.46"
+        }
+      }
+    end
+    assert_response :missing
+    payback.reload
+    assert_equal "2024-10-24", payback.date.to_s
+    assert_equal (-447.61), payback.dollar_amount_paid
   end
   test "#destroy" do
     Connection.create(from: people(:user_one), to: people(:administrator))

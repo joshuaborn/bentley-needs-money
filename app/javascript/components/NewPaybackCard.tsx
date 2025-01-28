@@ -56,8 +56,8 @@ export default function NewPaybackCard(props:NewPaybackCardProps) {
     } = useForm<NewPaybackFormInputs>({
         defaultValues: {
             payback: {
-                dollar_amount_paid: props.peopleOwed[0] ? props.peopleOwed[0].cumulativeSum * -1 : 0,
                 date: new Date().toISOString().slice(0, 10),
+                dollar_amount_paid: props.peopleOwed[0] ? props.peopleOwed[0].cumulativeSum * -1 : 0,
             },
             person: {
                 id: props.peopleOwed[0] ? props.peopleOwed[0].personId : undefined,
@@ -154,7 +154,7 @@ export default function NewPaybackCard(props:NewPaybackCardProps) {
                                     className={"input" + (errors.payback?.date ? " is-danger" : "")}
                                     id="payback_date"
                                     type="date"
-                                    {...register("payback.date", {value: new Date().toISOString().slice(0, 10)})}
+                                    {...register("payback.date")}
                                 />
                             </div>
                             {errors.payback?.date && <p className="help is-danger">{errors.payback.date.message}</p>}

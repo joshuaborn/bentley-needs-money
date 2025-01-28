@@ -38,6 +38,7 @@ export interface EditExpenseFormInputs extends FieldValues {
 };
 
 export default function EditExpenseCard(props:EditExpenseCardProps) {
+
     const {
         clearErrors,
         formState: { errors },
@@ -45,6 +46,7 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
         register,
         setError,
     } = useForm<EditExpenseFormInputs>();
+
     const onSubmit = (formData:EditExpenseFormInputs) =>  {
         props.setModeState({mode: 'update expense', expenseId: props.expense.transferId});
         patch('/expenses/' + props.expense.transferId.toString(), formData)
@@ -71,7 +73,7 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                 props.setModeState({mode: "idle"});
            })
     };
-    const loadingClassName = (props.modeState.mode === 'update expense') ? ' is-loading' : '';
+
     const otherPersonFields = props.expense.otherPersonTransfers.map((personTransfer, index) => {
         const htmlId = "other_person_transfers_" + index.toString() + "_dollar_amount";
         // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -97,7 +99,9 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
             </div>
         );
     });
+
     const [deleteModalState, setDeleteModalState] = useState(false);
+
     const handleDelete = (event:SyntheticEvent) => {
         event.preventDefault();
         setDeleteModalState(false);
@@ -122,6 +126,7 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                 });
            });
     };
+
     const deleteModal = deleteModalState && (
         <div className="modal is-active">
           <div className="modal-background" onClick={() => { setDeleteModalState(false) }}></div>
@@ -139,9 +144,14 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
           <button className="modal-close is-large" aria-label="close" onClick={() => { setDeleteModalState(false) }}></button>
         </div>
     );
+
     return (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+                type="hidden"
+                {...register("my_person_transfer.id", {value: props.expense.myPersonTransfer.id})}
+            />
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">Edit Expense</p>
@@ -169,10 +179,6 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                             {errors.expense?.dollar_amount_paid && <p className="help is-danger">{errors.expense.dollar_amount_paid.message}</p>}
                         </div>
                         <div className="field">
-                            <input
-                                type="hidden"
-                                {...register("my_person_transfer.id", {value: props.expense.myPersonTransfer.id})}
-                            />
                             <label className="label" htmlFor="my_person_transfer_dollar_amount">Your Contribution</label>
                             <div className="control has-icons-left">
                                 <input
@@ -235,7 +241,7 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
                     </div>
                 </div>
                 <footer className="card-footer buttons has-addons">
-                    <button type="submit" className={"card-footer-item button is-link" + loadingClassName}>
+                    <button type="submit" className={"card-footer-item button is-link" + (props.modeState.mode === 'update expense' ? ' is-loading' : '')}>
                         Update
                     </button>
                     <a href="#" className="card-footer-item has-text-danger" onClick={(e) => { e.preventDefault(); setDeleteModalState(true) }}>Delete</a>

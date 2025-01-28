@@ -1,15 +1,88 @@
-import type { SyntheticEvent } from 'react';
+import type {
+    Dispatch,
+    SetStateAction,
+    SyntheticEvent,
+} from 'react';
 
-import type { Transfer } from '../types';
+import type { FieldValues } from 'react-hook-form';
+
+import type { 
+    FlashState,
+    ModeState,
+    PaybackResponse,
+    Transfer,
+} from '../types';
+
+import { useForm }  from 'react-hook-form';
+
+import { patch } from '../server';
+import { setPaybackErrors } from '../form_helpers';
 
 interface EditPaybackCardProps {
+    flashState: FlashState,
     handleCloseCard: (event:SyntheticEvent) => void,
     payback: Transfer,
+    modeState: ModeState,
+    setFlashState: Dispatch<SetStateAction<FlashState>>,
+    setModeState: Dispatch<SetStateAction<ModeState>>,
+    setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
+};
+
+export interface EditPaybackFormInputs extends FieldValues {
+    payback: {
+        date: string,
+        dollar_amount_paid: number,
+        id: number,
+    },
 };
 
 export default function EditPaybackCard(props:EditPaybackCardProps) {
+
+    const {
+        clearErrors,
+        formState: { errors },
+        handleSubmit,
+        register,
+        setError,
+    } = useForm<EditPaybackFormInputs>({
+        defaultValues: {
+            payback: {
+                date: props.payback.date,
+                dollar_amount_paid: props.payback.dollarAmountPaid,
+            }
+        }
+    });
+
+    const onSubmit = (formData:EditPaybackFormInputs) =>  {
+        props.setModeState({mode: 'update payback', paybackId: props.payback.transferId});
+        patch('/paybacks/'+ props.payback.transferId.toString(), formData)
+            .then((response) => response.json())
+            .then((data:PaybackResponse) => {
+                if (setPaybackErrors(data, setError)) {
+                    props.setModeState({mode: 'edit payback', paybackId: props.payback.transferId});
+                } else if ("person.transfers" in data) {
+                    clearErrors();
+                    props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
+                    props.setModeState({mode: "idle"});
+                    props.setFlashState({
+                        counter: props.flashState.counter + 1,
+                        messages: [["success", "Payback was successfully updated."]]
+                    });
+                }
+            })
+            .catch((error:unknown) => {
+                console.log(error);
+                props.setFlashState({
+                    counter: props.flashState.counter + 1,
+                    messages: [["danger", "There was an error with the network request."]]
+                })
+                props.setModeState({mode: "idle"});
+            })
+    };
+
     return (
-        <form action={(formData) => { console.log(formData) }}>
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        <form onSubmit={handleSubmit(onSubmit)}>
             <div className="card">
                 <header className="card-header">
                     <p className="card-header-title">Edit Payback</p>
@@ -29,18 +102,33 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
                                 {props.payback.otherPersonTransfers[0].name}
                             </div>
                         </div>
-                        <div className="field">
+                        <div className="field amount">
                             <label className="label" htmlFor="payback_dollar_amount_paid">Amount</label>
                             <div className="control has-icons-left">
-                                <input step="0.01" className="input" type="number" defaultValue={props.payback.dollarAmountPaid} name="payback[dollar_amount_paid]" id="payback_dollar_amount_paid" />
-                                <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
+                                <input
+                                    className={"input" + (errors.payback?.dollar_amount_paid ? " is-danger" : "")}
+                                    id="payback_dollar_amount_paid"
+                                    step="0.01"
+                                    type="number"
+                                    {...register("payback.dollar_amount_paid")}
+                                />
+                                <span className="icon is-small is-left">
+                                    <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>
+                                </span>
                             </div>
+                            {errors.payback?.dollar_amount_paid && <p className="help is-danger">{errors.payback.dollar_amount_paid.message}</p>}
                         </div>
                         <div className="field">
                             <label className="label" htmlFor="payback_date">Date</label>
                             <div className="control">
-                                <input className="input" defaultValue={props.payback.date} type="date" name="payback[date]" id="payback_date" />
+                                <input
+                                    className={"input" + (errors.payback?.date ? " is-danger" : "")}
+                                    id="payback_date"
+                                    type="date"
+                                    {...register("payback.date")}
+                                />
                             </div>
+                            {errors.payback?.date && <p className="help is-danger">{errors.payback.date.message}</p>}
                         </div>
                     </div>
                 </div>
@@ -52,4 +140,5 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
             </div>
         </form>
     );
+
 }
