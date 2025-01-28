@@ -57,7 +57,10 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
   font-size: 0.75rem;
 }
 
-.card-header {
+.side-panel .card .card-header {
+  border-start-end-radius: unset;
+  border-start-start-radius: unset;
+  border-top: var(--main-border);
   border-bottom: var(--main-border);
 }
 
