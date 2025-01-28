@@ -1,32 +1,5 @@
 require "test_helper"
 
-def person_transfer_mapping(person_transfer)
-  {
-    "date" => person_transfer.transfer.date,
-    "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
-    "memo" => person_transfer.transfer.memo,
-    "myPersonTransfer" => {
-      "dollarAmount" => person_transfer.dollar_amount,
-      "id" => person_transfer.id,
-      "inYnab" => person_transfer.in_ynab?,
-      "personId" => people(:user_one).id
-    },
-    "otherPersonTransfers" => [
-      {
-        "cumulativeSum" => person_transfer.dollar_cumulative_sum,
-        "date" => person_transfer.transfer.date,
-        "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
-        "id" => person_transfer.other_person_transfer.id,
-        "name" => person_transfer.other_person.name,
-        "personId" => person_transfer.other_person.id
-      }
-    ],
-    "payee" => person_transfer.transfer.payee,
-    "transferId" => person_transfer.transfer_id,
-    "type" => person_transfer.transfer.type
-  }
-end
-
 class ExpensesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
   setup do
@@ -49,7 +22,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     person_transfers = people(:user_one).person_transfers.
       includes(:transfer, :person_transfers, :people).
-      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
     assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create when other person paid and is splitting with current_user" do
@@ -69,7 +42,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     person_transfers = people(:user_one).person_transfers.
       includes(:transfer, :person_transfers, :people).
-      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
     assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create re-renders new when there are validation errors" do
@@ -89,7 +62,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "4.3"
       }
     }
-    post expenses_path, params: parameters
+    assert_no_difference("Expense.count") do
+      post expenses_path, params: parameters
+    end
     expected_response = { "expense.payee"=>[ "can't be blank" ] }
     assert_equal JSON.parse(expected_response.to_json), @response.parsed_body["expense.errors"]
   end
@@ -161,7 +136,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     person_transfers = people(:user_one).person_transfers.
       includes(:transfer, :person_transfers, :people).
-      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
     assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
     person_transfer.reload
     assert_equal parameters[:expense][:date], person_transfer.transfer.date.to_s
@@ -252,7 +227,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     person_transfers = people(:user_one).person_transfers.
       includes(:transfer, :person_transfers, :people).
-      order(transfers: { date: :desc, created_at: :asc }).map { |pt| person_transfer_mapping(pt) }
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
     assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#destroy of expense not associated with current_user" do

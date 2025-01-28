@@ -1,12 +1,23 @@
-import type { Dispatch, SetStateAction, SyntheticEvent, ReactNode } from 'react';
+import type {
+    Dispatch,
+    ReactNode,
+    SetStateAction,
+    SyntheticEvent,
+} from 'react';
+
 import type { FieldValues } from 'react-hook-form';
 
-import type { ModeState, Transfer, ExpenseResponse, FlashState } from '../types';
+import type {
+    ExpenseResponse,
+    FlashState,
+    ModeState,
+    Transfer,
+} from '../types';
 
 import { useForm }  from 'react-hook-form';
 
 import { post } from '../server';
-import { setErrorsFromResponse } from '../form_helpers';
+import { setExpenseErrors } from '../form_helpers';
 
 interface NewExpenseCardProps {
     flashState: FlashState,
@@ -27,11 +38,12 @@ export interface NewExpenseFormInputs extends FieldValues {
     },
     person: {
         id: number,
-    }
+    },
     person_paid: string,
 };
 
 export default function NewExpenseCard(props:NewExpenseCardProps) {
+
     const {
         clearErrors,
         formState: { errors },
@@ -39,12 +51,13 @@ export default function NewExpenseCard(props:NewExpenseCardProps) {
         register,
         setError,
     } = useForm<NewExpenseFormInputs>();
+
     const onSubmit = (formData:NewExpenseFormInputs) =>  {
         props.setModeState({mode: 'create expense'});
         post('/expenses', formData)
             .then((response) => response.json())
             .then((data:ExpenseResponse) => {
-                if (setErrorsFromResponse(data, setError)) {
+                if (setExpenseErrors(data, setError)) {
                     props.setModeState({mode: 'new expense'});
                 } else if ("person.transfers" in data) {
                     clearErrors();
@@ -65,7 +78,7 @@ export default function NewExpenseCard(props:NewExpenseCardProps) {
                 props.setModeState({mode: "idle"});
             })
     };
-    const loadingClassName = (props.modeState.mode === 'create expense') ? ' is-loading' : '';
+
     return (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -154,7 +167,7 @@ export default function NewExpenseCard(props:NewExpenseCardProps) {
                     </div>
                 </div>
                 <footer className="card-footer buttons has-addons">
-                    <button type="submit" className={"card-footer-item button is-link" + loadingClassName}>
+                    <button type="submit" className={"card-footer-item button is-link" + (props.modeState.mode === 'create expense' ? ' is-loading' : '')}>
                         Create
                     </button>
                     <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
@@ -162,4 +175,5 @@ export default function NewExpenseCard(props:NewExpenseCardProps) {
             </div>
         </form>
     );
+
 }

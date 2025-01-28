@@ -1,6 +1,6 @@
 import { useState }  from 'react';
 
-import type { ModeState, FlashState, Person, Transfer, PersonOwed } from '../types';
+import type { ModeState, FlashState, Person, Transfer, PersonTransfer } from '../types';
 import ActionBar from './ActionBar';
 import MainPanel from './MainPanel';
 import SidePanel from './SidePanel';
@@ -21,14 +21,14 @@ export default function App({connectedPeople, initialPersonTransfers, initialFla
     const peopleOwedMap = transfersState.reduce(
         function(accumulator, transfer) {
             transfer.otherPersonTransfers.forEach((personOwed) => {
-                const currentEntry = accumulator.get(personOwed.id);
+                const currentEntry = accumulator.get(personOwed.personId);
                 if (typeof currentEntry === "undefined" || (currentEntry.date < transfer.date)) {
-                    accumulator.set(personOwed.id, personOwed);
+                    accumulator.set(personOwed.personId, personOwed);
                 }
             });
             return accumulator;
         },
-        new Map<number,PersonOwed>()
+        new Map<number,PersonTransfer>()
     );
     const peopleOwed = Array.from(peopleOwedMap).map(([, value]) => (value));
     

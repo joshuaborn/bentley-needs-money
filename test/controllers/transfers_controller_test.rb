@@ -19,7 +19,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
       end,
       "person.transfers": people(:user_one).person_transfers.
         includes(:transfer, :person_transfers, :people).
-        order(transfers: { date: :desc, created_at: :asc }). map do |person_transfer|
+        order(transfers: { date: :desc, created_at: :desc }). map do |person_transfer|
           {
             "date" => person_transfer.transfer.date,
             "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,

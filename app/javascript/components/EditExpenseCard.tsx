@@ -7,7 +7,7 @@ import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
 
 import { patch, destroy }  from '../server';
-import { setErrorsFromResponse } from '../form_helpers';
+import { setExpenseErrors } from '../form_helpers';
 
 interface EditExpenseCardProps {
     expense: Transfer,
@@ -50,7 +50,7 @@ export default function EditExpenseCard(props:EditExpenseCardProps) {
         patch('/expenses/' + props.expense.transferId.toString(), formData)
            .then((response) => response.json())
            .then((data:ExpenseResponse) => {
-                if (setErrorsFromResponse(data, setError)) {
+                if (setExpenseErrors(data, setError)) {
                     props.setModeState({mode: 'edit expense', expenseId: props.expense.transferId});
                 } else if ("person.transfers" in data) {
                     clearErrors();

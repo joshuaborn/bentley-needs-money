@@ -11,8 +11,8 @@ class ApplicationController < ActionController::Base
     def person_transfers_json_mapping(person)
       person.person_transfers.
         includes(:transfer, :person_transfers, :people).
-        order(transfers: { date: :desc, created_at: :asc }).
-        where([ "people.id <> ?", current_person ]).map do |person_transfer|
+        order(transfers: { date: :desc, created_at: :desc }).
+        where([ "people.id <> ?", person ]).map do |person_transfer|
           {
             "date" => person_transfer.transfer.date,
             "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
               "dollarAmount" => person_transfer.dollar_amount,
               "id" => person_transfer.id,
               "inYnab" => person_transfer.in_ynab?,
-              "personId" => current_person.id
+              "personId" => person.id
             },
             "otherPersonTransfers" => [
               {

@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 
-import type { ModeState, FlashState, Person, PersonOwed, Transfer } from '../types';
+import type { ModeState, FlashState, Person, Transfer, PersonTransfer } from '../types';
 import EditExpenseCard from './EditExpenseCard';
 import EditPaybackCard from './EditPaybackCard';
 import FlashNotification from './FlashNotification';
@@ -11,7 +11,7 @@ interface SidePanelProps {
     connectedPeople: Person[],
     flashState: FlashState,
     modeState: ModeState,
-    peopleOwed: PersonOwed[],
+    peopleOwed: PersonTransfer[],
     setFlashState: Dispatch<SetStateAction<FlashState>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
     setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
@@ -50,7 +50,16 @@ export default function SidePanel(props:SidePanelProps) {
                        />;
             break;
         case 'new payback':
-            contents = <NewPaybackCard handleCloseCard={handleCloseCard} peopleOwed={props.peopleOwed} />;
+        case 'create payback':
+            contents = <NewPaybackCard
+                flashState={props.flashState}
+                handleCloseCard={handleCloseCard}
+                modeState={props.modeState}
+                peopleOwed={props.peopleOwed}
+                setFlashState={props.setFlashState}
+                setModeState={props.setModeState}
+                setTransfersState={props.setTransfersState}
+            />;
             break;
         case 'edit expense':
         case 'update expense':
@@ -69,6 +78,7 @@ export default function SidePanel(props:SidePanelProps) {
             }
             break;
         case 'edit payback':
+        case 'update payback':
             payback = props.transfers.find((obj) => obj.transferId === modeState.paybackId);
             if (payback) contents = <EditPaybackCard key={payback.transferId} handleCloseCard={handleCloseCard} payback={payback} />;
             break;

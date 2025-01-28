@@ -19,7 +19,14 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "447.61"
       }
     }
-    # post paybacks_path, params: parameters
+    assert_difference("Payback.count") do
+      post paybacks_path, params: parameters, as: :json
+    end
+    assert_response :success
+    person_transfers = people(:user_one).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
   end
   test "#create in which the current_user is being paid back by someone else" do
     Connection.create(from: people(:user_one), to: people(:administrator))
@@ -33,7 +40,33 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "-447.61"
       }
     }
-    # post paybacks_path, params: parameters
+    assert_difference("Payback.count") do
+      post paybacks_path, params: parameters, as: :json
+    end
+    assert_response :success
+    person_transfers = people(:administrator).person_transfers.
+      includes(:transfer, :person_transfers, :people).
+      order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+    assert_equal JSON.parse(person_transfers.to_json), @response.parsed_body["person.transfers"]
+  end
+  test "#create when there are validation errors" do
+    Connection.create(from: people(:user_one), to: people(:administrator))
+    Connection.create(from: people(:administrator), to: people(:user_one))
+    build_expenses_for_tests()
+    sign_in people(:user_one)
+    parameters = {
+      person: { id: people(:administrator).id },
+      payback: {
+        date: "",
+        dollar_amount_paid: "0"
+      }
+    }
+    assert_no_difference("Payback.count") do
+      post paybacks_path, params: parameters, as: :json
+    end
+    assert_response :success
+    expected_response = { "payback.date"=>[ "can't be blank" ] }
+    assert_equal JSON.parse(expected_response.to_json), @response.parsed_body["payback.errors"]
   end
   test "#create with someone the user is not connected to" do
     build_expenses_for_tests()
@@ -46,7 +79,10 @@ class PaybacksControllerTest < ActionDispatch::IntegrationTest
         dollar_amount_paid: "-447.61"
       }
     }
-    # post paybacks_path, params: parameters
+    assert_no_difference("Payback.count") do
+      post paybacks_path, params: parameters, as: :json
+    end
+    assert_response :missing
   end
   test "#update payback and associated person_transfers" do
     Connection.create(from: people(:user_one), to: people(:administrator))

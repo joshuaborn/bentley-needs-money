@@ -49,5 +49,12 @@ export type ExpenseValidatableField = "expense.date" | "expense.dollar_amount_pa
 
 export interface ExpenseResponse {
     "person.transfers"?: Transfer[],
-    "expense.errors"?: object
+    "expense.errors"?: object,
+}
+
+export type PaybackValidatableField = "payback.date" | "payback.dollar_amount_paid";
+
+export interface PaybackResponse {
+    "person.transfers"?: Transfer[],
+    "payback.errors"?: object,
 }
