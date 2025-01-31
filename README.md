@@ -4,6 +4,8 @@
 ### Technology
 
 * [Ruby on Rails](https://rubyonrails.org/) (v7/8)
+* [React](https://react.dev/)
+* [TypeScript](https://www.typescriptlang.org/) via [Bun](https://bun.sh/)
 * [PostgreSQL](https://www.postgresql.org/)
 * [Bulma](https://bulma.io/)
 * [Docker](https://www.docker.com/)
@@ -16,9 +18,8 @@
 * Calculates a running cumulative sum of how much each person owes another
 * Keeps track of when people pay each other back
 * Uses a responsive, mobile-friendly user experience
-* Available at no cost – Bentley Needs Money is provided free of charge!
 
 ### Planned Future Development
 
+* User experience (UX) improvements
 * You Need a Budget (YNAB) integration
-* Splitting between more than two people
