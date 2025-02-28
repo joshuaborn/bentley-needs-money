@@ -1,21 +1,27 @@
 class ExpensesController < ApplicationController
   def create
-    other_person = current_person.connected_people.find(params[:person][:id])
-    if params[:person_paid] == "current"
-      expense = Expense.split_between_two_people(current_person, other_person, create_expense_params())
-    elsif params[:person_paid] == "other"
-      expense = Expense.split_between_two_people(other_person, current_person, create_expense_params())
-    else
-      raise StandardError.new("Unrecognized person_paid parameter")
-    end
-    if expense.save
-      render json: {
-        "person.transfers": person_transfers_json_mapping(current_person)
-      }
-    else
-      render json: {
-        "expense.errors": prefix_errors(expense.errors)
-      }
+    begin
+      other_person = current_person.connected_people.find(params[:person][:id])
+      if [ "current", "other" ].any?(params[:person_paid])
+        if params[:person_paid] == "current"
+          expense = Expense.split_between_two_people(current_person, other_person, create_expense_params())
+        elsif params[:person_paid] == "other"
+          expense = Expense.split_between_two_people(other_person, current_person, create_expense_params())
+        end
+        if expense.save
+          render json: {
+            "person.transfers": person_transfers_json_mapping(current_person)
+          }
+        else
+          render json: {
+            "expense.errors": prefix_errors(expense.errors)
+          }
+        end
+      else
+        render status: 500, json: {}
+      end
+    rescue ActiveRecord::RecordNotFound
+      render status: 404, json: {}
     end
   end
 
@@ -45,11 +51,15 @@ class ExpensesController < ApplicationController
   end
 
   def destroy
-    expense = current_person.expenses.find(params[:id])
-    expense.destroy
-    render json: {
-      "person.transfers": person_transfers_json_mapping(current_person)
-    }
+    begin
+      expense = current_person.expenses.find(params[:id])
+      expense.destroy
+      render json: {
+        "person.transfers": person_transfers_json_mapping(current_person)
+      }
+    rescue ActiveRecord::RecordNotFound
+      render status: 404, json: {}
+    end
   end
 
   private
