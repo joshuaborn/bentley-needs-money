@@ -245,15 +245,11 @@ RSpec.describe PaybacksController, type: :controller do
 
     let(:parameters) do
       {
-        "id": payback.id
+        "id": Payback.last.id
       }
     end
 
     context "payback associated with current user" do
-      let(:payback) do
-        Payback.last
-      end
-
       before(:each) do
         Payback.new_from_parameters(
           connected_user,
@@ -275,10 +271,6 @@ RSpec.describe PaybacksController, type: :controller do
     end
 
     context "payback not associated with current user" do
-      let(:payback) do
-        Payback.last
-      end
-
       before(:each) do
         Payback.new_from_parameters(
           unconnected_user,

@@ -19,7 +19,7 @@ RSpec.describe ExpensesController, type: :controller do
   end
 
   describe "#create" do
-    before(:example) do
+    subject do
       post :create, params: parameters, as: :json
     end
 
@@ -38,14 +38,19 @@ RSpec.describe ExpensesController, type: :controller do
       end
 
       it "returns a 200" do
-        expect(response).to have_http_status(:ok)
+        expect(subject).to have_http_status(:ok)
+      end
+
+      it "creates an Expense" do
+        expect { subject }.to change(Expense, :count).by(1)
       end
 
       it "responds with list of current user's person_transfers" do
-        person_transfers = current_user.person_transfers.
-          includes(:transfer, :person_transfers, :people).
-          order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
-        expect(response.parsed_body["person.transfers"]).to eq(JSON.parse(person_transfers.to_json))
+        expect(subject.parsed_body["person.transfers"]).to eq(
+          current_user.person_transfers.
+            includes(:transfer, :person_transfers, :people).
+            order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+        )
       end
     end
 
@@ -64,14 +69,19 @@ RSpec.describe ExpensesController, type: :controller do
       end
 
       it "returns a 200" do
-        expect(response).to have_http_status(:ok)
+        expect(subject).to have_http_status(:ok)
+      end
+
+      it "creates an Expense" do
+        expect { subject }.to change(Expense, :count).by(1)
       end
 
       it "responds with list of current user's person_transfers" do
-        person_transfers = current_user.person_transfers.
-          includes(:transfer, :person_transfers, :people).
-          order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
-        expect(response.parsed_body["person.transfers"]).to eq(person_transfers)
+        expect(subject.parsed_body["person.transfers"]).to eq(
+          current_user.person_transfers.
+            includes(:transfer, :person_transfers, :people).
+            order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+        )
       end
     end
 
@@ -89,11 +99,15 @@ RSpec.describe ExpensesController, type: :controller do
       end
 
       it "returns a 200" do
-        expect(response).to have_http_status(:ok)
+        expect(subject).to have_http_status(:ok)
+      end
+
+      it "doesn't create an Expense" do
+        expect { subject }.not_to change(Expense, :count)
       end
 
       it "responds with error message" do
-        expect(response.parsed_body["expense.errors"]).to eq({ "expense.payee"=>[ "can't be blank" ] })
+        expect(subject.parsed_body["expense.errors"]).to eq({ "expense.payee"=>[ "can't be blank" ] })
       end
     end
 
@@ -111,8 +125,12 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
+      it "doesn't create an Expense" do
+        expect { subject }.not_to change(Expense, :count)
+      end
+
       it "returns a 501" do
-        expect(response).to have_http_status(:error)
+        expect(subject).to have_http_status(:error)
       end
     end
 
@@ -130,8 +148,12 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
+      it "doesn't create an Expense" do
+        expect { subject }.not_to change(Expense, :count)
+      end
+
       it "returns a 404" do
-        expect(response).to have_http_status(:missing)
+        expect(subject).to have_http_status(:missing)
       end
     end
   end
@@ -297,13 +319,15 @@ RSpec.describe ExpensesController, type: :controller do
   end
 
   describe "#destroy" do
+    subject do
+       delete :destroy, params: parameters, as: :json
+    end
+
     let(:parameters) do
       {
         "id": expense.id
       }
     end
-
-    subject { delete :destroy, params: parameters, as: :json }
 
     before(:example) do
       build_expenses_for_tests(current_user, connected_user, unconnected_user)
