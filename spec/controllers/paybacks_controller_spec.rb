@@ -80,7 +80,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "there is a validation error" do
+    context "validation error" do
       let(:parameters) do
         {
           person: { id: connected_user.id },
@@ -104,7 +104,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "with someone the user is not connected to" do
+    context "current user isn't connected to other user" do
       let(:parameters) do
         {
           person: { id: unconnected_user.id },
@@ -125,12 +125,12 @@ RSpec.describe PaybacksController, type: :controller do
     end
   end
 
-  describe "update" do
+  describe "#update" do
     before(:example) do
       patch :update, params: parameters, as: :json
     end
 
-    context "normally" do
+    context "payback associated with current user and no validation errors" do
       let(:payback) do
         Payback.new_from_parameters(
           connected_user,
@@ -170,7 +170,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "with validation errors" do
+    context "validation errors" do
       let(:payback) do
         Payback.new_from_parameters(
           connected_user,
@@ -195,13 +195,13 @@ RSpec.describe PaybacksController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
 
-      it "responds with error message" do
-        expect(response.parsed_body["payback.errors"]).to eq({ "payback.date"=>[ "can't be blank" ] })
-      end
-
       it "doesn't update attributes" do
         expect(payback.reload.date.to_s).to eq("2024-10-24")
         expect(payback.reload.dollar_amount_paid).to eq(-447.61)
+      end
+
+      it "responds with error message" do
+        expect(response.parsed_body["payback.errors"]).to eq({ "payback.date"=>[ "can't be blank" ] })
       end
     end
 
@@ -265,7 +265,7 @@ RSpec.describe PaybacksController, type: :controller do
         expect(subject).to have_http_status(:ok)
       end
 
-      it "deletes a Payback" do
+      it "deletes a payback" do
         expect { subject }.to change(Payback, :count).by(-1)
       end
     end
@@ -286,7 +286,7 @@ RSpec.describe PaybacksController, type: :controller do
         expect(subject).to have_http_status(:missing)
       end
 
-      it "does not delete a Payback" do
+      it "does not delete a payback" do
         expect { subject }.not_to change(Payback, :count)
       end
     end

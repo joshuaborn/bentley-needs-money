@@ -54,7 +54,7 @@ RSpec.describe TransfersController, type: :controller do
         expect(subject).to have_http_status(:ok)
       end
 
-      context "there is a connection request" do
+      context "and there is a connection request" do
         before(:example) do
           ConnectionRequest.create(from: connected_user, to: current_user)
         end

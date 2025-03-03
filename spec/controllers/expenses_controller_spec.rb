@@ -41,7 +41,7 @@ RSpec.describe ExpensesController, type: :controller do
         expect(subject).to have_http_status(:ok)
       end
 
-      it "creates an Expense" do
+      it "creates an expense" do
         expect { subject }.to change(Expense, :count).by(1)
       end
 
@@ -72,7 +72,7 @@ RSpec.describe ExpensesController, type: :controller do
         expect(subject).to have_http_status(:ok)
       end
 
-      it "creates an Expense" do
+      it "creates an expense" do
         expect { subject }.to change(Expense, :count).by(1)
       end
 
@@ -85,7 +85,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "there is a validation error" do
+    context "validation error" do
       let(:parameters) do
         {
           person_paid: "other",
@@ -102,7 +102,7 @@ RSpec.describe ExpensesController, type: :controller do
         expect(subject).to have_http_status(:ok)
       end
 
-      it "doesn't create an Expense" do
+      it "doesn't create an expense" do
         expect { subject }.not_to change(Expense, :count)
       end
 
@@ -125,16 +125,16 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
-      it "doesn't create an Expense" do
-        expect { subject }.not_to change(Expense, :count)
-      end
-
       it "returns a 501" do
         expect(subject).to have_http_status(:error)
       end
+
+      it "doesn't create an expense" do
+        expect { subject }.not_to change(Expense, :count)
+      end
     end
 
-    context "other person isn't connected with current person" do
+    context "current person isn't connected with other person" do
       let(:parameters) do
         {
           person_paid: "current",
@@ -148,12 +148,12 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
-      it "doesn't create an Expense" do
-        expect { subject }.not_to change(Expense, :count)
-      end
-
       it "returns a 404" do
         expect(subject).to have_http_status(:missing)
+      end
+
+      it "doesn't create an expense" do
+        expect { subject }.not_to change(Expense, :count)
       end
     end
   end
@@ -164,7 +164,7 @@ RSpec.describe ExpensesController, type: :controller do
       patch :update, params: parameters, as: :json
     end
 
-    context "success" do
+    context "expense associated with current user and no validation errors" do
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -200,13 +200,6 @@ RSpec.describe ExpensesController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
 
-      it "responds with list of current user's person_transfers" do
-        person_transfers = current_user.person_transfers.
-          includes(:transfer, :person_transfers, :people).
-          order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
-        expect(response.parsed_body["person.transfers"]).to eq(person_transfers)
-      end
-
       it "updates the transfer" do
         transfer = person_transfer.reload.transfer
         expect(transfer.date.to_s).to eq(parameters[:expense][:date])
@@ -225,6 +218,13 @@ RSpec.describe ExpensesController, type: :controller do
         other_person_transfer = person_transfer.reload.other_person_transfer
         expect(other_person_transfer.dollar_amount).to eq(parameters[:other_person_transfers][0][:dollar_amount])
         expect(other_person_transfer.in_ynab).to eq(parameters[:other_person_transfers][0][:in_ynab])
+      end
+
+      it "responds with list of current user's person_transfers" do
+        person_transfers = current_user.person_transfers.
+          includes(:transfer, :person_transfers, :people).
+          order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+        expect(response.parsed_body["person.transfers"]).to eq(person_transfers)
       end
     end
 
@@ -273,7 +273,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "trying to update an expense with an unconnected user" do
+    context "expense with an unconnected user" do
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -333,7 +333,7 @@ RSpec.describe ExpensesController, type: :controller do
       build_expenses_for_tests(current_user, connected_user, unconnected_user)
     end
 
-    context "success" do
+    context "expense associated with current user" do
       let(:expense) do
         Expense.find_between_two_people(current_user, connected_user).last
       end
@@ -342,7 +342,7 @@ RSpec.describe ExpensesController, type: :controller do
         expect(subject).to have_http_status(:ok)
       end
 
-      it "deletes an Expense" do
+      it "deletes an expense" do
         expect { subject }.to change(Expense, :count).by(-1)
       end
     end
@@ -356,7 +356,7 @@ RSpec.describe ExpensesController, type: :controller do
         expect(subject).to have_http_status(:missing)
       end
 
-      it "does not delete an Expense" do
+      it "does not delete an expense" do
         expect { subject }.not_to change(Expense, :count)
       end
     end
