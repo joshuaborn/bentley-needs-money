@@ -296,17 +296,17 @@ RSpec.describe ExpensesController, type: :controller do
     end
   end
 
-  describe "#create" do
+  describe "#destroy" do
     let(:parameters) do
       {
         "id": expense.id
       }
     end
 
+    subject { delete :destroy, params: parameters, as: :json }
+
     before(:example) do
       build_expenses_for_tests(current_user, connected_user, unconnected_user)
-      @count_before = Expense.count
-      delete :destroy, params: parameters, as: :json
     end
 
     context "success" do
@@ -315,11 +315,11 @@ RSpec.describe ExpensesController, type: :controller do
       end
 
       it "returns a 200" do
-        expect(response).to have_http_status(:ok)
+        expect(subject).to have_http_status(:ok)
       end
 
       it "deletes an Expense" do
-        expect(Expense.count).to eq(@count_before - 1)
+        expect { subject }.to change(Expense, :count).by(-1)
       end
     end
 
@@ -329,11 +329,11 @@ RSpec.describe ExpensesController, type: :controller do
       end
 
       it "returns a 404" do
-        expect(response).to have_http_status(:missing)
+        expect(subject).to have_http_status(:missing)
       end
 
       it "does not delete an Expense" do
-        expect(Expense.count).to eq(@count_before)
+        expect { subject }.not_to change(Expense, :count)
       end
     end
   end
