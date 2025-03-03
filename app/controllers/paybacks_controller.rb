@@ -22,26 +22,34 @@ class PaybacksController < ApplicationController
   end
 
   def update
-    payback = current_person.paybacks.find(params[:id])
-    if payback.people.any? { |person| !person.is_connected_with?(current_person) }
+    begin
+      payback = current_person.paybacks.find(params[:id])
+      if payback.people.any? { |person| !person.is_connected_with?(current_person) }
+        render status: 404, json: {}
+      elsif payback.update(update_payback_params)
+        render json: {
+          "person.transfers": person_transfers_json_mapping(current_person)
+        }
+      else
+        render json: {
+          "payback.errors": prefix_errors(payback.errors)
+        }
+      end
+    rescue ActiveRecord::RecordNotFound
       render status: 404, json: {}
-    elsif payback.update(update_payback_params)
-      render json: {
-        "person.transfers": person_transfers_json_mapping(current_person)
-      }
-    else
-      render json: {
-        "payback.errors": prefix_errors(payback.errors)
-      }
     end
   end
 
   def destroy
-    payback = current_person.paybacks.find(params[:id])
-    payback.destroy
-    render json: {
-      "person.transfers": person_transfers_json_mapping(current_person)
-    }
+    begin
+      payback = current_person.paybacks.find(params[:id])
+      payback.destroy
+      render json: {
+        "person.transfers": person_transfers_json_mapping(current_person)
+      }
+    rescue ActiveRecord::RecordNotFound
+      render status: 404, json: {}
+    end
   end
 
   private
