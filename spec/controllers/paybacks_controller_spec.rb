@@ -42,7 +42,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "current user is paying other user back" do
+    context "when current user is paying other user back" do
       let(:parameters) do
         {
           person: { id: connected_user.id },
@@ -65,7 +65,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "current user is being paid back by other user" do
+    context "when current user is being paid back by other user" do
       let(:parameters) do
         {
           person: { id: connected_user.id },
@@ -88,7 +88,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "validation error" do
+    context "with a validation error" do
       let(:parameters) do
         {
           person: { id: connected_user.id },
@@ -107,7 +107,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "current user isn't connected to other user" do
+    context "when current user isn't connected to other user" do
       let(:parameters) do
         {
           person: { id: unconnected_user.id },
@@ -144,7 +144,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "payback associated with current user and no validation errors" do
+    context "of a payback associated with current user and no validation errors" do
       let(:payback) do
         Payback.new_from_parameters(
           connected_user,
@@ -181,7 +181,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "validation errors" do
+    context "with validation errors" do
       let(:payback) do
         Payback.new_from_parameters(
           connected_user,
@@ -209,7 +209,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "payback not associated with current user" do
+    context "of a payback not associated with current user" do
       let(:payback) do
         Payback.new_from_parameters(
           unconnected_user,
@@ -248,7 +248,7 @@ RSpec.describe PaybacksController, type: :controller do
       }
     end
 
-    context "payback associated with current user" do
+    context "of a payback associated with current user" do
       before(:each) do
         Payback.new_from_parameters(
           connected_user,
@@ -269,7 +269,7 @@ RSpec.describe PaybacksController, type: :controller do
       end
     end
 
-    context "payback not associated with current user" do
+    context "of payback not associated with current user" do
       before(:each) do
         Payback.new_from_parameters(
           unconnected_user,

@@ -25,7 +25,7 @@ RSpec.describe TransfersController, type: :controller do
       end
     end
 
-    context "there are no transfers and no connections" do
+    context "when there are no transfers and no connections" do
       context "and no connection requests" do
         include_examples "redirects"
 
@@ -47,7 +47,7 @@ RSpec.describe TransfersController, type: :controller do
       end
     end
 
-    context "there are transfers" do
+    context "when there are transfers" do
       before do
         build_expenses_for_tests(current_user, connected_user, unconnected_user)
       end

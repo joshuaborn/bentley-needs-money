@@ -49,7 +49,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "current user paid and is splitting with other connected person" do
+    context "when current user paid and is splitting with other connected person" do
       let(:parameters) do
         {
           person_paid: "current",
@@ -67,7 +67,7 @@ RSpec.describe ExpensesController, type: :controller do
       include_examples "create expense"
     end
 
-    context "other connected person paid and is splitting with current user" do
+    context "when other connected person paid and is splitting with current user" do
       let(:parameters) do
         {
           person_paid: "other",
@@ -85,7 +85,7 @@ RSpec.describe ExpensesController, type: :controller do
       include_examples "create expense"
     end
 
-    context "validation error" do
+    context "with a validation error" do
       let(:parameters) do
         {
           person_paid: "other",
@@ -106,7 +106,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "invalid person_paid parameter" do
+    context "with invalid person_paid parameter" do
       let(:parameters) do
         {
           person_paid: "foobar",
@@ -127,7 +127,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "current person isn't connected with other person" do
+    context "when current person isn't connected with other person" do
       let(:parameters) do
         {
           person_paid: "current",
@@ -155,7 +155,7 @@ RSpec.describe ExpensesController, type: :controller do
       patch :update, params: parameters, as: :json
     end
 
-    context "expense associated with current user and no validation errors" do
+    context "when expense is associated with current user and no validation errors" do
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -219,7 +219,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "validation errors" do
+    context "with validation errors" do
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -263,7 +263,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "expense with an unconnected user" do
+    context "when expense is associated with an unconnected user" do
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -321,7 +321,7 @@ RSpec.describe ExpensesController, type: :controller do
       build_expenses_for_tests(current_user, connected_user, unconnected_user)
     end
 
-    context "expense associated with current user" do
+    context "of an expense associated with current user" do
       let(:expense) do
         Expense.find_between_two_people(current_user, connected_user).last
       end
@@ -333,7 +333,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
     end
 
-    context "expense not associated with current user" do
+    context "of an expense not associated with current user" do
       let(:expense) do
         Expense.find_between_two_people(connected_user, unconnected_user).last
       end

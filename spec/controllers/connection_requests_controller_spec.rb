@@ -31,7 +31,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
       post :create, params: { connection_request: { to: { email: target_email } } }
     end
 
-    context "connection already exists" do
+    context "when a connection already exists" do
       let(:target_email) { other_user.email }
 
       include_examples "redirect"
@@ -45,7 +45,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
       end
     end
 
-    context "email address is for someone with an account" do
+    context "when email address is for someone with an account" do
       let(:target_email) { yet_another_user.email }
 
       include_examples "redirect"
@@ -67,7 +67,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
       end
     end
 
-    context "email address is for someone with doesn't have an account" do
+    context "when email address is for someone with doesn't have an account" do
       let(:target_email) { Faker::Internet.unique.email }
 
       include_examples "redirect"
@@ -93,7 +93,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
   describe "#destroy (deny a connection request)" do
     subject { delete :destroy, params: { id: connection_request.id } }
 
-    context "connection request is to current user" do
+    context "when connection request is to current user" do
       let!(:connection_request) do
         ConnectionRequest.create(from: other_user, to: current_user)
       end
@@ -109,7 +109,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
       end
     end
 
-    context "connection request is to someone else" do
+    context "when connection request is to someone else" do
       let!(:connection_request) do
         ConnectionRequest.create(from: other_user, to: yet_another_user)
       end

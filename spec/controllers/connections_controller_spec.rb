@@ -29,7 +29,7 @@ RSpec.describe ConnectionsController, type: :controller do
       post :create, params: { connection_request_id: connection_request.id }
     end
 
-    context "connection request made to current user" do
+    context "when connection request is to current user" do
       let(:connection_request) do
         ConnectionRequest.create(from: other_user, to: current_user)
       end
@@ -53,7 +53,7 @@ RSpec.describe ConnectionsController, type: :controller do
       end
     end
 
-    context "connection request made to someone else" do
+    context "when connection request is to someone else" do
       let(:connection_request) do
         ConnectionRequest.create(from: other_user, to: yet_another_user)
       end
