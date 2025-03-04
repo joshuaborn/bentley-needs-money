@@ -94,11 +94,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
     subject { delete :destroy, params: { id: connection_request.id } }
 
     context "connection request is to current user" do
-      let(:connection_request) do
-        ConnectionRequest.where(from: other_user, to: current_user).first
-      end
-
-      before(:example) do
+      let!(:connection_request) do
         ConnectionRequest.create(from: other_user, to: current_user)
       end
 
@@ -116,11 +112,7 @@ RSpec.describe ConnectionRequestsController, type: :controller do
     end
 
     context "connection request is to someone else" do
-      let(:connection_request) do
-        ConnectionRequest.where(from: other_user, to: yet_another_user).first
-      end
-
-      before(:example) do
+      let!(:connection_request) do
         ConnectionRequest.create(from: other_user, to: yet_another_user)
       end
 

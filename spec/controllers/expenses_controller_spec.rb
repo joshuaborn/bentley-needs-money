@@ -235,7 +235,6 @@ RSpec.describe ExpensesController, type: :controller do
           connected_user
         ).last
       end
-
       let(:parameters) do
         {
           "id": person_transfer.transfer.id,
@@ -280,7 +279,6 @@ RSpec.describe ExpensesController, type: :controller do
           unconnected_user
         ).last
       end
-
       let(:parameters) do
         {
           "id": person_transfer.transfer.id,
@@ -322,7 +320,6 @@ RSpec.describe ExpensesController, type: :controller do
     subject do
        delete :destroy, params: parameters, as: :json
     end
-
     let(:parameters) do
       {
         "id": expense.id

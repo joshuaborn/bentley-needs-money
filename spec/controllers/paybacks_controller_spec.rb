@@ -141,7 +141,6 @@ RSpec.describe PaybacksController, type: :controller do
           }
         ).tap { |payback| payback.save! }
       end
-
       let(:parameters) do
         {
           id: payback.id,
@@ -181,7 +180,6 @@ RSpec.describe PaybacksController, type: :controller do
           }
         ).tap { |payback| payback.save! }
       end
-
       let(:parameters) do
         {
           id: payback.id,
@@ -216,7 +214,6 @@ RSpec.describe PaybacksController, type: :controller do
           }
         ).tap { |payback| payback.save! }
       end
-
       let(:parameters) do
         {
           id: payback.id,
@@ -242,7 +239,6 @@ RSpec.describe PaybacksController, type: :controller do
     subject do
       delete :destroy, params: parameters, as: :json
     end
-
     let(:parameters) do
       {
         "id": Payback.last.id
