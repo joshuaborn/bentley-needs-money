@@ -11,7 +11,7 @@ RSpec.describe TransfersController, type: :controller do
   let(:connected_user) { FactoryBot.create(:person) }
   let(:unconnected_user) { FactoryBot.create(:person) }
 
-  before(:example) do
+  before do
     @request.env["devise.mapping"] = Devise.mappings[:person]
     sign_in current_user
   end
@@ -31,7 +31,7 @@ RSpec.describe TransfersController, type: :controller do
       end
 
       context "but there is a connection request" do
-        before(:example) do
+        before do
           ConnectionRequest.create(from: connected_user, to: current_user)
         end
 
@@ -46,7 +46,7 @@ RSpec.describe TransfersController, type: :controller do
     end
 
     context "there are transfers" do
-      before(:example) do
+      before do
         build_expenses_for_tests(current_user, connected_user, unconnected_user)
       end
 
@@ -55,7 +55,7 @@ RSpec.describe TransfersController, type: :controller do
       end
 
       context "and there is a connection request" do
-        before(:example) do
+        before do
           ConnectionRequest.create(from: connected_user, to: current_user)
         end
 

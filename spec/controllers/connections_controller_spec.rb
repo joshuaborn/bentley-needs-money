@@ -5,7 +5,7 @@ RSpec.describe ConnectionsController, type: :controller do
   let(:other_user) { FactoryBot.create(:person) }
   let(:yet_another_user) { FactoryBot.create(:person) }
 
-  before(:example) do
+  before do
     @request.env["devise.mapping"] = Devise.mappings[:person]
     sign_in current_user
   end

@@ -11,7 +11,7 @@ RSpec.describe PaybacksController, type: :controller do
   let(:connected_user) { FactoryBot.create(:person) }
   let(:unconnected_user) { FactoryBot.create(:person) }
 
-  before(:example) do
+  before do
     @request.env["devise.mapping"] = Devise.mappings[:person]
     Connection.create(from: current_user, to: connected_user)
     Connection.create(from: connected_user, to: current_user)
@@ -126,7 +126,7 @@ RSpec.describe PaybacksController, type: :controller do
   end
 
   describe "#update" do
-    before(:example) do
+    before do
       patch :update, params: parameters, as: :json
     end
 

@@ -5,7 +5,7 @@ RSpec.describe WelcomeController, type: :controller do
     subject { get :index }
 
     context "user signed in" do
-      before(:example) do
+      before do
         @request.env["devise.mapping"] = Devise.mappings[:person]
         sign_in FactoryBot.create(:person)
       end

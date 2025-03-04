@@ -11,7 +11,7 @@ RSpec.describe ExpensesController, type: :controller do
   let(:connected_user) { FactoryBot.create(:person) }
   let(:unconnected_user) { FactoryBot.create(:person) }
 
-  before(:example) do
+  before do
     @request.env["devise.mapping"] = Devise.mappings[:person]
     Connection.create(from: current_user, to: connected_user)
     Connection.create(from: connected_user, to: current_user)
@@ -159,7 +159,7 @@ RSpec.describe ExpensesController, type: :controller do
   end
 
   describe "#update" do
-    before(:example) do
+    before do
       build_expenses_for_tests(current_user, connected_user, unconnected_user)
       patch :update, params: parameters, as: :json
     end
@@ -326,7 +326,7 @@ RSpec.describe ExpensesController, type: :controller do
       }
     end
 
-    before(:example) do
+    before do
       build_expenses_for_tests(current_user, connected_user, unconnected_user)
     end
 
