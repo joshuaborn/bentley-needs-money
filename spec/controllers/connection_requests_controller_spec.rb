@@ -12,6 +12,12 @@ RSpec.describe ConnectionRequestsController, type: :controller do
     Connection.create(from: other_user, to: current_user)
   end
 
+  shared_examples "redirect" do
+    it "redirects to connections index" do
+      expect(subject).to redirect_to controller: :connections, action: :index
+    end
+  end
+
   describe "#new" do
     subject { get :new }
 
@@ -28,6 +34,8 @@ RSpec.describe ConnectionRequestsController, type: :controller do
     context "connection already exists" do
       let(:target_email) { other_user.email }
 
+      include_examples "redirect"
+
       it "sets the flash" do
         expect(subject.request.flash[:warning]).to match("You are already connected to")
       end
@@ -35,14 +43,12 @@ RSpec.describe ConnectionRequestsController, type: :controller do
       it "doesn't create a connection request" do
         expect { subject }.not_to change(ConnectionRequest, :count)
       end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
-      end
     end
 
     context "email address is for someone with an account" do
       let(:target_email) { yet_another_user.email }
+
+      include_examples "redirect"
 
       it "sets the flash" do
         expect(subject.request.flash[:info]).to match(/Connection with.*requested/)
@@ -52,21 +58,19 @@ RSpec.describe ConnectionRequestsController, type: :controller do
         expect { subject }.to change(ConnectionRequest, :count).by(1)
       end
 
-      it "sends an email" do
+      it "sends a connection request email" do
         mail_delivery = double('connection_request_email')
         expect(mail_delivery).to receive(:deliver_now)
         expect(ConnectionMailer).to receive(:connection_request_email).
           with(current_user, yet_another_user).and_return(mail_delivery)
         subject
       end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
-      end
     end
 
     context "email address is for someone with doesn't have an account" do
       let(:target_email) { Faker::Internet.unique.email }
+
+      include_examples "redirect"
 
       it "sets the flash" do
         expect(subject.request.flash[:info]).to match("There is no account associated with")
@@ -76,16 +80,12 @@ RSpec.describe ConnectionRequestsController, type: :controller do
         expect { subject }.to change(SignupRequest, :count).by(1)
       end
 
-      it "sends an email" do
+      it "sends a signup request email" do
         mail_delivery = double('signup_request_email')
         expect(mail_delivery).to receive(:deliver_now)
         expect(ConnectionMailer).to receive(:signup_request_email).
           with(current_user, target_email).and_return(mail_delivery)
         subject
-      end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
       end
     end
   end
@@ -98,16 +98,14 @@ RSpec.describe ConnectionRequestsController, type: :controller do
         ConnectionRequest.create(from: other_user, to: current_user)
       end
 
+      include_examples "redirect"
+
       it "sets the flash" do
         expect(subject.request.flash[:info]).to eq("Connection request from #{connection_request.from.name} denied.")
       end
 
       it "deletes a connection request" do
         expect { subject }.to change(ConnectionRequest, :count).by(-1)
-      end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
       end
     end
 
@@ -116,12 +114,10 @@ RSpec.describe ConnectionRequestsController, type: :controller do
         ConnectionRequest.create(from: other_user, to: yet_another_user)
       end
 
+      include_examples "redirect"
+
       it "doesn't delete a connection request" do
         expect { subject }.not_to change(ConnectionRequest, :count)
-      end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
       end
     end
   end

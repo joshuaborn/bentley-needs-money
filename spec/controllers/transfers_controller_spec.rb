@@ -19,14 +19,18 @@ RSpec.describe TransfersController, type: :controller do
   describe "#index" do
     subject { get :index }
 
+    shared_examples "redirects" do
+      it "redirects to connections index" do
+        expect(subject).to redirect_to controller: :connections, action: :index
+      end
+    end
+
     context "there are no transfers and no connections" do
       context "and no connection requests" do
+        include_examples "redirects"
+
         it "sets the flash" do
           expect(subject.request.flash[:info]).to eq("In order to begin, you need a connection with another person. Request a connection so that you can start splitting expenses.")
-        end
-
-        it "redirects to connections index" do
-          expect(subject).to redirect_to controller: :connections, action: :index
         end
       end
 
@@ -35,12 +39,10 @@ RSpec.describe TransfersController, type: :controller do
           ConnectionRequest.create(from: connected_user, to: current_user)
         end
 
+        include_examples "redirects"
+
         it "sets the flash" do
           expect(subject.request.flash[:info]).to eq("In order to begin, you need a connection with another person. You already have someone who has requested to connect with you, so you can accept the request to start splitting expenses.")
-        end
-
-        it "redirects to connections index" do
-          expect(subject).to redirect_to controller: :connections, action: :index
         end
       end
     end
@@ -50,14 +52,22 @@ RSpec.describe TransfersController, type: :controller do
         build_expenses_for_tests(current_user, connected_user, unconnected_user)
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
+      shared_examples "status ok" do
+        it "returns a 200" do
+          expect(subject).to have_http_status(:ok)
+        end
+      end
+
+      context "and no connection requests" do
+        include_examples "status ok"
       end
 
       context "and there is a connection request" do
         before do
           ConnectionRequest.create(from: connected_user, to: current_user)
         end
+
+        include_examples "status ok"
 
         it "sets the flash" do
           expect(subject.request.flash[:info]).to match("You have one or more connection requests.")

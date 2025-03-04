@@ -24,6 +24,24 @@ RSpec.describe PaybacksController, type: :controller do
       post :create, params: parameters, as: :json
     end
 
+    shared_examples "status ok" do
+      it "returns a 200" do
+        expect(subject).to have_http_status(:ok)
+      end
+    end
+
+    shared_examples "create payback" do
+      it "creates a payback" do
+        expect { subject }.to change(Payback, :count).by(1)
+      end
+    end
+
+    shared_examples "don't create payback" do
+      it "doesn't create a payback" do
+        expect { subject }.not_to change(Payback, :count)
+      end
+    end
+
     context "current user is paying other user back" do
       let(:parameters) do
         {
@@ -35,13 +53,8 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
-
-      it "creates a payback" do
-        expect { subject }.to change(Payback, :count).by(1)
-      end
+      include_examples "status ok"
+      include_examples "create payback"
 
       it "responds with list of current user's person_transfers" do
         expect(subject.parsed_body["person.transfers"]).to eq(
@@ -63,13 +76,8 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
-
-      it "creates a payback" do
-        expect { subject }.to change(Payback, :count).by(1)
-      end
+      include_examples "status ok"
+      include_examples "create payback"
 
       it "responds with list of current user's person_transfers" do
         expect(subject.parsed_body["person.transfers"]).to eq(
@@ -91,13 +99,8 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
-
-      it "doesn't create a payback" do
-        expect { subject }.not_to change(Payback, :count)
-      end
+      include_examples "status ok"
+      include_examples "don't create payback"
 
       it "responds with error message" do
         expect(subject.parsed_body["payback.errors"]).to eq({ "payback.date"=>[ "can't be blank" ] })
@@ -115,12 +118,10 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
+      include_examples "don't create payback"
+
       it "returns a 404" do
         expect(subject).to have_http_status(:missing)
-      end
-
-      it "doesn't create a payback" do
-        expect { subject }.not_to change(Payback, :count)
       end
     end
   end
@@ -128,6 +129,19 @@ RSpec.describe PaybacksController, type: :controller do
   describe "#update" do
     before do
       patch :update, params: parameters, as: :json
+    end
+
+    shared_examples "ok status" do
+      it "returns a 200" do
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    shared_examples "doesn't update" do
+      it "doesn't update attributes" do
+        expect(payback.reload.date.to_s).to eq("2024-10-24")
+        expect(payback.reload.dollar_amount_paid).to eq(-447.61)
+      end
     end
 
     context "payback associated with current user and no validation errors" do
@@ -151,9 +165,7 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
-      it "returns a 200" do
-        expect(response).to have_http_status(:ok)
-      end
+      include_examples "ok status"
 
       it "responds with list of current user's person_transfers" do
         expect(response.parsed_body["person.transfers"]).to eq(
@@ -189,14 +201,8 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
-      it "returns a 200" do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "doesn't update attributes" do
-        expect(payback.reload.date.to_s).to eq("2024-10-24")
-        expect(payback.reload.dollar_amount_paid).to eq(-447.61)
-      end
+      include_examples "ok status"
+      include_examples "doesn't update"
 
       it "responds with error message" do
         expect(response.parsed_body["payback.errors"]).to eq({ "payback.date"=>[ "can't be blank" ] })
@@ -224,13 +230,10 @@ RSpec.describe PaybacksController, type: :controller do
         }
       end
 
+      include_examples "doesn't update"
+
       it "returns a 404" do
         expect(response).to have_http_status(:missing)
-      end
-
-      it "doesn't update attributes" do
-        expect(payback.reload.date.to_s).to eq("2024-10-24")
-        expect(payback.reload.dollar_amount_paid).to eq(-447.61)
       end
     end
   end

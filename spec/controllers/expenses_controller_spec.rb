@@ -18,9 +18,35 @@ RSpec.describe ExpensesController, type: :controller do
     sign_in current_user
   end
 
+  shared_examples "ok status" do
+    it "returns a 200" do
+      expect(subject).to have_http_status(:ok)
+    end
+  end
+
   describe "#create" do
     subject do
       post :create, params: parameters, as: :json
+    end
+
+    shared_examples "create expense" do
+      it "creates an expense" do
+        expect { subject }.to change(Expense, :count).by(1)
+      end
+
+      it "responds with list of current user's person_transfers" do
+        expect(subject.parsed_body["person.transfers"]).to eq(
+          current_user.person_transfers.
+            includes(:transfer, :person_transfers, :people).
+            order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
+        )
+      end
+    end
+
+    shared_examples "doesn't create expense" do
+      it "doesn't create an expense" do
+        expect { subject }.not_to change(Expense, :count)
+      end
     end
 
     context "current user paid and is splitting with other connected person" do
@@ -37,21 +63,8 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
-
-      it "creates an expense" do
-        expect { subject }.to change(Expense, :count).by(1)
-      end
-
-      it "responds with list of current user's person_transfers" do
-        expect(subject.parsed_body["person.transfers"]).to eq(
-          current_user.person_transfers.
-            includes(:transfer, :person_transfers, :people).
-            order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
-        )
-      end
+      include_examples "ok status"
+      include_examples "create expense"
     end
 
     context "other connected person paid and is splitting with current user" do
@@ -68,21 +81,8 @@ RSpec.describe ExpensesController, type: :controller do
          }
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
-
-      it "creates an expense" do
-        expect { subject }.to change(Expense, :count).by(1)
-      end
-
-      it "responds with list of current user's person_transfers" do
-        expect(subject.parsed_body["person.transfers"]).to eq(
-          current_user.person_transfers.
-            includes(:transfer, :person_transfers, :people).
-            order(transfers: { date: :desc, created_at: :desc }).map { |pt| person_transfer_mapping(pt) }
-        )
-      end
+      include_examples "ok status"
+      include_examples "create expense"
     end
 
     context "validation error" do
@@ -98,13 +98,8 @@ RSpec.describe ExpensesController, type: :controller do
          }
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
-
-      it "doesn't create an expense" do
-        expect { subject }.not_to change(Expense, :count)
-      end
+      include_examples "ok status"
+      include_examples "doesn't create expense"
 
       it "responds with error message" do
         expect(subject.parsed_body["expense.errors"]).to eq({ "expense.payee"=>[ "can't be blank" ] })
@@ -125,12 +120,10 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
+      include_examples "doesn't create expense"
+
       it "returns a 501" do
         expect(subject).to have_http_status(:error)
-      end
-
-      it "doesn't create an expense" do
-        expect { subject }.not_to change(Expense, :count)
       end
     end
 
@@ -148,12 +141,10 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
+      include_examples "doesn't create expense"
+
       it "returns a 404" do
         expect(subject).to have_http_status(:missing)
-      end
-
-      it "doesn't create an expense" do
-        expect { subject }.not_to change(Expense, :count)
       end
     end
   end
@@ -335,9 +326,7 @@ RSpec.describe ExpensesController, type: :controller do
         Expense.find_between_two_people(current_user, connected_user).last
       end
 
-      it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
-      end
+      include_examples "ok status"
 
       it "deletes an expense" do
         expect { subject }.to change(Expense, :count).by(-1)

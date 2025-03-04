@@ -10,6 +10,12 @@ RSpec.describe ConnectionsController, type: :controller do
     sign_in current_user
   end
 
+  shared_examples "redirect" do
+    it "redirects to connections index" do
+      expect(subject).to redirect_to controller: :connections, action: :index
+    end
+  end
+
   describe "#index" do
     subject { get :index }
 
@@ -28,6 +34,8 @@ RSpec.describe ConnectionsController, type: :controller do
         ConnectionRequest.create(from: other_user, to: current_user)
       end
 
+      include_examples "redirect"
+
       it "creates connections" do
         expect { subject }.to change(Connection, :count).by(2)
       end
@@ -43,10 +51,6 @@ RSpec.describe ConnectionsController, type: :controller do
           with(other_user, current_user).and_return(mail_delivery)
         subject
       end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
-      end
     end
 
     context "connection request made to someone else" do
@@ -54,12 +58,10 @@ RSpec.describe ConnectionsController, type: :controller do
         ConnectionRequest.create(from: other_user, to: yet_another_user)
       end
 
+      include_examples "redirect"
+
       it "doesn't create connections" do
         expect { subject }.not_to change(Connection, :count)
-      end
-
-      it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :connections, action: :index
       end
     end
   end
