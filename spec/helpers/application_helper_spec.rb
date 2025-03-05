@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ApplicationHelper, type: :view do
+RSpec.describe ApplicationHelper, type: :helper do
   describe ".bulma_notification_name" do
     it "translates Rails' flash names to Bulma's notification names" do
       expect(bulma_notification_name('notice')).to eq('info')
