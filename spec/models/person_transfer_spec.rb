@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'helpers/build_expenses_for_tests.rb'
+require 'support/build_expenses_for_tests.rb'
 
 RSpec.configure do |c|
   c.include Helpers

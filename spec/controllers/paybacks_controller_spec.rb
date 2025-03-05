@@ -1,6 +1,6 @@
 require 'rails_helper'
-require 'helpers/person_transfer_mapping.rb'
-require 'helpers/build_expenses_for_tests.rb'
+require 'support/person_transfer_mapping.rb'
+require 'support/build_expenses_for_tests.rb'
 
 RSpec.configure do |c|
   c.include Helpers
