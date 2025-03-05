@@ -1,9 +1,4 @@
 require 'rails_helper'
-require 'helpers/build_expenses_for_tests.rb'
-
-RSpec.configure do |c|
-  c.include Helpers
-end
 
 RSpec.describe Transfer, type: :model do
   describe "#dollar_amount_paid" do
@@ -28,7 +23,14 @@ RSpec.describe Transfer, type: :model do
     let(:yet_another_user) { FactoryBot.create(:person) }
 
     it "returns just the transfers between two people" do
-      build_expenses_for_tests(current_user, other_user, yet_another_user)
+      3.times do
+        create_transfer_between_people(current_user, other_user)
+        create_transfer_between_people(other_user, current_user)
+        create_transfer_between_people(other_user, yet_another_user)
+        create_transfer_between_people(yet_another_user, other_user)
+        create_transfer_between_people(yet_another_user, current_user)
+        create_transfer_between_people(current_user, yet_another_user)
+      end
       expect(
         Transfer.find_between_two_people(current_user, other_user)
       ).to contain_exactly(*(current_user.transfers & other_user.transfers))
