@@ -1,6 +1,5 @@
 require 'rails_helper'
 require 'support/person_transfer_mapping.rb'
-require 'support/build_expenses_for_tests.rb'
 
 RSpec.configure do |c|
   c.include Helpers
@@ -15,7 +14,6 @@ RSpec.describe PaybacksController, type: :controller do
     @request.env["devise.mapping"] = Devise.mappings[:person]
     Connection.create(from: current_user, to: connected_user)
     Connection.create(from: connected_user, to: current_user)
-    build_expenses_for_tests(current_user, connected_user, unconnected_user)
     sign_in current_user
   end
 

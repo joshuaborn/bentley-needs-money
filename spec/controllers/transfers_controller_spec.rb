@@ -1,6 +1,5 @@
 require 'rails_helper'
 require 'support/person_transfer_mapping.rb'
-require 'support/build_expenses_for_tests.rb'
 
 RSpec.configure do |c|
   c.include Helpers
@@ -8,8 +7,7 @@ end
 
 RSpec.describe TransfersController, type: :controller do
   let(:current_user) { FactoryBot.create(:person) }
-  let(:connected_user) { FactoryBot.create(:person) }
-  let(:unconnected_user) { FactoryBot.create(:person) }
+  let(:other_user) { FactoryBot.create(:person) }
 
   before do
     @request.env["devise.mapping"] = Devise.mappings[:person]
@@ -36,7 +34,7 @@ RSpec.describe TransfersController, type: :controller do
 
       context "but there is a connection request" do
         before do
-          ConnectionRequest.create(from: connected_user, to: current_user)
+          ConnectionRequest.create(from: other_user, to: current_user)
         end
 
         include_examples "redirects"
@@ -49,7 +47,7 @@ RSpec.describe TransfersController, type: :controller do
 
     context "when there are transfers" do
       before do
-        build_expenses_for_tests(current_user, connected_user, unconnected_user)
+        create_transfer_between_people(current_user, other_user)
       end
 
       shared_examples "status ok" do
@@ -64,7 +62,7 @@ RSpec.describe TransfersController, type: :controller do
 
       context "and there is a connection request" do
         before do
-          ConnectionRequest.create(from: connected_user, to: current_user)
+          ConnectionRequest.create(from: other_user, to: current_user)
         end
 
         include_examples "status ok"

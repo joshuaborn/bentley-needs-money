@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'support/build_expenses_for_tests.rb'
 
 RSpec.configure do |c|
   c.include Helpers
@@ -53,7 +52,13 @@ RSpec.describe PersonTransfer, type: :model do
     let(:other_user) { FactoryBot.create(:person) }
     let(:yet_another_user) { FactoryBot.create(:person) }
 
-    before { build_expenses_for_tests(current_user, other_user, yet_another_user) }
+    before do
+      3.times do
+        create_transfer_between_people(current_user, other_user)
+        create_transfer_between_people(other_user, yet_another_user)
+        create_transfer_between_people(yet_another_user, current_user)
+      end
+    end
 
     describe ".find_for_person_with_other_person" do
       it "returns just the person transfers between two people" do

@@ -1,6 +1,5 @@
 require 'rails_helper'
 require 'support/person_transfer_mapping.rb'
-require 'support/build_expenses_for_tests.rb'
 
 RSpec.configure do |c|
   c.include Helpers
@@ -150,25 +149,20 @@ RSpec.describe ExpensesController, type: :controller do
   end
 
   describe "#update" do
-    before do
-      build_expenses_for_tests(current_user, connected_user, unconnected_user)
-      patch :update, params: parameters, as: :json
-    end
-
     context "when expense is associated with current user and no validation errors" do
+      let!(:expense) { create_expense_between_people(current_user, connected_user) }
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
           connected_user
         ).last
       end
-
       let(:parameters) do
         {
-          "id": person_transfer.transfer.id,
+          "id": expense.id,
           "expense": {
-            "date": "2025-01-24",
-            "dollar_amount_paid": 9,
+            "date": Date.new(2025, 1, 24),
+            "dollar_amount_paid": 9.0,
             "memo": "Memo 9",
             "payee": "Payee 9"
           },
@@ -187,28 +181,26 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
+      before { patch :update, params: parameters, as: :json }
+
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
       end
 
       it "updates the transfer" do
-        transfer = person_transfer.reload.transfer
-        expect(transfer.date.to_s).to eq(parameters[:expense][:date])
-        expect(transfer.dollar_amount_paid).to eq(parameters[:expense][:dollar_amount_paid])
-        expect(transfer.memo).to eq(parameters[:expense][:memo])
-        expect(transfer.payee).to eq(parameters[:expense][:payee])
+        expect(expense.reload).to have_attributes(parameters[:expense])
       end
 
       it "updates the person_transfer for the current user" do
-        person_transfer.reload
-        expect(person_transfer.dollar_amount).to eq(parameters[:my_person_transfer][:dollar_amount])
-        expect(person_transfer.in_ynab).to eq(parameters[:my_person_transfer][:in_ynab])
+        expect(person_transfer.reload).to have_attributes(parameters[:my_person_transfer])
       end
 
-      it "updates the person_transfer for the other user" do
-        other_person_transfer = person_transfer.reload.other_person_transfer
-        expect(other_person_transfer.dollar_amount).to eq(parameters[:other_person_transfers][0][:dollar_amount])
-        expect(other_person_transfer.in_ynab).to eq(parameters[:other_person_transfers][0][:in_ynab])
+      it "updates the dollar amount for the person_transfer for the other user" do
+        expect(person_transfer.reload.other_person_transfer.dollar_amount).to eq(parameters[:other_person_transfers][0][:dollar_amount])
+      end
+
+      it "doesn't update the in_ynab attribute for the person_transfer for the other user" do
+        expect(person_transfer.reload.other_person_transfer.in_ynab).to be_falsey
       end
 
       it "responds with list of current user's person_transfers" do
@@ -220,6 +212,7 @@ RSpec.describe ExpensesController, type: :controller do
     end
 
     context "with validation errors" do
+      let!(:expense) { create_expense_between_people(current_user, connected_user) }
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -228,7 +221,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
       let(:parameters) do
         {
-          "id": person_transfer.transfer.id,
+          "id": expense.id,
           "expense": {
             "date": "2025-01-24",
             "dollar_amount_paid": 0,
@@ -250,6 +243,8 @@ RSpec.describe ExpensesController, type: :controller do
         }
       end
 
+      before { patch :update, params: parameters, as: :json }
+
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
       end
@@ -264,6 +259,8 @@ RSpec.describe ExpensesController, type: :controller do
     end
 
     context "when expense is associated with an unconnected user" do
+      subject { patch :update, params: parameters, as: :json }
+      let!(:expense) { create_expense_between_people(current_user, unconnected_user) }
       let(:person_transfer) do
         PersonTransfer.find_for_person_with_other_person(
           current_user,
@@ -272,7 +269,7 @@ RSpec.describe ExpensesController, type: :controller do
       end
       let(:parameters) do
         {
-          "id": person_transfer.transfer.id,
+          "id": expense.id,
           "expense": {
             "date": "2025-01-24",
             "dollar_amount_paid": 9,
@@ -295,14 +292,22 @@ RSpec.describe ExpensesController, type: :controller do
       end
 
       it "returns a 404" do
-        expect(response).to have_http_status(:missing)
+        expect(subject).to have_http_status(:missing)
+      end
+
+      it "does not change the expense's attributes" do
+        expect { subject }.not_to change { expense.reload.attributes }
+      end
+
+      it "does not change the associated person_transfer's attributes" do
+        expect { subject }.not_to change { person_transfer.reload.attributes }
       end
 
       it "does not update the person_expense and associated expense" do
         person_transfer_attributes_before = person_transfer.attributes
-        transfer_attributes_before = person_transfer.transfer.attributes
-        expect(person_transfer.reload.attributes).to eq(person_transfer_attributes_before)
-        expect(person_transfer.reload.transfer.attributes).to eq(transfer_attributes_before)
+        transfer_attributes_before = expense.attributes
+        expect(person_transfer.reload).to have_attributes(person_transfer_attributes_before)
+        expect(person_transfer.reload.transfer).to have_attributes(transfer_attributes_before)
       end
     end
   end
@@ -317,13 +322,9 @@ RSpec.describe ExpensesController, type: :controller do
       }
     end
 
-    before do
-      build_expenses_for_tests(current_user, connected_user, unconnected_user)
-    end
-
     context "of an expense associated with current user" do
-      let(:expense) do
-        Expense.find_between_two_people(current_user, connected_user).last
+      let!(:expense) do
+        create_expense_between_people(current_user, connected_user)
       end
 
       include_examples "ok status"
@@ -334,8 +335,8 @@ RSpec.describe ExpensesController, type: :controller do
     end
 
     context "of an expense not associated with current user" do
-      let(:expense) do
-        Expense.find_between_two_people(connected_user, unconnected_user).last
+      let!(:expense) do
+        create_expense_between_people(connected_user, unconnected_user)
       end
 
       it "returns a 404" do
