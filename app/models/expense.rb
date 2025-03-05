@@ -19,6 +19,7 @@ class Expense < Transfer
       end
       expense
     end
+
     def find_between_two_people(first_person, second_person)
       Expense.joins("JOIN person_transfers AS pe1 ON transfers.id = pe1.transfer_id").
         joins("JOIN person_transfers AS pe2 ON transfers.id = pe2.transfer_id").
