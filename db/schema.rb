@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_11_144042) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_13_194024) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,16 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_11_144042) do
   create_table "connections", force: :cascade do |t|
     t.integer "from_id"
     t.integer "to_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "debts", force: :cascade do |t|
+    t.integer "ower_id"
+    t.integer "owed_id"
+    t.integer "reason_id"
+    t.integer "amount"
+    t.integer "cumulative_sum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -54,6 +64,16 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_11_144042) do
     t.datetime "updated_at", null: false
     t.integer "cumulative_sum"
     t.boolean "in_ynab"
+  end
+
+  create_table "reasons", force: :cascade do |t|
+    t.string "type"
+    t.date "date"
+    t.string "payee"
+    t.string "memo"
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "signup_requests", force: :cascade do |t|

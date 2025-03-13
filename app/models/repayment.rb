@@ -1,0 +1,2 @@
+class Repayment < Reason
+end
