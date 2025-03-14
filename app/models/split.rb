@@ -1,5 +1,5 @@
 class Split < Reason
-  validates_presence_of :payee, :amount
+  validates :payee, :amount, :debts, presence: true
 
   def self.between_two_people(payer, ower, attrs = {})
     Split.new(attrs).tap do |split|
