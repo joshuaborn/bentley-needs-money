@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_13_194024) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_14_205747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,6 +36,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_13_194024) do
     t.integer "cumulative_sum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "ower_reconciled"
+    t.boolean "owed_reconciled"
   end
 
   create_table "people", force: :cascade do |t|

@@ -12,12 +12,17 @@ RSpec.describe Split, type: :model do
         Split.between_two_people(payer, ower, attrs)
       end
 
+      it "marks the debt as reconciled for the payer, but not the ower, by default" do
+        expect(split.debts[0].ower).to eq(ower)
+        expect(split.debts[0].owed).to eq(payer)
+        expect(split.debts[0].ower_reconciled).to be false
+        expect(split.debts[0].owed_reconciled).to be true
+      end
+
       it "gives the ower half the split's amount as debt" do
         expect(split.amount).to eq(100)
         expect(split.debts.length).to eq(1)
         expect(split.debts[0].amount).to eq(50)
-        expect(split.debts[0].ower).to eq(ower)
-        expect(split.debts[0].owed).to eq(payer)
       end
     end
 
