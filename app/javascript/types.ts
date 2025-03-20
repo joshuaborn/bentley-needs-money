@@ -1,13 +1,13 @@
 export type ModeState =
     | { mode: 'idle' }
-    | { mode: 'new expense' }
-    | { mode: 'create expense' }
-    | { mode: 'edit expense', expenseId: number }
-    | { mode: 'update expense', expenseId: number }
-    | { mode: 'new payback' }
-    | { mode: 'create payback' }
-    | { mode: 'edit payback', paybackId: number }
-    | { mode: 'update payback', paybackId: number }
+    | { mode: 'new split' }
+    | { mode: 'create split' }
+    | { mode: 'edit split', splitId: number }
+    | { mode: 'update split', splitId: number }
+    | { mode: 'new repayment' }
+    | { mode: 'create repayment' }
+    | { mode: 'edit repayment', repaymentId: number }
+    | { mode: 'update repayment', repaymentId: number }
 ;
 
 export interface FlashState {
@@ -15,46 +15,30 @@ export interface FlashState {
     messages: string[][],
 }
 
+export type PersonRole = 'Ower' | 'Owed';
+
 export interface Person {
     id: number,
     name: string,
+    role: PersonRole,
 }
 
-export interface PersonAmount extends Person {
+export type ReasonType = 'Split' | 'Repayment';
+
+export interface Reason {
+    date: string,
     dollarAmount: number,
-}
-
-export interface PersonOwed extends PersonAmount {
-    cumulativeSum: number,
-    date: string,
-}
-
-export interface PersonTransfer extends PersonOwed {
-    personId: number,
-    inYnab?: boolean,
-}
-
-export interface Transfer {
-    date: string,
-    dollarAmountPaid: number,
+    id: number,
     memo: string,
-    myPersonTransfer: PersonTransfer,
     payee: string,
-    otherPersonTransfers: PersonTransfer[],
-    transferId: number,
-    type: "Expense" | "Payback",
+    type: ReasonType,
 }
 
-export type ExpenseValidatableField = "expense.date" | "expense.dollar_amount_paid" | "expense.payee";
-
-export interface ExpenseResponse {
-    "person.transfers"?: Transfer[],
-    "expense.errors"?: object,
-}
-
-export type PaybackValidatableField = "payback.date" | "payback.dollar_amount_paid";
-
-export interface PaybackResponse {
-    "person.transfers"?: Transfer[],
-    "payback.errors"?: object,
+export interface Debt {
+    dollarAmount: number,
+    dollarCumulativeSum: number,
+    id: number,
+    person: Person,
+    reason: Reason,
+    reconciled: boolean
 }

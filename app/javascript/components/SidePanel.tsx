@@ -1,21 +1,22 @@
 import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 
-import type { ModeState, FlashState, Person, Transfer, PersonTransfer } from '../types';
-import EditExpenseCard from './EditExpenseCard';
-import EditPaybackCard from './EditPaybackCard';
+import type { ModeState, FlashState, Person, Debt } from '../types';
+
+import EditRepaymentCard from './EditRepaymentCard';
+import EditSplitCard from './EditSplitCard';
 import FlashNotification from './FlashNotification';
-import NewExpenseCard from './NewExpenseCard';
-import NewPaybackCard from './NewPaybackCard';
+import NewRepaymentCard from './NewRepaymentCard';
+import NewSplitCard from './NewSplitCard';
 
 interface SidePanelProps {
     connectedPeople: Person[],
+    debts: Debt[],
     flashState: FlashState,
     modeState: ModeState,
-    peopleOwed: PersonTransfer[],
+    peopleOwed: Debt[],
+    setDebtsState: Dispatch<SetStateAction<Debt[]>>,
     setFlashState: Dispatch<SetStateAction<FlashState>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
-    setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
-    transfers: Transfer[],
 }
 
 export default function SidePanel(props:SidePanelProps) {
@@ -34,61 +35,60 @@ export default function SidePanel(props:SidePanelProps) {
     });
     const modeState = props.modeState;
     let contents = null;
-    let expense = null;
-    let payback = null;
+    let debt = null;
     switch (modeState.mode) {
-        case 'new expense':
-        case 'create expense':
-            contents = <NewExpenseCard 
-                            handleCloseCard={handleCloseCard}
+        case 'new split':
+        case 'create split':
+            contents = <NewSplitCard 
                             flashState={props.flashState}
+                            handleCloseCard={handleCloseCard}
                             modeState={props.modeState}
                             peopleOptions={peopleOptions}
+                            setDebtsState={props.setDebtsState}
                             setFlashState={props.setFlashState}
                             setModeState={props.setModeState}
-                            setTransfersState={props.setTransfersState}
                        />;
             break;
-        case 'new payback':
-        case 'create payback':
-            contents = <NewPaybackCard
+        case 'new repayment':
+        case 'create repayment':
+            contents = <NewRepaymentCard
                 flashState={props.flashState}
                 handleCloseCard={handleCloseCard}
                 modeState={props.modeState}
                 peopleOwed={props.peopleOwed}
+                setDebtsState={props.setDebtsState}
                 setFlashState={props.setFlashState}
                 setModeState={props.setModeState}
-                setTransfersState={props.setTransfersState}
             />;
             break;
-        case 'edit expense':
-        case 'update expense':
-            expense = props.transfers.find((obj) => obj.transferId === modeState.expenseId);
-            if (expense) {
-                contents = <EditExpenseCard
-                    expense={expense}
+        case 'edit split':
+        case 'update split':
+            debt = props.debts.find((obj) => obj.reason.id === modeState.splitId);
+            if (debt) {
+                contents = <EditSplitCard
+                    debt={debt}
                     flashState={props.flashState}
                     handleCloseCard={handleCloseCard}
-                    key={expense.transferId}
+                    key={debt.reason.id}
                     modeState={props.modeState}
+                    setDebtsState={props.setDebtsState}
                     setFlashState={props.setFlashState}
                     setModeState={props.setModeState}
-                    setTransfersState={props.setTransfersState}
                 />;
             }
             break;
-        case 'edit payback':
-        case 'update payback':
-            payback = props.transfers.find((obj) => obj.transferId === modeState.paybackId);
-            if (payback) contents = <EditPaybackCard
+        case 'edit repayment':
+        case 'update repayment':
+            debt = props.debts.find((obj) => obj.reason.id === modeState.repaymentId);
+            if (debt) contents = <EditRepaymentCard
+                debt={debt}
                 flashState={props.flashState}
                 handleCloseCard={handleCloseCard}
-                key={payback.transferId}
+                key={debt.reason.id}
                 modeState={props.modeState}
-                payback={payback}
+                setDebtsState={props.setDebtsState}
                 setFlashState={props.setFlashState}
                 setModeState={props.setModeState}
-                setTransfersState={props.setTransfersState}
             />;
             break;
     }

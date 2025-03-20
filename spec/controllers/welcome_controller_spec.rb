@@ -11,7 +11,7 @@ RSpec.describe WelcomeController, type: :controller do
       end
 
       it "redirects to connections index" do
-        expect(subject).to redirect_to controller: :transfers, action: :index
+        expect(subject).to redirect_to controller: :debts, action: :index
       end
     end
 

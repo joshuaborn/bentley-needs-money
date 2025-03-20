@@ -2,7 +2,7 @@
   --main-border: 1px solid var(--bulma-border);
 }
 
-html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex {
+html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
   height: 100%;
   overflow: hidden;
 }
@@ -91,25 +91,25 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
   margin-top: 1rem;
 }
 
-.transfers .transfers-headings, .person-transfer.grid {
+.debts .debts-headings, .debt.grid {
   margin-bottom: 0;
 }
 
-.transfers {
+.debts {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.transfers .transfers-headings {
+.debts .debts-headings {
   flex: 0 0 auto;
 }
 
-.transfers .transfers-content {
+.debts .debts-content {
   flex: 1 1 auto;
 }
 
-.transfers .person-transfer.person-payback {
+.debts .debt.repayment {
   background-color: var(--bulma-border);
 }
 
@@ -212,7 +212,7 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
     min-height: 0;
   }
 
-  .transfers .date, .connection-title {
+  .debts .date, .connection-title {
     background-color: var(--bulma-body-background-color);
     border-top: var(--main-border);
     color: var(--bulma-text-bold);
@@ -220,7 +220,7 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
     padding: 0.25rem 1rem;
   }
 
-  .person-transfer.grid, .connection {
+  .debt.grid, .connection {
     background-color: var(--bulma-background);
     border-top: var(--main-border);
     color: inherit;
@@ -228,11 +228,11 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
     padding: 0.25rem 0.5rem;
   }
     
-  .person-transfer.grid .transfer-payee, .person-transfer.grid .transfer-dollar-amount-paid {
+  .debt.grid .debt-payee, .debt.grid .debt-dollar-amount-paid {
     color: var(--bulma-text-bold);
   }
 
-  .person-transfer.grid .transfer-memo, .person-transfer.grid .person-transfer-dollar-amount, .connection .email {
+  .debt.grid .debt-memo, .debt.grid .debt-dollar-amount, .connection .email {
     font-size: 0.9rem;
   }
 
@@ -272,29 +272,29 @@ html:has(.outer-flex), body:has(.outer-flex), #transfers-index-app, .outer-flex 
     order: 2;
   }
 
-  .transfers {
+  .debts {
     border-left: var(--main-border);
   }
     
-  .transfers .cell {
+  .debts .cell {
     padding: 0.25rem 0.5rem;
   }
 
-  .transfers .transfers-headings, .transfers .person-transfer {
+  .debts .debts-headings, .debts .debt {
     padding: 0 0.5rem;
   }
    
-  .transfers .transfers-headings {
+  .debts .debts-headings {
     border-bottom: var(--main-border);
     font-size: 0.8rem;
     text-transform: uppercase;
   }
     
-  .transfers .transfers-headings div .cell:nth-last-child(n+2) {
+  .debts .debts-headings div .cell:nth-last-child(n+2) {
     border-right: var(--main-border);
   }
 
-  .transfers .person-transfer {
+  .debts .debt {
     border-bottom: var(--main-border);
     color: var(--bulma-text-bold);
   }

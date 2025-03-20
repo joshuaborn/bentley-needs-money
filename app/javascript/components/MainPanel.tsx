@@ -1,23 +1,30 @@
 import type { Dispatch, SetStateAction, ReactNode } from 'react';
 
-import type { Transfer, ModeState } from '../types';
-import TransferRow from './TransferRow';
+import type { Debt, ModeState } from '../types';
+import SplitRow from './SplitRow';
+import RepaymentRow from './RepaymentRow';
 
 interface MainPanelProps {
+    debts: Debt[],
     setModeState: Dispatch<SetStateAction<ModeState>>,
-    transfers: Transfer[],
 };
 
 export default function MainPanel(props:MainPanelProps) {
     let lastDate = "";
-    const transfersContent = props.transfers.reduce((accumulator, transfer) => {
-        if (transfer.date === lastDate) {
-            accumulator.push(<TransferRow key={transfer.transferId} transfer={transfer} setModeState={props.setModeState} />);
+    const debtsContent = props.debts.reduce((accumulator, debt) => {
+        let rowNode;
+        if (debt.reason.type === 'Repayment') {
+            rowNode = <RepaymentRow key={debt.id} debt={debt} setModeState={props.setModeState} />;
         } else {
-            lastDate = transfer.date;
+            rowNode = <SplitRow key={debt.id} debt={debt} setModeState={props.setModeState} />;
+        }
+        if (debt.reason.date === lastDate) {
+            accumulator.push(rowNode);
+        } else {
+            lastDate = debt.reason.date;
             accumulator.push(
                 <div key={"date-" + lastDate.toString()} className="date is-hidden-tablet">{lastDate}</div>,
-                <TransferRow key={transfer.transferId} transfer={transfer} setModeState={props.setModeState} />
+                rowNode
             );
         }
         return accumulator;
@@ -25,19 +32,19 @@ export default function MainPanel(props:MainPanelProps) {
 
     return (
         <div className="main-panel column is-three-quarters-desktop">
-            <div className="transfers">
-                <div className="transfers-headings fixed-grid has-3-cols-mobile has-7-cols-tablet">
+            <div className="debts">
+                <div className="debts-headings fixed-grid has-3-cols-mobile has-7-cols-tablet">
                     <div className="grid is-gap-0 is-hidden-mobile">
                         <div className="cell">Date</div>
                         <div className="cell">Payee</div>
                         <div className="cell">Memo</div>
-                        <div className="cell has-text-right">Total</div>
+                        <div className="cell has-text-right">Amount</div>
                         <div className="cell is-col-span-2 has-text-right">Amount Owed</div>
                         <div className="cell has-text-right">Cumulative Sum</div>
                     </div>
                 </div>
-                <div className="transfers-content fixed-grid has-3-cols-mobile has-7-cols-tablet scroller">
-                    {transfersContent}
+                <div className="debts-content fixed-grid has-3-cols-mobile has-7-cols-tablet scroller">
+                    {debtsContent}
                 </div>
             </div>
         </div>

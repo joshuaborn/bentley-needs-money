@@ -1,6 +1,6 @@
 import { useState }  from 'react';
 
-import type { ModeState, FlashState, Person, Transfer, PersonTransfer } from '../types';
+import type { ModeState, FlashState, Person, Debt } from '../types';
 import ActionBar from './ActionBar';
 import MainPanel from './MainPanel';
 import SidePanel from './SidePanel';
@@ -8,27 +8,25 @@ import SidePanel from './SidePanel';
 interface AppProps {
     connectedPeople: Person[],
     initialFlash: string[][],
-    initialPersonTransfers: Transfer[],
+    initialDebts: Debt[],
 };
 
-export default function App({connectedPeople, initialPersonTransfers, initialFlash}:AppProps) {
+export default function App({connectedPeople, initialDebts, initialFlash}:AppProps) {
     const [flashState, setFlashState] = useState<FlashState>({
         counter: 0,
         messages: initialFlash
     });
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
-    const [transfersState, setTransfersState] = useState<Transfer[]>(initialPersonTransfers);
-    const peopleOwedMap = transfersState.reduce(
-        function(accumulator, transfer) {
-            transfer.otherPersonTransfers.forEach((personOwed) => {
-                const currentEntry = accumulator.get(personOwed.personId);
-                if (typeof currentEntry === "undefined" || (currentEntry.date < transfer.date)) {
-                    accumulator.set(personOwed.personId, personOwed);
-                }
-            });
+    const [debtsState, setDebtsState] = useState<Debt[]>(initialDebts);
+    const peopleOwedMap = debtsState.reduce(
+        function(accumulator, debt) {
+            const currentEntry = accumulator.get(debt.person.id);
+            if (typeof currentEntry === "undefined" || (currentEntry.reason.date < debt.reason.date)) {
+                accumulator.set(debt.person.id, debt);
+            }
             return accumulator;
         },
-        new Map<number,PersonTransfer>()
+        new Map<number,Debt>()
     );
     const peopleOwed = Array.from(peopleOwedMap).map(([, value]) => (value));
     
@@ -42,12 +40,12 @@ export default function App({connectedPeople, initialPersonTransfers, initialFla
                     peopleOwed={peopleOwed}
                     setFlashState={setFlashState}
                     setModeState={setModeState}
-                    setTransfersState={setTransfersState}
-                    transfers={transfersState}
+                    setDebtsState={setDebtsState}
+                    debts={debtsState}
                 />
                 <MainPanel
                     setModeState={setModeState}
-                    transfers={transfersState}
+                    debts={debtsState}
                 />
             </div>
             <ActionBar

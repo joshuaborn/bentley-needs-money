@@ -1,7 +1,8 @@
-class TransfersController < ApplicationController
+class DebtsController < ApplicationController
   layout "navigable"
   def index
-    if current_person.person_transfers.empty? and current_person.connections.empty?
+    debts = Debt.for_person(current_person)
+    if debts.empty?
       if current_person.inbound_connection_requests.any?
         flash[:info] = "In order to begin, you need a connection with another person. You already have someone who has requested to connect with you, so you can accept the request to start splitting expenses."
       else
@@ -9,7 +10,8 @@ class TransfersController < ApplicationController
       end
       redirect_to connections_path
     else
-      @person_transfers = person_transfers_json_mapping(current_person)
+      decorator = DebtDecorator.new.for(current_person)
+      @debts = debts.map { |debt| decorator.decorate(debt).as_json }
       @connected_people = current_person.connected_people.select(:id, :name)
       if current_person.inbound_connection_requests.any?
         flash.now[:info] = "You have one or more connection requests. Navigate to the <a href='#{url_for connections_path}' target='_top'>Connections page</a> to approve or deny connection requests.".html_safe

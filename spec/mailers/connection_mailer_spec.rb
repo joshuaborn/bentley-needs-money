@@ -56,7 +56,7 @@ RSpec.describe ConnectionMailer, type: :mailer do
 
     it "contains a link to the index page" do
       expect(email.body.encoded).to match(
-        transfers_url(host: "localhost", port: 3000)
+        debts_url(host: "localhost", port: 3000)
       )
     end
   end

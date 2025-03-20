@@ -1,18 +1,15 @@
 class Repayment < Reason
-  DEBT_ATTRIBUTES_MAPPING = {
-    repayer: :owed,
-    repayee: :ower,
-    amount: :amount
-  }
-
   validates :debts, length: { is: 1 }
 
-  def self.new(attrs)
-    super(attrs.except(*DEBT_ATTRIBUTES_MAPPING.keys)).tap do |repayment|
-      debt_attributes = attrs.slice(*DEBT_ATTRIBUTES_MAPPING.keys).transform_keys do |key|
-       DEBT_ATTRIBUTES_MAPPING[key]
-      end
-      repayment.debts.new(debt_attributes)
+  def self.new(repayer, repayee, attrs)
+    super({ date: attrs.delete(:date) }).tap do |repayment|
+      attrs[:owed_reconciled] = true,
+      attrs[:ower_reconciled] = false
+      repayment.debts.new({
+        owed: repayer,
+        ower: repayee,
+        **attrs
+      })
     end
   end
 end

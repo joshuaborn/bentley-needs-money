@@ -7,68 +7,78 @@ import type {
 import type { FieldValues } from 'react-hook-form';
 
 import type { 
+    Debt,
     FlashState,
     ModeState,
-    PaybackResponse,
-    Transfer,
 } from '../types';
 
 import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
 
 import { patch, destroy } from '../server';
-import { setPaybackErrors } from '../form_helpers';
 import DeleteModal from './DeleteModal';
 
-interface EditPaybackCardProps {
+interface EditRepaymentCardProps {
+    debt: Debt,
     flashState: FlashState,
     handleCloseCard: (event:SyntheticEvent) => void,
-    payback: Transfer,
     modeState: ModeState,
+    setDebtsState: Dispatch<SetStateAction<Debt[]>>,
     setFlashState: Dispatch<SetStateAction<FlashState>>,
     setModeState: Dispatch<SetStateAction<ModeState>>,
-    setTransfersState: Dispatch<SetStateAction<Transfer[]>>,
 };
 
-export interface EditPaybackFormInputs extends FieldValues {
-    payback: {
-        date: string,
-        dollar_amount_paid: number,
+export interface EditRepaymentFormInputs extends FieldValues {
+    date: string,
+    debts_attributes: {
         id: number,
-    },
+        dollar_amount: number,
+    }[],
 };
 
-export default function EditPaybackCard(props:EditPaybackCardProps) {
+export interface EditRepaymentFormErrors {
+    date?: string[],
+    "debts.amount"?: string[],
+    debts?: string[],
+}
+
+export interface EditRepaymentFormResponse {
+    debts: Debt[],
+    errors: EditRepaymentFormErrors,
+}
+
+export default function EditRepaymentCard(props:EditRepaymentCardProps) {
 
     const {
-        clearErrors,
-        formState: { errors },
         handleSubmit,
         register,
-        setError,
-    } = useForm<EditPaybackFormInputs>({
+    } = useForm<EditRepaymentFormInputs>({
         defaultValues: {
-            payback: {
-                date: props.payback.date,
-                dollar_amount_paid: props.payback.dollarAmountPaid,
-            }
+            date: props.debt.reason.date,
+            debts_attributes: [{
+                id: props.debt.id,
+                dollar_amount: props.debt.dollarAmount
+            }]
         }
     });
+    
+    const [formErrorsState, setFormErrorsState] = useState<EditRepaymentFormErrors>({});
 
-    const onSubmit = (formData:EditPaybackFormInputs) =>  {
-        props.setModeState({mode: 'update payback', paybackId: props.payback.transferId});
-        patch('/paybacks/'+ props.payback.transferId.toString(), formData)
+    const onSubmit = (formData:EditRepaymentFormInputs) =>  {
+        props.setModeState({mode: 'update repayment', repaymentId: props.debt.reason.id});
+        patch('/repayments/'+ props.debt.reason.id.toString(), formData)
             .then((response) => response.json())
-            .then((data:PaybackResponse) => {
-                if (setPaybackErrors(data, setError)) {
-                    props.setModeState({mode: 'edit payback', paybackId: props.payback.transferId});
-                } else if ("person.transfers" in data) {
-                    clearErrors();
-                    props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
+            .then((data:EditRepaymentFormResponse) => {
+                if ("errors" in data) {
+                    setFormErrorsState(data.errors);
+                    props.setModeState({mode: 'edit repayment', repaymentId: props.debt.reason.id});
+                } else if ("debts" in data) {
+                    setFormErrorsState({});
+                    props.setDebtsState((data as {"debts": Debt[]}).debts);
                     props.setModeState({mode: "idle"});
                     props.setFlashState({
                         counter: props.flashState.counter + 1,
-                        messages: [["success", "Payback was successfully updated."]]
+                        messages: [["success", "Repayment was successfully updated."]]
                     });
                 }
             })
@@ -88,14 +98,14 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
         event.preventDefault();
         setDeleteModalState(false);
         props.setModeState({mode: 'idle'});
-        destroy('/paybacks/' + props.payback.transferId.toString())
+        destroy('/repayments/' + props.debt.reason.id.toString())
            .then((response) => response.json())
-           .then((data:PaybackResponse) => {
-                if ("person.transfers" in data) {
-                    props.setTransfersState((data as {"person.transfers": Transfer[]})["person.transfers"]);
+           .then((data:EditRepaymentFormResponse) => {
+                if ("debts" in data) {
+                    props.setDebtsState((data as {"debts": Debt[]}).debts);
                     props.setFlashState({
                         counter: props.flashState.counter + 1,
-                        messages: [["success", "Payback was successfully deleted."]]
+                        messages: [["success", "Repayment was successfully deleted."]]
                     })
                     props.setModeState({mode: "idle"});
                 }
@@ -114,7 +124,7 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="card">
                 <header className="card-header">
-                    <p className="card-header-title">Edit Payback</p>
+                    <p className="card-header-title">Edit Repayment</p>
                     <a href="#" className="card-header-icon" onClick={props.handleCloseCard}>
                         <span className="icon">
                             <i className="fa-solid fa-xmark fa-lg has-text-link" aria-hidden="true"></i>
@@ -124,40 +134,40 @@ export default function EditPaybackCard(props:EditPaybackCardProps) {
                 <div className="card-content">
                     <div className="content">
                         <div className="field">
+                            <label className="label" htmlFor="repayment_date">Date</label>
+                            <div className="control">
+                                <input
+                                    className={"input" + (formErrorsState.date ? " is-danger" : "")}
+                                    id="repayment_date"
+                                    type="date"
+                                    {...register("date")}
+                                />
+                            </div>
+                            {formErrorsState.date && <p className="help is-danger">{formErrorsState.date[0]}</p>}
+                        </div>
+                        <div className="field">
                             <div className="label">
                                 Person
                             </div>
                             <div className="control">
-                                {props.payback.otherPersonTransfers[0].name}
+                                {props.debt.person.name}
                             </div>
                         </div>
                         <div className="field amount">
-                            <label className="label" htmlFor="payback_dollar_amount_paid">Amount</label>
+                            <label className="label" htmlFor="repayment_dollar_amount_paid">Amount</label>
                             <div className="control has-icons-left">
                                 <input
-                                    className={"input" + (errors.payback?.dollar_amount_paid ? " is-danger" : "")}
-                                    id="payback_dollar_amount_paid"
+                                    className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
+                                    id={"repayment_debt_" + props.debt.id.toString() + "dollar_amount"}
                                     step="0.01"
                                     type="number"
-                                    {...register("payback.dollar_amount_paid")}
+                                    {...register("debts_attributes[0].dollar_amount")}
                                 />
                                 <span className="icon is-small is-left">
                                     <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>
                                 </span>
                             </div>
-                            {errors.payback?.dollar_amount_paid && <p className="help is-danger">{errors.payback.dollar_amount_paid.message}</p>}
-                        </div>
-                        <div className="field">
-                            <label className="label" htmlFor="payback_date">Date</label>
-                            <div className="control">
-                                <input
-                                    className={"input" + (errors.payback?.date ? " is-danger" : "")}
-                                    id="payback_date"
-                                    type="date"
-                                    {...register("payback.date")}
-                                />
-                            </div>
-                            {errors.payback?.date && <p className="help is-danger">{errors.payback.date.message}</p>}
+                            {formErrorsState["debts.amount"] && <p className="help is-danger">{formErrorsState["debts.amount"][0]}</p>}
                         </div>
                     </div>
                 </div>

@@ -1,11 +1,6 @@
 require 'rails_helper'
-require 'support/person_transfer_mapping.rb'
 
-RSpec.configure do |c|
-  c.include Helpers
-end
-
-RSpec.describe TransfersController, type: :controller do
+RSpec.describe DebtsController, type: :controller do
   let(:current_user) { FactoryBot.create(:person) }
   let(:other_user) { FactoryBot.create(:person) }
 
@@ -23,7 +18,7 @@ RSpec.describe TransfersController, type: :controller do
       end
     end
 
-    context "when there are no transfers and no connections" do
+    context "when there are no debts and no connections" do
       context "and no connection requests" do
         include_examples "redirects"
 
@@ -45,9 +40,9 @@ RSpec.describe TransfersController, type: :controller do
       end
     end
 
-    context "when there are transfers" do
+    context "when there are debts" do
       before do
-        create_transfer_between_people(current_user, other_user)
+        create_debt_on_day(ower: current_user, owed: other_user, date: Date.today)
       end
 
       shared_examples "status ok" do

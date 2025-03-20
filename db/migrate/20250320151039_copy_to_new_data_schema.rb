@@ -20,11 +20,13 @@ class CopyToNewDataSchema < ActiveRecord::Migration[8.0]
         )
       elsif transfer.type == 'Payback'
         reason = Repayment.new(
-          amount:     negative_person_transfer.amount * (-1),
-          created_at: transfer.created_at,
-          date:       transfer.date,
-          repayee:    negative_person_transfer.person,
-          repayer:    positive_person_transfer.person
+          positive_person_transfer.person,
+          negative_person_transfer.person,
+          {
+            amount:     negative_person_transfer.amount * (-1),
+            created_at: transfer.created_at,
+            date:       transfer.date
+          }
         )
       end
       reason.save!

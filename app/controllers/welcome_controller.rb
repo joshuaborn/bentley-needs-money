@@ -3,6 +3,6 @@ class WelcomeController < ApplicationController
   layout "base"
 
   def index
-    redirect_to transfers_path if person_signed_in?
+    redirect_to debts_path if person_signed_in?
   end
 end

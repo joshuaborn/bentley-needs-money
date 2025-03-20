@@ -6,7 +6,6 @@ class Debt < ApplicationRecord
   validates :amount, comparison: { greater_than: 0 }
   validates_presence_of :reason
 
-  scope :for_person, ->(person) { where(ower: person).or(where(owed: person)) }
   scope :between_people, ->(first_person, second_person) {
     where(ower: first_person, owed: second_person).or(
       where(ower: second_person, owed: first_person)
@@ -28,8 +27,14 @@ class Debt < ApplicationRecord
       debt.reason.created_at
     )
   }
-  scope :ordered_by_date, -> {
-    joins(:reason).order({ reasons: { date: :asc } }, { reasons: { created_at: :asc } })
+  scope :ascending_by_date, -> {
+    order({ reasons: { date: :asc } }, { reasons: { created_at: :asc } })
+  }
+  scope :descending_by_date, -> {
+    order({ reasons: { date: :desc } }, { reasons: { created_at: :desc } })
+  }
+  scope :for_person, ->(person) {
+    includes(:reason, :ower, :owed).where(ower: person).or(where(owed: person)).descending_by_date
   }
 
   before_save :set_cumulative_sums_before_save
@@ -54,7 +59,7 @@ class Debt < ApplicationRecord
     # owes the ower money. The add_or_sub_factor is what switches the sign of
     # the cumulative_sum when calculating it for each debt record.
     def set_cumulative_sums_before_save
-      debts = Debt.between_people(self.ower, self.owed).ordered_by_date
+      debts = Debt.includes(:reason).between_people(self.ower, self.owed).ascending_by_date
 
       # On updates, this debt shouldn't be in the list of debts.
       debts = debts.where("debts.id != ?", self.id) if self.persisted?
@@ -84,7 +89,7 @@ class Debt < ApplicationRecord
 
     # This triggers the set_cumulative_sums_before_save callback as needed.
     def set_cumulative_sums_after_destroy
-      next_debt = Debt.between_people(self.ower, self.owed).after(self).ordered_by_date.first
+      next_debt = Debt.includes(:reason).between_people(self.ower, self.owed).after(self).ascending_by_date.first
       next_debt.save! if next_debt.present?
     end
 end

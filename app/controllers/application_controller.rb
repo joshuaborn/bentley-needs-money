@@ -8,36 +8,11 @@ class ApplicationController < ActionController::Base
       devise_parameter_sanitizer.permit(:sign_up, keys: [ :name ])
     end
 
-    def person_transfers_json_mapping(person)
-      person.person_transfers.
-        includes(:transfer, :person_transfers, :people).
-        order(transfers: { date: :desc, created_at: :desc }).
-        where([ "people.id <> ?", person ]).map do |person_transfer|
-          {
-            "date" => person_transfer.transfer.date,
-            "dollarAmountPaid" => person_transfer.transfer.dollar_amount_paid,
-            "memo" => person_transfer.transfer.memo,
-            "myPersonTransfer" => {
-              "dollarAmount" => person_transfer.dollar_amount,
-              "id" => person_transfer.id,
-              "inYnab" => person_transfer.in_ynab?,
-              "personId" => person.id
-            },
-            "otherPersonTransfers" => [
-              {
-                "cumulativeSum" => person_transfer.dollar_cumulative_sum,
-                "date" => person_transfer.transfer.date,
-                "dollarAmount" => person_transfer.other_person_transfer.dollar_amount,
-                "id" => person_transfer.other_person_transfer.id,
-                "name" => person_transfer.other_person.name,
-                "personId" => person_transfer.other_person.id
-              }
-           ],
-            "payee" => person_transfer.transfer.payee,
-            "transferId" => person_transfer.transfer_id,
-            "type" => person_transfer.transfer.type
-          }
-        end
+    def render_debts_as_json
+      decorator = DebtDecorator.new.for(current_person)
+      render json: {
+        "debts": Debt.for_person(current_person).map { |debt| decorator.decorate(debt).as_json }
+      }
     end
 
   private
@@ -47,6 +22,6 @@ class ApplicationController < ActionController::Base
     end
 
     def after_sign_in_path_for(resource)
-      stored_location_for(resource) || transfers_path
+      stored_location_for(resource) || debts_path
     end
 end

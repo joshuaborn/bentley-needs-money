@@ -18,7 +18,7 @@
       <% if person_signed_in? %>
         <div class="navbar-menu" id="navMenu">
           <div class="navbar-start">
-            <%= link_to 'Expenses', transfers_path, class: "navbar-item" + (current_page?(transfers_path) ? " is-active" : "") %>
+            <%= link_to 'Expenses', debts_path, class: "navbar-item" + (current_page?(debts_path) ? " is-active" : "") %>
             <%= link_to 'Connections', connections_path, class: "navbar-item" + (current_page?(connections_path) ? " is-active" : "") %>
           </div>
           <div class="navbar-end">
