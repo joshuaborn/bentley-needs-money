@@ -51,14 +51,14 @@ RSpec.describe DebtDecorator, type: :model do
 
       it "returns JSON representation of Debt record's id and amount" do
         expect(debt_decorator.as_json).to include({
-          "amount" => debt.amount,
+          "dollarAmount" => debt.dollar_amount,
           "id" => debt.id
         })
       end
 
       it "returns JSON representation of Debt with cumulative_sum negated" do
         expect(debt_decorator.as_json).to include({
-          "cumulativeSum" => debt.cumulative_sum * (-1)
+          "dollarCumulativeSum" => debt.dollar_cumulative_sum * (-1)
         })
       end
 
@@ -69,7 +69,12 @@ RSpec.describe DebtDecorator, type: :model do
       end
 
       it "returns a JSON representation of the associated Reason record" do
-        expect(debt_decorator.as_json).to include(debt.reason.as_json(root: 'reason', only: [ :amount, :date, :id, :payee, :memo, :type ]))
+        attributes = [ :dollar_amount, :id, :payee, :memo, :type ].inject(Hash.new) do |hash, attribute|
+          hash[attribute.to_s.camelize(:lower)] = debt.reason.send(attribute)
+          hash
+        end
+        attributes["date"] = debt.reason.date.to_s
+        expect(debt_decorator.as_json).to include({ "reason" => attributes })
       end
 
       context "and transaction is not reconciled for ower" do
@@ -94,14 +99,14 @@ RSpec.describe DebtDecorator, type: :model do
 
       it "returns JSON representation of Debt record's id and amount" do
         expect(debt_decorator.as_json).to include({
-          "amount" => debt.amount,
+          "dollarAmount" => debt.dollar_amount,
           "id" => debt.id
         })
       end
 
       it "returns JSON representation of Debt with cumulative_sum as is" do
         expect(debt_decorator.as_json).to include({
-          "cumulativeSum" => debt.cumulative_sum
+          "dollarCumulativeSum" => debt.dollar_cumulative_sum
         })
       end
 
@@ -112,7 +117,12 @@ RSpec.describe DebtDecorator, type: :model do
       end
 
       it "returns a JSON representation of the associated Reason record" do
-        expect(debt_decorator.as_json).to include(debt.reason.as_json(root: 'reason', only: [ :amount, :date, :id, :payee, :memo, :type ]))
+        attributes = [ :dollar_amount, :id, :payee, :memo, :type ].inject(Hash.new) do |hash, attribute|
+          hash[attribute.to_s.camelize(:lower)] = debt.reason.send(attribute)
+          hash
+        end
+        attributes["date"] = debt.reason.date.to_s
+        expect(debt_decorator.as_json).to include({ "reason" => attributes })
       end
 
       context "and transaction is not reconciled for owed person" do
