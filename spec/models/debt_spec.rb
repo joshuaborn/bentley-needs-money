@@ -18,7 +18,7 @@ RSpec.describe Debt, type: :model do
       end
     end
 
-    describe "#cumulative_sum" do
+    describe "#dollar_cumulative_sum" do
       it "returns the integer cumulative sum in cents as a floating point number in dollars" do
         debt.cumulative_sum = 39432
         expect(debt.dollar_cumulative_sum).to eq(394.32)
