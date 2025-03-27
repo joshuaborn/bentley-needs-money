@@ -1,10 +1,6 @@
 class Person < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
-  has_many :person_transfers
-  has_many :transfers, through: :person_transfers, dependent: :destroy
-  has_many :expenses, through: :person_transfers, source: :transfer
-  has_many :paybacks, through: :person_transfers, source: :transfer
   has_many :signup_requests, inverse_of: "from"
   has_many :outbound_connection_requests, class_name: "ConnectionRequest", inverse_of: "from"
   has_many :inbound_connection_requests, class_name: "ConnectionRequest", inverse_of: "to"
@@ -14,10 +10,6 @@ class Person < ApplicationRecord
   validates :name, presence: true
 
   after_create :convert_signup_requests
-
-  def get_amounts_owed
-    PersonTransfer.get_amounts_owed_for(self)
-  end
 
   def request_connection(email)
     other_person = Person.where(email: email).first

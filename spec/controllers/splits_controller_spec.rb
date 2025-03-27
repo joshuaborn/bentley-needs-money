@@ -1,9 +1,4 @@
 require 'rails_helper'
-require 'support/person_transfer_mapping.rb'
-
-RSpec.configure do |c|
-  c.include Helpers
-end
 
 RSpec.describe SplitsController, type: :controller do
   let(:current_user) { FactoryBot.create(:person) }

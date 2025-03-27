@@ -3,13 +3,6 @@ require 'rails_helper'
 RSpec.describe Person, type: :model do
   subject(:person) { FactoryBot.create(:person) }
 
-  describe "#get_amounts_owed" do
-    it "calls PersonTransfer#get_amounts_owed_for" do
-      expect(PersonTransfer).to receive(:get_amounts_owed_for).with(person)
-      person.get_amounts_owed
-    end
-  end
-
   describe "#request_connection" do
     shared_examples "don't create" do
       it "doesn't create a connection request" do
