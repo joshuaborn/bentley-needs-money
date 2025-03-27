@@ -12,6 +12,7 @@ export default function FlashNotification(props:FlashNotificationProps) {
         event.preventDefault();
         setVisibleState(false);
     }
+    const markup = { __html: props.message };
     let className = props.kind;
     switch (className) {
         case "notice":
@@ -29,7 +30,7 @@ export default function FlashNotification(props:FlashNotificationProps) {
     return (
         <div className={"notification is-" + className}>
             <a href="#" className="delete" onClick={handleCloseNotification}></a>
-            {props.message}
+            <div dangerouslySetInnerHTML={markup} />
         </div>
     );
 }
