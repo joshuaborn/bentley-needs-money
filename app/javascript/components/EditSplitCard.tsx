@@ -15,10 +15,7 @@ import type {
 import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
 
-import {
-    destroy,
-    patch,
-} from '../server';
+import { patch } from '../server';
 import DeleteModal from './DeleteModal';
 
 interface EditSplitCardProps {
@@ -49,7 +46,7 @@ interface EditSplitFormErrors {
     payee?: string[],
 }
 
-interface EditSplitFormResponse {
+export interface EditSplitFormResponse {
     debts: Debt[],
     errors: EditSplitFormErrors,
 }
@@ -95,29 +92,16 @@ export default function EditSplitCard(props:EditSplitCardProps) {
 
     const [deleteModalState, setDeleteModalState] = useState(false);
 
-    const handleDelete = (event:SyntheticEvent) => {
-        event.preventDefault();
+    const handleDelete = (data:Promise<EditSplitFormResponse>) => {
         setDeleteModalState(false);
-        props.setModeState({mode: 'idle'});
-        destroy('/splits/' + split.id.toString())
-           .then((response) => response.json())
-           .then((data:EditSplitFormResponse) => {
-                if ("debts" in data) {
-                    props.setDebtsState((data as {"debts": Debt[]}).debts);
-                    props.setFlashState({
-                        counter: props.flashState.counter + 1,
-                        messages: [["success", "Split was successfully deleted."]]
-                    })
-                    props.setModeState({mode: "idle"});
-                }
-           })
-           .catch((error:unknown) => {
-                console.log(error);
-                props.setFlashState({
-                    counter: props.flashState.counter + 1,
-                    messages:  [["danger", "There was an error with the deletion."]]
-                });
-           });
+        if ("debts" in data) {
+            props.setDebtsState((data as {"debts": Debt[]}).debts);
+            props.setFlashState({
+                counter: props.flashState.counter + 1,
+                messages: [["success", "Split was successfully deleted."]]
+            })
+            props.setModeState({mode: "idle"});
+        }
     };
 
     let debtAmountLabel;
@@ -219,9 +203,10 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                 </footer>
             </div>
             {deleteModalState && <DeleteModal
+                label="split"
                 onCancel={() => { setDeleteModalState(false) }}
                 onDelete={handleDelete}
-                label="split"
+                urlPath={'/splits/' + split.id.toString()}
             />}
         </form>
     );

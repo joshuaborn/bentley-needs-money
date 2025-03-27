@@ -15,7 +15,7 @@ import type {
 import { useState }  from 'react';
 import { useForm }  from 'react-hook-form';
 
-import { patch, destroy } from '../server';
+import { patch } from '../server';
 import DeleteModal from './DeleteModal';
 
 interface EditRepaymentCardProps {
@@ -94,29 +94,16 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
 
     const [deleteModalState, setDeleteModalState] = useState(false);
 
-    const handleDelete = (event:SyntheticEvent) => {
-        event.preventDefault();
+    const handleDelete = (data:Promise<EditRepaymentFormResponse>) => {
         setDeleteModalState(false);
-        props.setModeState({mode: 'idle'});
-        destroy('/repayments/' + props.debt.reason.id.toString())
-           .then((response) => response.json())
-           .then((data:EditRepaymentFormResponse) => {
-                if ("debts" in data) {
-                    props.setDebtsState((data as {"debts": Debt[]}).debts);
-                    props.setFlashState({
-                        counter: props.flashState.counter + 1,
-                        messages: [["success", "Repayment was successfully deleted."]]
-                    })
-                    props.setModeState({mode: "idle"});
-                }
-           })
-           .catch((error:unknown) => {
-                console.log(error);
-                props.setFlashState({
-                    counter: props.flashState.counter + 1,
-                    messages:  [["danger", "There was an error with the deletion."]]
-                });
-           });
+        if ("debts" in data) {
+            props.setDebtsState((data as {"debts": Debt[]}).debts);
+            props.setFlashState({
+                counter: props.flashState.counter + 1,
+                messages: [["success", "Repayment was successfully deleted."]]
+            })
+            props.setModeState({mode: "idle"});
+        }
     };
 
     return (
@@ -178,9 +165,10 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
                 </footer>
             </div>
             {deleteModalState && <DeleteModal
+                label="expense"
                 onCancel={() => { setDeleteModalState(false) }}
                 onDelete={handleDelete}
-                label="expense"
+                urlPath={'/repayments/' + props.debt.reason.id.toString()}
             />}
         </form>
     );
