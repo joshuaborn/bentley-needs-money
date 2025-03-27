@@ -159,7 +159,9 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
                     </div>
                 </div>
                 <footer className="card-footer buttons has-addons">
-                    <input type="submit" name="commit" value="Update" className="card-footer-item button is-link" />
+                    <button type="submit" className={"card-footer-item button is-link" + (props.modeState.mode === 'update repayment' ? ' is-loading' : '')}>
+                        Update
+                    </button>
                     <a href="#" className="card-footer-item has-text-danger" onClick={(e) => { e.preventDefault(); setDeleteModalState(true) }}>Delete</a>
                     <a href="#" className="card-footer-item" onClick={props.handleCloseCard}>Cancel</a>
                 </footer>
