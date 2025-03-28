@@ -77,4 +77,8 @@ RSpec.configure do |config|
   end
 
   config.default_formatter = "doc"
+
+  config.before(:each) do
+    Faker::UniqueGenerator.clear
+  end
 end
