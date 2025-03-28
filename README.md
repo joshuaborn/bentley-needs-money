@@ -1,4 +1,4 @@
-[Bentley Needs Money](https://bentleyneeds.money) is an open source web application that I developed in the spirit of ["eating your own dog food"](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) as a way to refresh my software engineering skills and to fulfill a use case I myself frequently use. It is named after Bentley the dog, because many of the expenses split in my household pertain to taking care of Bentley, who is known for his underbite, freckles, floppy ears, and for being a very, very good boy.
+[Bentley Needs Money](https://bentleyneeds.money) is an expense-sharing tool that helps people split and track expenses between them. It is named after Bentley the dog, as many of the expenses tracked relate to taking care of him. Bentley is known for his underbite, freckles, floppy ears, and being a very, very good boy.
 
 
 ### Technology
@@ -7,19 +7,33 @@
 * [React](https://react.dev/)
 * [TypeScript](https://www.typescriptlang.org/) via [Bun](https://bun.sh/)
 * [PostgreSQL](https://www.postgresql.org/)
-* [Bulma](https://bulma.io/)
 * [Docker](https://www.docker.com/)
 * [DigitalOcean App Platform](https://www.digitalocean.com/products/app-platform)
+* [Devise](https://github.com/heartcombo/devise)
+* [Bulma](https://bulma.io/)
 
 
 ### Current Features
 
-* Automatically splits expenses in half
-* Calculates a running cumulative sum of how much each person owes another
-* Keeps track of when people pay each other back
-* Uses a responsive, mobile-friendly user experience
+* Automatically splitting expenses in half between two people
+* Calculating a running total of how much each person owes the other
+* Tracking repayments between people
+* Providing a mobile-friendly interface
 
 ### Planned Future Development
 
-* User experience (UX) improvements
 * You Need a Budget (YNAB) integration
+
+
+### Data Model
+
+* Person: The user model with Devise authentication that manages connections with other users and tracks financial relationships.
+* Connection: Manages relationships between users, allowing them to share expenses.
+* ConnectionRequest: Handles pending connections.
+* SignupRequest: Invitations for non-users to join the system.
+* Debt: The core financial record tracks money owed between people.
+* Reason: Base class for financial events with associated debts.
+  * Split: Subclass of Reason for splitting expenses, with logic for handling even/uneven splits.
+  * Repayment: Subclass of Reason for tracking when someone pays back money.
+  
+The flow works like this: users connect through requests, connected users create splits for shared expenses, debts track money owed with running balances, and repayments settle those debts. The system maintains cumulative totals to track overall debt status between users.
