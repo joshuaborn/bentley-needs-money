@@ -51,7 +51,7 @@ RSpec.describe SplitsController, type: :controller do
             payee: "Acme, Inc.",
             memo: "widgets",
             date: "2024-09-25",
-            dollar_amount: "4.3"
+            amount: 430
           }
         }
       end
@@ -69,7 +69,7 @@ RSpec.describe SplitsController, type: :controller do
             payee: "Acme, Inc.",
             memo: "widgets",
             date: "2024-09-25",
-            dollar_amount: "4.3"
+            amount: 430
            }
          }
       end
@@ -86,7 +86,7 @@ RSpec.describe SplitsController, type: :controller do
           split: {
             memo: "widgets",
             date: "2024-09-25",
-            dollar_amount: "4.3"
+            amount: 430
            }
          }
       end
@@ -108,7 +108,7 @@ RSpec.describe SplitsController, type: :controller do
             payee: "Acme, Inc.",
             memo: "widgets",
             date: "2024-09-25",
-            dollar_amount: "4.3"
+            amount: 430
           }
         }
       end
@@ -129,7 +129,7 @@ RSpec.describe SplitsController, type: :controller do
             payee: "Acme, Inc.",
             memo: "widgets",
             date: "2024-09-25",
-            dollar_amount: "4.3"
+            amount: 430
           }
         }
       end
@@ -159,11 +159,11 @@ RSpec.describe SplitsController, type: :controller do
           date: Date.new(2025, 1, 24),
           payee: "Payee 9",
           memo: "Memo 9",
-          dollar_amount: 9.0,
+          amount: 900,
           debts_attributes: [
             {
               id: split.debts.first.id,
-              dollar_amount: 4.5,
+              amount: 450,
               owed_reconciled: !split.debts.first.owed_reconciled,
               ower_reconciled: !split.debts.first.ower_reconciled
             }
@@ -178,11 +178,11 @@ RSpec.describe SplitsController, type: :controller do
       end
 
       it "updates the split" do
-        expect(split.reload).to have_attributes(parameters.slice(:id, :date, :payee, :memo, :dollar_amount))
+        expect(split.reload).to have_attributes(parameters.slice(:id, :date, :payee, :memo, :amount))
       end
 
       it "updates the amount of the debt of the split" do
-        expect(split.reload.debts.first.dollar_amount).to eq(parameters[:debts_attributes].first[:dollar_amount])
+        expect(split.reload.debts.first.amount).to eq(parameters[:debts_attributes].first[:amount])
       end
 
       it "doesn't update the owed_reconciled and ower_reconciled attributes on the debt record" do
@@ -214,11 +214,11 @@ RSpec.describe SplitsController, type: :controller do
           date: Date.new(2025, 1, 24),
           payee: "",
           memo: "Memo",
-          dollar_amount: 9.0,
+          amount: 900,
           debts_attributes: [
             {
               id: split.debts.first.id,
-              dollar_amount: -4.5
+              amount: -450
             }
           ]
         }
@@ -256,11 +256,11 @@ RSpec.describe SplitsController, type: :controller do
           date: Date.new(2025, 1, 24),
           payee: "Payee 9",
           memo: "Memo 9",
-          dollar_amount: 9.0,
+          amount: 900,
           debts_attributes: [
             {
               id: split.debts.first.id,
-              dollar_amount: 4.5
+              amount: 450
             }
           ]
         }

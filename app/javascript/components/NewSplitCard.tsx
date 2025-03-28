@@ -29,8 +29,8 @@ interface NewSplitCardProps {
 };
 
 interface NewSplitFormErrors {
+    amount?: string[],
     date?: string[],
-    dollar_amount?: string[],
     payee?: string[],
 }
 
@@ -47,10 +47,10 @@ interface NewSplitFormInputs extends FieldValues {
         id: number,
     },
     split: {
-        payee: string,
-        memo: string,
+        amount: number,
         date: string,
-        dollar_amount: number,
+        memo: string,
+        payee: string,
     },
 };
 
@@ -136,20 +136,20 @@ export default function NewSplitCard(props:NewSplitCardProps) {
                             </div>
                         </div>
                         <div className="field">
-                            <label className="label" htmlFor="split_dollar_amount">Amount</label>
+                            <label className="label" htmlFor="split_amount">Amount</label>
                             <div className="control has-icons-left">
                                 <input
-                                    className={"input" + (formErrorsState.dollar_amount ? " is-danger" : "")}
+                                    className={"input" + (formErrorsState.amount ? " is-danger" : "")}
                                     defaultValue="0.00"
-                                    id="split_dollar_amount"
+                                    id="split_amount"
                                     min="0"
                                     step="0.01"
                                     type="number"
-                                    {...register("split.dollar_amount")}
+                                    {...register("split.amount")}
                                 />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
-                            {formErrorsState.dollar_amount && <p className="help is-danger">{formErrorsState.dollar_amount[0]}</p>}
+                            {formErrorsState.amount && <p className="help is-danger">{formErrorsState.amount[0]}</p>}
                         </div>
                         <div className="field">
                             <label className="label">Split Type</label>

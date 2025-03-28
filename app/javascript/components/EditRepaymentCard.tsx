@@ -31,8 +31,8 @@ interface EditRepaymentCardProps {
 export interface EditRepaymentFormInputs extends FieldValues {
     date: string,
     debts_attributes: {
+        amount: number,
         id: number,
-        dollar_amount: number,
     }[],
 };
 
@@ -57,7 +57,7 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
             date: props.debt.reason.date,
             debts_attributes: [{
                 id: props.debt.id,
-                dollar_amount: props.debt.dollarAmount
+                amount: props.debt.amount / 100
             }]
         }
     });
@@ -141,14 +141,14 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
                             </div>
                         </div>
                         <div className="field amount">
-                            <label className="label" htmlFor="repayment_dollar_amount_paid">Amount</label>
+                            <label className="label" htmlFor="repayment_amount_paid">Amount</label>
                             <div className="control has-icons-left">
                                 <input
                                     className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
-                                    id={"repayment_debt_" + props.debt.id.toString() + "dollar_amount"}
+                                    id={"repayment_debt_" + props.debt.id.toString() + "_amount"}
                                     step="0.01"
                                     type="number"
-                                    {...register("debts_attributes[0].dollar_amount")}
+                                    {...register("debts_attributes[0].amount")}
                                 />
                                 <span className="icon is-small is-left">
                                     <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>

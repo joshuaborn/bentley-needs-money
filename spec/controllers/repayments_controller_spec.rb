@@ -51,7 +51,7 @@ RSpec.describe RepaymentsController, type: :controller do
           person: { id: connected_user.id },
           repayment: {
             date: "2024-10-24",
-            dollar_amount: "447.61"
+            amount: 44761
           }
         }
       end
@@ -68,7 +68,7 @@ RSpec.describe RepaymentsController, type: :controller do
           person: { id: connected_user.id },
           repayment: {
             date: "2024-10-24",
-            dollar_amount: "447.61"
+            amount: 44761
           }
         }
       end
@@ -85,7 +85,7 @@ RSpec.describe RepaymentsController, type: :controller do
           person: { id: connected_user.id },
           repayment: {
             date: "",
-            dollar_amount: "1000"
+            amount: 100000
           }
         }
       end
@@ -105,7 +105,7 @@ RSpec.describe RepaymentsController, type: :controller do
           person: { id: unconnected_user.id },
           repayment: {
             date: "2024-10-24",
-            dollar_amount: "447.61"
+            amount: 44761
           }
         }
       end
@@ -132,7 +132,7 @@ RSpec.describe RepaymentsController, type: :controller do
     shared_examples "doesn't update" do
       it "doesn't update attributes" do
         expect(repayment.reload.date.to_s).to eq("2024-10-24")
-        expect(repayment.reload.debts.first.dollar_amount).to eq(447.61)
+        expect(repayment.reload.debts.first.amount).to eq(44761)
       end
     end
 
@@ -143,7 +143,7 @@ RSpec.describe RepaymentsController, type: :controller do
           current_user,
           {
             date: "2024-10-24",
-            dollar_amount: 447.61
+            amount: 44761
           }
         ).tap(&:save!)
       end
@@ -154,7 +154,7 @@ RSpec.describe RepaymentsController, type: :controller do
           debts_attributes: [
             {
               id: repayment.debts.first.id,
-              dollar_amount: 445.46
+              amount: 44546
             }
           ]
         }
@@ -171,7 +171,7 @@ RSpec.describe RepaymentsController, type: :controller do
 
       it "updates repayment's attributes" do
         expect(repayment.reload.date.to_s).to eq(parameters[:date])
-        expect(repayment.reload.debts.first.dollar_amount).to eq(parameters[:debts_attributes][0][:dollar_amount])
+        expect(repayment.reload.debts.first.amount).to eq(parameters[:debts_attributes][0][:amount])
       end
     end
 
@@ -182,7 +182,7 @@ RSpec.describe RepaymentsController, type: :controller do
           current_user,
           {
             date: "2024-10-24",
-            dollar_amount: 447.61
+            amount: 44761
           }
         ).tap(&:save!)
       end
@@ -208,7 +208,7 @@ RSpec.describe RepaymentsController, type: :controller do
           connected_user,
           {
             date: "2024-10-24",
-            dollar_amount: 447.61
+            amount: 44761
           }
         ).tap(&:save!)
       end
@@ -219,7 +219,7 @@ RSpec.describe RepaymentsController, type: :controller do
           debts_attributes: [
             {
               id: repayment.debts.first.id,
-              dollar_amount: 445.46
+              amount: 44546
             }
           ]
         }
@@ -250,7 +250,7 @@ RSpec.describe RepaymentsController, type: :controller do
           current_user,
           {
             date: "2024-10-24",
-            dollar_amount: 447.61
+            amount: 44761
           }
         ).tap(&:save!)
       end
@@ -271,7 +271,7 @@ RSpec.describe RepaymentsController, type: :controller do
           connected_user,
           {
             date: "2024-10-24",
-            dollar_amount: 447.61
+            amount: 44761
           }
         ).tap(&:save!)
       end

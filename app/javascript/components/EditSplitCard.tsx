@@ -29,14 +29,14 @@ interface EditSplitCardProps {
 };
 
 interface EditSplitFormInputs extends FieldValues {
+    amount: number,
     date: string,
-    payee: string,
-    memo: string,
-    dollar_amount: number,
     debts_attributes: {
+        amount: number,
         id: number,
-        dollar_amount: number,
     }[],
+    memo: string,
+    payee: string,
 };
 
 interface EditSplitFormErrors {
@@ -58,7 +58,18 @@ export default function EditSplitCard(props:EditSplitCardProps) {
     const {
         handleSubmit,
         register,
-    } = useForm<EditSplitFormInputs>();
+    } = useForm<EditSplitFormInputs>({
+        defaultValues: {
+            date: split.date,
+            payee: split.payee,
+            memo: split.memo,
+            amount: split.amount / 100,
+            debts_attributes: [{
+                id: props.debt.id,
+                amount: props.debt.amount / 100
+            }]
+        }
+    });
 
     const [formErrorsState, setFormErrorsState] = useState<EditSplitFormErrors>({});
 
@@ -132,7 +143,7 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                                     className={"input" + (formErrorsState.date ? " is-danger" : "")}
                                     id="split_date"
                                     type="date"
-                                    {...register("date", {value: split.date})}
+                                    {...register("date")}
                                 />
                             </div>
                             {formErrorsState.date && <p className="help is-danger">{formErrorsState.date[0]}</p>}
@@ -144,7 +155,7 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                                     className={"input" + (formErrorsState.payee ? " is-danger" : "")}
                                     id="split_payee"
                                     type="text"
-                                    {...register("payee", {value: split.payee})}
+                                    {...register("payee")}
                                 />
                             </div>
                             {formErrorsState.payee && <p className="help is-danger">{formErrorsState.payee[0]}</p>}
@@ -156,19 +167,19 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                                     className="input"
                                     id="split_memo"
                                     type="text"
-                                    {...register("memo", {value: split.memo})}
+                                    {...register("memo")}
                                 />
                             </div>
                         </div>
                         <div className="field">
-                            <label className="label" htmlFor="split_dollar_amount">Amount</label>
+                            <label className="label" htmlFor="split_amount">Amount</label>
                             <div className="control has-icons-left">
                                 <input
                                     className="input"
-                                    id="split_dollar_amount"
+                                    id="split_amount"
                                     step="0.01"
                                     type="number"
-                                    {...register("dollar_amount", {value: split.dollarAmount})}
+                                    {...register("amount")}
                                 />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
@@ -177,17 +188,17 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                     <div className="field">
                         <input
                             type="hidden"
-                            {...register("debts_attributes[0].id", {value: props.debt.id})}
+                            {...register("debts_attributes[0].id")}
                         />
-                        <label className="label" htmlFor={"split_debt_" + props.debt.id.toString() + "_dollar_amount"}>{debtAmountLabel}</label>
+                        <label className="label" htmlFor={"split_debt_" + props.debt.id.toString() + "_amount"}>{debtAmountLabel}</label>
                         <div className="control has-icons-left">
                             <input
                                 className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
-                                id={"split_debt_" + props.debt.id.toString() + "_dollar_amount"}
+                                id={"split_debt_" + props.debt.id.toString() + "_amount"}
                                 step="0.01"
                                 min="0"
                                 type="number"
-                                {...register("debts_attributes[0].dollar_amount", {value: props.debt.dollarAmount})}
+                                {...register("debts_attributes[0].amount")}
                             />
                             <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                         </div>

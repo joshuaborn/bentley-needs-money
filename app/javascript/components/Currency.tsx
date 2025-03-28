@@ -1,9 +1,10 @@
 interface CurrencyProps {
-    dollarAmount: number,
+    cents: number,
 };
 
 export default function Currency(props:CurrencyProps) {
-    return props.dollarAmount < 0 ?
-        <>-${(-1 * props.dollarAmount).toFixed(2)}</> :
-        <>${props.dollarAmount.toFixed(2)}</>;
+    const dollars = props.cents / 100;
+    return dollars < 0 ?
+        <>-${(-1 * dollars).toFixed(2)}</> :
+        <>${dollars.toFixed(2)}</>;
 }

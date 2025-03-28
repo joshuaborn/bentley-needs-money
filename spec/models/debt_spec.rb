@@ -1,30 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Debt, type: :model do
-  context "instance method" do
-    subject(:debt) { FactoryBot.build(:debt) }
-
-    describe "#dollar_amount" do
-      it "returns the integer amount in cents as a floating point number in dollars" do
-        debt.amount = 17161
-        expect(debt.dollar_amount).to eq(171.61)
-      end
-    end
-
-    describe "#dollar_amount=" do
-      it "sets the integer amount in cents from a floating point number in dollars" do
-        debt.dollar_amount = 473.21
-        expect(debt.amount).to eq(47321)
-      end
-    end
-
-    describe "#dollar_cumulative_sum" do
-      it "returns the integer cumulative sum in cents as a floating point number in dollars" do
-        debt.cumulative_sum = 39432
-        expect(debt.dollar_cumulative_sum).to eq(394.32)
-      end
-    end
-  end
 
   context "class method" do
     let(:first_person) { FactoryBot.create(:person) }

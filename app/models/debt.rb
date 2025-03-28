@@ -40,17 +40,6 @@ class Debt < ApplicationRecord
   before_save :set_cumulative_sums_before_save
   after_destroy :set_cumulative_sums_after_destroy
 
-  def dollar_amount
-    self.amount.to_f / 100
-  end
-
-  def dollar_amount=(dollars)
-    self.amount = (100 * dollars.to_f).round(0)
-  end
-
-  def dollar_cumulative_sum
-    self.cumulative_sum.to_f / 100
-  end
 
   private
 

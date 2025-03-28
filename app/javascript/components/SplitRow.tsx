@@ -20,11 +20,11 @@ export default function SplitRow(props:DebtRowProps) {
     let amountOwed = <></>;
     if (props.debt.person.role === 'Owed') {
         amountOwed = <>
-            <Currency key={props.debt.id.toString() + "-amount"} dollarAmount={props.debt.dollarAmount} /> owed to {props.debt.person.name}
+            <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} /> owed to {props.debt.person.name}
         </>;
     } else {
         amountOwed = <>
-            {props.debt.person.name} owes <Currency key={props.debt.id.toString() + "-amount"} dollarAmount={props.debt.dollarAmount} />
+            {props.debt.person.name} owes <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} />
         </>;
     }
     return (
@@ -38,14 +38,14 @@ export default function SplitRow(props:DebtRowProps) {
             <div className="cell debt-memo is-row-start-2-mobile">
                 {checkYNAB} {props.debt.reason.memo}
             </div>
-            <div className="cell debt-dollar-amount-paid is-col-span-2-mobile has-text-right">
-                <Currency key={props.debt.id.toString() + "-amount-paid"} dollarAmount={props.debt.reason.dollarAmount} />
+            <div className="cell debt-amount-paid is-col-span-2-mobile has-text-right">
+                <Currency key={props.debt.id.toString() + "-amount-paid"} cents={props.debt.reason.amount} />
             </div>
-            <div className="cell debt-dollar-amount is-col-span-2 has-text-right">
+            <div className="cell debt-amount is-col-span-2 has-text-right">
                 {amountOwed}
             </div>
-            <div className="cell debt-dollar-cumulative-sum has-text-right is-hidden-mobile">
-                <Currency key={props.debt.id.toString() + "-cumulative-sum"} dollarAmount={props.debt.dollarCumulativeSum} />
+            <div className="cell debt-cumulative-sum has-text-right is-hidden-mobile">
+                <Currency key={props.debt.id.toString() + "-cumulative-sum"} cents={props.debt.cumulativeSum} />
             </div>
         </a>
     );

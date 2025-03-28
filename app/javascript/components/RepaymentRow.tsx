@@ -19,11 +19,11 @@ export default function DebtRow(props:DebtRowProps) {
     let amountOwed = <></>;
     if (props.debt.person.role === 'Owed') {
         amountOwed = <>
-            {props.debt.person.name} paid <Currency key={props.debt.id.toString() + "-amount"} dollarAmount={props.debt.dollarAmount} />
+            {props.debt.person.name} paid <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} />
         </>;
     } else {
         amountOwed = <>
-            <Currency key={props.debt.id.toString() + "-amount"} dollarAmount={props.debt.dollarAmount} /> paid to {props.debt.person.name}
+            <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} /> paid to {props.debt.person.name}
         </>;
     }
     return (
@@ -35,13 +35,13 @@ export default function DebtRow(props:DebtRowProps) {
             </div>
             <div className="cell debt-memo is-row-start-2-mobile">
             </div>
-            <div className="cell debt-dollar-amount-paid is-col-span-2-mobile has-text-right">
+            <div className="cell debt-amount-paid is-col-span-2-mobile has-text-right">
             </div>
-            <div className="cell debt-dollar-amount is-col-span-2 has-text-right">
+            <div className="cell debt-amount is-col-span-2 has-text-right">
                 {amountOwed}
             </div>
-            <div className="cell debt-dollar-cumulative-sum has-text-right is-hidden-mobile">
-                <Currency key={props.debt.id.toString() + "-cumulative-sum"} dollarAmount={props.debt.dollarCumulativeSum} />
+            <div className="cell debt-cumulative-sum has-text-right is-hidden-mobile">
+                <Currency key={props.debt.id.toString() + "-cumulative-sum"} cents={props.debt.cumulativeSum} />
             </div>
         </a>
     );

@@ -61,14 +61,14 @@ class RepaymentsController < ApplicationController
 
   private
     def params_for_create
-      params.require(:repayment).permit(:date, :dollar_amount)
+      params.require(:repayment).permit(:date, :amount)
     end
 
     def params_for_update
       params.permit(
         :id,
         :date,
-        debts_attributes: [ [ :id, :dollar_amount ] ]
+        debts_attributes: [ [ :id, :amount ] ]
       )
     end
 end

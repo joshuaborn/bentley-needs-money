@@ -5,14 +5,14 @@ RSpec.describe Repayment, type: :model do
     let(:repayer) { FactoryBot.create(:person) }
     let(:repayee) { FactoryBot.create(:person) }
     let(:date) { Faker::Date.between(from: 2.years.ago, to: Date.today) }
-    let(:dollar_amount) { Faker::Number.decimal }
+    let(:amount) { Faker::Number.number(digits: 4) }
     subject(:repayment) do
-      Repayment.new(repayer, repayee, { date: date, dollar_amount: dollar_amount })
+      Repayment.new(repayer, repayee, { date: date, amount: amount })
     end
 
     it 'instantiates an associated debt record with the provided attributes' do
       expect(repayment.date).to eq(date)
-      expect(repayment.debts.first.dollar_amount).to eq(dollar_amount)
+      expect(repayment.debts.first.amount).to eq(amount)
       expect(repayment.debts.first.owed).to eq(repayer)
       expect(repayment.debts.first.ower).to eq(repayee)
     end

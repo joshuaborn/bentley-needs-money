@@ -51,14 +51,14 @@ RSpec.describe DebtDecorator, type: :model do
 
       it "returns JSON representation of Debt record's id and amount" do
         expect(debt_decorator.as_json).to include({
-          "dollarAmount" => debt.dollar_amount,
+          "amount" => debt.amount,
           "id" => debt.id
         })
       end
 
       it "returns JSON representation of Debt with cumulative_sum negated" do
         expect(debt_decorator.as_json).to include({
-          "dollarCumulativeSum" => debt.dollar_cumulative_sum * (-1)
+          "cumulativeSum" => debt.cumulative_sum * (-1)
         })
       end
 
@@ -69,7 +69,7 @@ RSpec.describe DebtDecorator, type: :model do
       end
 
       it "returns a JSON representation of the associated Reason record" do
-        attributes = [ :dollar_amount, :id, :payee, :memo, :type ].inject(Hash.new) do |hash, attribute|
+        attributes = [ :amount, :id, :payee, :memo, :type ].inject(Hash.new) do |hash, attribute|
           hash[attribute.to_s.camelize(:lower)] = debt.reason.send(attribute)
           hash
         end
@@ -99,14 +99,14 @@ RSpec.describe DebtDecorator, type: :model do
 
       it "returns JSON representation of Debt record's id and amount" do
         expect(debt_decorator.as_json).to include({
-          "dollarAmount" => debt.dollar_amount,
+          "amount" => debt.amount,
           "id" => debt.id
         })
       end
 
       it "returns JSON representation of Debt with cumulative_sum as is" do
         expect(debt_decorator.as_json).to include({
-          "dollarCumulativeSum" => debt.dollar_cumulative_sum
+          "cumulativeSum" => debt.cumulative_sum
         })
       end
 
@@ -117,7 +117,7 @@ RSpec.describe DebtDecorator, type: :model do
       end
 
       it "returns a JSON representation of the associated Reason record" do
-        attributes = [ :dollar_amount, :id, :payee, :memo, :type ].inject(Hash.new) do |hash, attribute|
+        attributes = [ :amount, :id, :payee, :memo, :type ].inject(Hash.new) do |hash, attribute|
           hash[attribute.to_s.camelize(:lower)] = debt.reason.send(attribute)
           hash
         end

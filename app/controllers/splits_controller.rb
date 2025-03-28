@@ -49,7 +49,7 @@ class SplitsController < ApplicationController
 
   private
     def params_for_create
-      params.require(:split).permit(:dollar_amount, :date, :payee, :memo)
+      params.require(:split).permit(:amount, :date, :payee, :memo)
     end
 
     def params_for_update
@@ -58,8 +58,8 @@ class SplitsController < ApplicationController
         :date,
         :payee,
         :memo,
-        :dollar_amount,
-        debts_attributes: [ [ :id, :dollar_amount ] ]
+        :amount,
+        debts_attributes: [ [ :id, :amount ] ]
       )
     end
 end

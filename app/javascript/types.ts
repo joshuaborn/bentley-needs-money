@@ -26,8 +26,8 @@ export interface Person {
 export type ReasonType = 'Split' | 'Repayment';
 
 export interface Reason {
+    amount: number,
     date: string,
-    dollarAmount: number,
     id: number,
     memo: string,
     payee: string,
@@ -35,8 +35,8 @@ export interface Reason {
 }
 
 export interface Debt {
-    dollarAmount: number,
-    dollarCumulativeSum: number,
+    amount: number,
+    cumulativeSum: number,
     id: number,
     person: Person,
     reason: Reason,

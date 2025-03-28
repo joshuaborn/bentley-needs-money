@@ -29,8 +29,8 @@ interface NewRepaymentCardProps {
 };
 
 interface NewRepaymentFormErrors {
+    amount?: string[],
     date?: string[],
-    dollar_amount?: string[],
 }
 
 interface NewRepaymentFormResponse {
@@ -46,8 +46,8 @@ interface NewRepaymentFormInputs extends FieldValues {
     },
     repayer: Repayer,
     repayment: {
+        amount: number,
         date: string,
-        dollar_amount: number,
     },
 };
 
@@ -69,9 +69,9 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
         defaultValues: {
             repayment: {
                 date: new Date().toISOString().slice(0, 10),
-                dollar_amount: props.peopleOwed[0] ? Math.abs(props.peopleOwed[0].dollarCumulativeSum) : 0,
+                amount: props.peopleOwed[0] ? Math.abs(props.peopleOwed[0].cumulativeSum) / 100 : 0,
             },
-            repayer: props.peopleOwed[0] && props.peopleOwed[0].dollarCumulativeSum < -1 ? 'self' : 'other person',
+            repayer: props.peopleOwed[0] && props.peopleOwed[0].cumulativeSum < -1 ? 'self' : 'other person',
             person: {
                 id: props.peopleOwed[0] ? props.peopleOwed[0].person.id : undefined,
             }
@@ -112,8 +112,8 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
     const handlePersonChange = () => {
         const newPerson = props.peopleOwed.find((debt) => debt.person.id == getValues('person.id'));
         if (newPerson) {
-            setValue('repayment', { date: getValues('repayment.date'), dollar_amount: Math.abs(newPerson.dollarCumulativeSum)});
-            setValue('repayer', newPerson.dollarCumulativeSum < -1 ? 'self' : 'other person');
+            setValue('repayment', { date: getValues('repayment.date'), amount: Math.abs(newPerson.cumulativeSum) / 100});
+            setValue('repayer', newPerson.cumulativeSum < -1 ? 'self' : 'other person');
             setPersonState(newPerson.person);
         }
     };
@@ -163,20 +163,20 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
                             </div>
                         </div>
                         <div className="field amount">
-                            <label className="label" htmlFor="repayment_dollar_amount_paid">Amount</label>
+                            <label className="label" htmlFor="repayment_amount_paid">Amount</label>
                             <div className="control has-icons-left">
                                 <input
-                                    className={"input" + (formErrorsState.dollar_amount ? " is-danger" : "")}
-                                    id="repayment_dollar_amount_paid"
+                                    className={"input" + (formErrorsState.amount ? " is-danger" : "")}
+                                    id="repayment_amount_paid"
                                     step="0.01"
                                     type="number"
-                                    {...register("repayment.dollar_amount")}
+                                    {...register("repayment.amount")}
                                 />
                                 <span className="icon is-small is-left">
                                     <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>
                                 </span>
                             </div>
-                            {formErrorsState.dollar_amount && <p className="help is-danger">{formErrorsState.dollar_amount[0]}</p>}
+                            {formErrorsState.amount && <p className="help is-danger">{formErrorsState.amount[0]}</p>}
                         </div>
                         <div className="field">
                             <div className="control">
