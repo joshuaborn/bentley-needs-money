@@ -1,4 +1,4 @@
-import type { 
+import type {
     SyntheticEvent,
     Dispatch,
     SetStateAction,
@@ -6,22 +6,23 @@ import type {
 
 import type { FieldValues } from 'react-hook-form';
 
-import type { 
+import type {
     Debt,
     FlashState,
     ModeState,
 } from '../types';
 
-import { useState }  from 'react';
-import { useForm }  from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import { patch } from '../server';
 import DeleteModal from './DeleteModal';
+import CurrencyInput from './CurrencyInput';
 
 interface EditSplitCardProps {
     debt: Debt,
     flashState: FlashState,
-    handleCloseCard: (event:SyntheticEvent) => void,
+    handleCloseCard: (event: SyntheticEvent) => void,
     modeState: ModeState,
     setDebtsState: Dispatch<SetStateAction<Debt[]>>,
     setFlashState: Dispatch<SetStateAction<FlashState>>,
@@ -51,11 +52,12 @@ export interface EditSplitFormResponse {
     errors: EditSplitFormErrors,
 }
 
-export default function EditSplitCard(props:EditSplitCardProps) {
-    
+export default function EditSplitCard(props: EditSplitCardProps) {
+
     const split = props.debt.reason;
 
     const {
+        control,
         handleSubmit,
         register,
     } = useForm<EditSplitFormInputs>({
@@ -63,55 +65,55 @@ export default function EditSplitCard(props:EditSplitCardProps) {
             date: split.date,
             payee: split.payee,
             memo: split.memo,
-            amount: split.amount / 100,
+            amount: split.amount,
             debts_attributes: [{
                 id: props.debt.id,
-                amount: props.debt.amount / 100
+                amount: props.debt.amount
             }]
         }
     });
 
     const [formErrorsState, setFormErrorsState] = useState<EditSplitFormErrors>({});
 
-    const onSubmit = (formData:EditSplitFormInputs) =>  {
-        props.setModeState({mode: 'update split', splitId: split.id});
+    const onSubmit = (formData: EditSplitFormInputs) => {
+        props.setModeState({ mode: 'update split', splitId: split.id });
         patch('/splits/' + split.id.toString(), formData)
-           .then((response) => response.json())
-           .then((data:EditSplitFormResponse) => {
+            .then((response) => response.json())
+            .then((data: EditSplitFormResponse) => {
                 if ("errors" in data) {
                     setFormErrorsState(data.errors);
-                    props.setModeState({mode: 'edit split', splitId: split.id});
+                    props.setModeState({ mode: 'edit split', splitId: split.id });
                 } else if ("debts" in data) {
                     setFormErrorsState({});
-                    props.setDebtsState((data as {"debts": Debt[]}).debts);
+                    props.setDebtsState((data as { "debts": Debt[] }).debts);
                     props.setFlashState({
                         counter: props.flashState.counter + 1,
                         messages: [["success", "Split was successfully updated."]]
                     });
-                    props.setModeState({mode: "idle"});
+                    props.setModeState({ mode: "idle" });
                 }
             })
-           .catch((error:unknown) => {
+            .catch((error: unknown) => {
                 console.log(error);
                 props.setFlashState({
                     counter: props.flashState.counter,
                     messages: [["danger", "There was an error with the network request."]]
                 });
-                props.setModeState({mode: "idle"});
-           })
+                props.setModeState({ mode: "idle" });
+            })
     };
 
     const [deleteModalState, setDeleteModalState] = useState(false);
 
-    const handleDelete = (data:Promise<EditSplitFormResponse>) => {
+    const handleDelete = (data: Promise<EditSplitFormResponse>) => {
         setDeleteModalState(false);
         if ("debts" in data) {
-            props.setDebtsState((data as {"debts": Debt[]}).debts);
+            props.setDebtsState((data as { "debts": Debt[] }).debts);
             props.setFlashState({
                 counter: props.flashState.counter + 1,
                 messages: [["success", "Split was successfully deleted."]]
             })
-            props.setModeState({mode: "idle"});
+            props.setModeState({ mode: "idle" });
         }
     };
 
@@ -174,12 +176,17 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                         <div className="field">
                             <label className="label" htmlFor="split_amount">Amount</label>
                             <div className="control has-icons-left">
-                                <input
-                                    className="input"
-                                    id="split_amount"
-                                    step="0.01"
-                                    type="number"
-                                    {...register("amount")}
+                                <Controller
+                                    name="amount"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <CurrencyInput
+                                            className="input"
+                                            id="split_amount"
+                                            onValueChange={(value) => { field.onChange(value); }}
+                                            value={field.value}
+                                        />
+                                    )}
                                 />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
@@ -192,13 +199,17 @@ export default function EditSplitCard(props:EditSplitCardProps) {
                         />
                         <label className="label" htmlFor={"split_debt_" + props.debt.id.toString() + "_amount"}>{debtAmountLabel}</label>
                         <div className="control has-icons-left">
-                            <input
-                                className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
-                                id={"split_debt_" + props.debt.id.toString() + "_amount"}
-                                step="0.01"
-                                min="0"
-                                type="number"
-                                {...register("debts_attributes[0].amount")}
+                            <Controller
+                                name="debts_attributes[0].amount"
+                                control={control}
+                                render={({ field }) => (
+                                    <CurrencyInput
+                                        className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
+                                        id={"split_debt_" + props.debt.id.toString() + "_amount"}
+                                        onValueChange={(value: number) => { field.onChange(value); }}
+                                        value={field.value as number | undefined}
+                                    />
+                                )}
                             />
                             <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                         </div>

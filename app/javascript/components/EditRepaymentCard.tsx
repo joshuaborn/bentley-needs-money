@@ -6,22 +6,23 @@ import type {
 
 import type { FieldValues } from 'react-hook-form';
 
-import type { 
+import type {
     Debt,
     FlashState,
     ModeState,
 } from '../types';
 
-import { useState }  from 'react';
-import { useForm }  from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import { patch } from '../server';
 import DeleteModal from './DeleteModal';
+import CurrencyInput from './CurrencyInput';
 
 interface EditRepaymentCardProps {
     debt: Debt,
     flashState: FlashState,
-    handleCloseCard: (event:SyntheticEvent) => void,
+    handleCloseCard: (event: SyntheticEvent) => void,
     modeState: ModeState,
     setDebtsState: Dispatch<SetStateAction<Debt[]>>,
     setFlashState: Dispatch<SetStateAction<FlashState>>,
@@ -47,9 +48,10 @@ export interface EditRepaymentFormResponse {
     errors: EditRepaymentFormErrors,
 }
 
-export default function EditRepaymentCard(props:EditRepaymentCardProps) {
+export default function EditRepaymentCard(props: EditRepaymentCardProps) {
 
     const {
+        control,
         handleSubmit,
         register,
     } = useForm<EditRepaymentFormInputs>({
@@ -57,52 +59,52 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
             date: props.debt.reason.date,
             debts_attributes: [{
                 id: props.debt.id,
-                amount: props.debt.amount / 100
+                amount: props.debt.amount
             }]
         }
     });
-    
+
     const [formErrorsState, setFormErrorsState] = useState<EditRepaymentFormErrors>({});
 
-    const onSubmit = (formData:EditRepaymentFormInputs) =>  {
-        props.setModeState({mode: 'update repayment', repaymentId: props.debt.reason.id});
-        patch('/repayments/'+ props.debt.reason.id.toString(), formData)
+    const onSubmit = (formData: EditRepaymentFormInputs) => {
+        props.setModeState({ mode: 'update repayment', repaymentId: props.debt.reason.id });
+        patch('/repayments/' + props.debt.reason.id.toString(), formData)
             .then((response) => response.json())
-            .then((data:EditRepaymentFormResponse) => {
+            .then((data: EditRepaymentFormResponse) => {
                 if ("errors" in data) {
                     setFormErrorsState(data.errors);
-                    props.setModeState({mode: 'edit repayment', repaymentId: props.debt.reason.id});
+                    props.setModeState({ mode: 'edit repayment', repaymentId: props.debt.reason.id });
                 } else if ("debts" in data) {
                     setFormErrorsState({});
-                    props.setDebtsState((data as {"debts": Debt[]}).debts);
-                    props.setModeState({mode: "idle"});
+                    props.setDebtsState((data as { "debts": Debt[] }).debts);
+                    props.setModeState({ mode: "idle" });
                     props.setFlashState({
                         counter: props.flashState.counter + 1,
                         messages: [["success", "Repayment was successfully updated."]]
                     });
                 }
             })
-            .catch((error:unknown) => {
+            .catch((error: unknown) => {
                 console.log(error);
                 props.setFlashState({
                     counter: props.flashState.counter + 1,
                     messages: [["danger", "There was an error with the network request."]]
                 })
-                props.setModeState({mode: "idle"});
+                props.setModeState({ mode: "idle" });
             })
     };
 
     const [deleteModalState, setDeleteModalState] = useState(false);
 
-    const handleDelete = (data:Promise<EditRepaymentFormResponse>) => {
+    const handleDelete = (data: Promise<EditRepaymentFormResponse>) => {
         setDeleteModalState(false);
         if ("debts" in data) {
-            props.setDebtsState((data as {"debts": Debt[]}).debts);
+            props.setDebtsState((data as { "debts": Debt[] }).debts);
             props.setFlashState({
                 counter: props.flashState.counter + 1,
                 messages: [["success", "Repayment was successfully deleted."]]
             })
-            props.setModeState({mode: "idle"});
+            props.setModeState({ mode: "idle" });
         }
     };
 
@@ -143,12 +145,17 @@ export default function EditRepaymentCard(props:EditRepaymentCardProps) {
                         <div className="field amount">
                             <label className="label" htmlFor="repayment_amount_paid">Amount</label>
                             <div className="control has-icons-left">
-                                <input
-                                    className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
-                                    id={"repayment_debt_" + props.debt.id.toString() + "_amount"}
-                                    step="0.01"
-                                    type="number"
-                                    {...register("debts_attributes[0].amount")}
+                                <Controller
+                                    name="debts_attributes[0].amount"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <CurrencyInput
+                                            className={"input" + (formErrorsState["debts.amount"] ? " is-danger" : "")}
+                                            id={"repayment_debt_" + props.debt.id.toString() + "_amount"}
+                                            onValueChange={(value: number) => { field.onChange(value); }}
+                                            value={field.value as number | undefined}
+                                        />
+                                    )}
                                 />
                                 <span className="icon is-small is-left">
                                     <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>

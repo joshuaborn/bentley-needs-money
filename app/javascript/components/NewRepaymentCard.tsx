@@ -13,14 +13,15 @@ import type {
     Person,
 } from '../types';
 
-import { useState }  from 'react';
-import { useForm }  from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import { post } from '../server';
+import CurrencyInput from './CurrencyInput';
 
 interface NewRepaymentCardProps {
     flashState: FlashState,
-    handleCloseCard: (event:SyntheticEvent) => void,
+    handleCloseCard: (event: SyntheticEvent) => void,
     modeState: ModeState,
     peopleOwed: Debt[],
     setDebtsState: Dispatch<SetStateAction<Debt[]>>,
@@ -51,7 +52,7 @@ interface NewRepaymentFormInputs extends FieldValues {
     },
 };
 
-export default function NewRepaymentCard(props:NewRepaymentCardProps) {
+export default function NewRepaymentCard(props: NewRepaymentCardProps) {
 
     const people = props.peopleOwed.map((debt) => {
         return [debt.person.id, debt.person.name];
@@ -59,8 +60,9 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
     const peopleOptions = people.map((tuple) => {
         return <option key={tuple[0]} value={tuple[0]}>{tuple[1]}</option>;
     });
-    
+
     const {
+        control,
         getValues,
         handleSubmit,
         register,
@@ -69,7 +71,7 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
         defaultValues: {
             repayment: {
                 date: new Date().toISOString().slice(0, 10),
-                amount: props.peopleOwed[0] ? Math.abs(props.peopleOwed[0].cumulativeSum) / 100 : 0,
+                amount: props.peopleOwed[0] ? Math.abs(props.peopleOwed[0].cumulativeSum) : 0,
             },
             repayer: props.peopleOwed[0] && props.peopleOwed[0].cumulativeSum < -1 ? 'self' : 'other person',
             person: {
@@ -77,42 +79,45 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
             }
         }
     });
-    
+
     const [formErrorsState, setFormErrorsState] = useState<NewRepaymentFormErrors>({});
 
-    const onSubmit = (formData:NewRepaymentFormInputs) =>  {
-        props.setModeState({mode: 'create repayment'});
+    const onSubmit = (formData: NewRepaymentFormInputs) => {
+        props.setModeState({ mode: 'create repayment' });
         post('/repayments', formData)
             .then((response) => response.json())
-            .then((data:NewRepaymentFormResponse) => {
+            .then((data: NewRepaymentFormResponse) => {
                 if ("errors" in data) {
-                    props.setModeState({mode: 'new repayment'});
+                    props.setModeState({ mode: 'new repayment' });
                 } else if ("debts" in data) {
                     setFormErrorsState({});
-                    props.setDebtsState((data as {"debts": Debt[]}).debts);
-                    props.setModeState({mode: "idle"});
+                    props.setDebtsState((data as { "debts": Debt[] }).debts);
+                    props.setModeState({ mode: "idle" });
                     props.setFlashState({
                         counter: props.flashState.counter + 1,
                         messages: [["success", "Repayment was successfully created."]]
                     });
                 }
             })
-            .catch((error:unknown) => {
+            .catch((error: unknown) => {
                 console.log(error);
                 props.setFlashState({
                     counter: props.flashState.counter + 1,
                     messages: [["danger", "There was an error with the network request."]]
                 })
-                props.setModeState({mode: "idle"});
+                props.setModeState({ mode: "idle" });
             })
     };
-    
-    const [personState, setPersonState] = useState<Person>(props.peopleOwed[0]?.person); 
-    
+
+    const [personState, setPersonState] = useState<Person>(props.peopleOwed[0]?.person);
+
     const handlePersonChange = () => {
         const newPerson = props.peopleOwed.find((debt) => debt.person.id == getValues('person.id'));
         if (newPerson) {
-            setValue('repayment', { date: getValues('repayment.date'), amount: Math.abs(newPerson.cumulativeSum) / 100});
+            setValue('repayment', {
+                date: getValues('repayment.date'),
+                amount: Math.abs(newPerson.cumulativeSum)
+            });
             setValue('repayer', newPerson.cumulativeSum < -1 ? 'self' : 'other person');
             setPersonState(newPerson.person);
         }
@@ -150,7 +155,7 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
                                 <select
                                     className="input"
                                     id="person_id"
-                                    {...register("person.id", { onChange: handlePersonChange})}
+                                    {...register("person.id", { onChange: handlePersonChange })}
                                 >
                                     {peopleOptions}
                                 </select>
@@ -165,12 +170,17 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
                         <div className="field amount">
                             <label className="label" htmlFor="repayment_amount_paid">Amount</label>
                             <div className="control has-icons-left">
-                                <input
-                                    className={"input" + (formErrorsState.amount ? " is-danger" : "")}
-                                    id="repayment_amount_paid"
-                                    step="0.01"
-                                    type="number"
-                                    {...register("repayment.amount")}
+                                <Controller
+                                    name="repayment.amount"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <CurrencyInput
+                                            className={"input" + (formErrorsState.amount ? " is-danger" : "")}
+                                            id="repayment_amount_paid"
+                                            onValueChange={(value) => { field.onChange(value); }}
+                                            value={field.value}
+                                        />
+                                    )}
                                 />
                                 <span className="icon is-small is-left">
                                     <i className="fa-solid fa-dollar-sign" aria-hidden="true"></i>
@@ -183,7 +193,7 @@ export default function NewRepaymentCard(props:NewRepaymentCardProps) {
                                 <label className="radio">
                                     <input type="radio" {...register("repayer")} value="self" /> from you to {personState.name}
                                 </label>
-                                <br/>
+                                <br />
                                 <label className="radio">
                                     <input type="radio" {...register("repayer")} value="other person" /> from {personState.name} to you
                                 </label>
