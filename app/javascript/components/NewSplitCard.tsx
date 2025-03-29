@@ -13,14 +13,15 @@ import type {
     ModeState,
 } from '../types';
 
-import { useState }  from 'react';
-import { useForm }  from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import { post } from '../server';
+import CurrencyInput from './CurrencyInput';
 
 interface NewSplitCardProps {
     flashState: FlashState,
-    handleCloseCard: (event:SyntheticEvent) => void,
+    handleCloseCard: (event: SyntheticEvent) => void,
     modeState: ModeState,
     peopleOptions: ReactNode,
     setDebtsState: Dispatch<SetStateAction<Debt[]>>,
@@ -54,40 +55,41 @@ interface NewSplitFormInputs extends FieldValues {
     },
 };
 
-export default function NewSplitCard(props:NewSplitCardProps) {
+export default function NewSplitCard(props: NewSplitCardProps) {
 
     const {
+        control,
         handleSubmit,
         register,
     } = useForm<NewSplitFormInputs>();
-    
+
     const [formErrorsState, setFormErrorsState] = useState<NewSplitFormErrors>({});
 
-    const onSubmit = (formData:NewSplitFormInputs) =>  {
-        props.setModeState({mode: 'create split'});
+    const onSubmit = (formData: NewSplitFormInputs) => {
+        props.setModeState({ mode: 'create split' });
         post('/splits', formData)
             .then((response) => response.json())
-            .then((data:NewSplitFormResponse) => {
+            .then((data: NewSplitFormResponse) => {
                 if ("errors" in data) {
                     setFormErrorsState(data.errors);
-                    props.setModeState({mode: 'new split'});
+                    props.setModeState({ mode: 'new split' });
                 } else if ("debts" in data) {
                     setFormErrorsState({});
-                    props.setDebtsState((data as {"debts": Debt[]}).debts);
-                    props.setModeState({mode: "idle"});
+                    props.setDebtsState((data as { "debts": Debt[] }).debts);
+                    props.setModeState({ mode: "idle" });
                     props.setFlashState({
                         counter: props.flashState.counter + 1,
                         messages: [["success", "Split was successfully created."]]
                     });
                 }
             })
-            .catch((error:unknown) => {
+            .catch((error: unknown) => {
                 console.log(error);
                 props.setFlashState({
                     counter: props.flashState.counter + 1,
                     messages: [["danger", "There was an error with the network request."]]
                 })
-                props.setModeState({mode: "idle"});
+                props.setModeState({ mode: "idle" });
             })
     };
 
@@ -138,14 +140,17 @@ export default function NewSplitCard(props:NewSplitCardProps) {
                         <div className="field">
                             <label className="label" htmlFor="split_amount">Amount</label>
                             <div className="control has-icons-left">
-                                <input
-                                    className={"input" + (formErrorsState.amount ? " is-danger" : "")}
-                                    defaultValue="0.00"
-                                    id="split_amount"
-                                    min="0"
-                                    step="0.01"
-                                    type="number"
-                                    {...register("split.amount")}
+                                <Controller
+                                    name="split.amount"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <CurrencyInput
+                                            className={"input" + (formErrorsState.amount ? " is-danger" : "")}
+                                            id="split_amount"
+                                            onValueChange={(value) => { field.onChange(value); }}
+                                            value={field.value}
+                                        />
+                                    )}
                                 />
                                 <span className="icon is-small is-left"><i className="fa-solid fa-dollar-sign" aria-hidden="true"></i></span>
                             </div>
@@ -157,7 +162,7 @@ export default function NewSplitCard(props:NewSplitCardProps) {
                                 <label className="radio">
                                     <input type="radio" {...register("owed")} value="self" defaultChecked={true} /> paid by you and split with...
                                 </label>
-                                <br/>
+                                <br />
                                 <label className="radio">
                                     <input type="radio" {...register("owed")} value="other person" /> paid by...
                                 </label>
