@@ -16,5 +16,4 @@ RSpec.describe Reason, type: :model do
       expect(reason.people).to contain_exactly(person_one, person_two, person_three)
     end
   end
-
 end

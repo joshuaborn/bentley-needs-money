@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Debt, type: :model do
-
   context "class method" do
     let(:first_person) { FactoryBot.create(:person) }
     let(:second_person) { FactoryBot.create(:person) }
