@@ -6,10 +6,11 @@ import Currency from './Currency';
 interface DebtRowProps {
     debt: Debt,
     setModeState: Dispatch<SetStateAction<ModeState>>,
+    useTable?: boolean,
 };
 
-export default function DebtRow(props:DebtRowProps) {
-    const handleClick = (event:SyntheticEvent): void => {
+export default function DebtRow(props: DebtRowProps) {
+    const handleClick = (event: SyntheticEvent): void => {
         event.preventDefault();
         props.setModeState({
             mode: "edit repayment",
@@ -26,23 +27,34 @@ export default function DebtRow(props:DebtRowProps) {
             <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} /> paid to {props.debt.person.name}
         </>;
     }
-    return (
-        <a key={props.debt.id} className="debt repayment grid is-gap-0" onClick={handleClick}>
-            <div className="cell debt-date is-hidden-mobile">
-                {props.debt.reason.date}
-            </div>
-            <div className="cell debt-payee">
-            </div>
-            <div className="cell debt-memo is-row-start-2-mobile">
-            </div>
-            <div className="cell debt-amount-paid is-col-span-2-mobile has-text-right">
-            </div>
-            <div className="cell debt-amount is-col-span-2 has-text-right">
-                {amountOwed}
-            </div>
-            <div className="cell debt-cumulative-sum has-text-right is-hidden-mobile">
-                <Currency key={props.debt.id.toString() + "-cumulative-sum"} cents={props.debt.cumulativeSum} />
-            </div>
-        </a>
-    );
+    if (props.useTable) {
+        return (
+            <tr onClick={handleClick} className="debt-row repayment">
+                <td>{props.debt.reason.date}</td>
+                <td></td>
+                <td></td>
+                <td className="has-text-right"></td>
+                <td className="has-text-right" colSpan={2}>
+                    {amountOwed}
+                </td>
+                <td className="has-text-right">
+                    <Currency key={props.debt.id.toString() + "-cumulative-sum"} cents={props.debt.cumulativeSum} />
+                </td>
+            </tr>
+        );
+    } else {
+        return (
+            <a key={props.debt.id} className="debt repayment grid is-gap-0" onClick={handleClick}>
+                <div className="cell debt-payee">
+                </div>
+                <div className="cell debt-memo is-row-start-2-mobile">
+                </div>
+                <div className="cell debt-amount-paid is-col-span-2-mobile has-text-right">
+                </div>
+                <div className="cell debt-amount is-col-span-2 has-text-right">
+                    {amountOwed}
+                </div>
+            </a>
+        );
+    }
 }

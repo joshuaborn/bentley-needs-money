@@ -2,7 +2,10 @@
   --main-border: 1px solid var(--bulma-border);
 }
 
-html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
+html:has(.outer-flex),
+body:has(.outer-flex),
+#debts-index-app,
+.outer-flex {
   height: 100%;
   overflow: hidden;
 }
@@ -87,30 +90,14 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
   margin: 0.5rem;
 }
 
-.container > .title {
+.container>.title {
   margin-top: 1rem;
-}
-
-.debts .debts-headings, .debt.grid {
-  margin-bottom: 0;
 }
 
 .debts {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.debts .debts-headings {
-  flex: 0 0 auto;
-}
-
-.debts .debts-content {
-  flex: 1 1 auto;
-}
-
-.debts .debt.repayment {
-  background-color: var(--bulma-border);
 }
 
 .scroller {
@@ -128,7 +115,7 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
 .connection {
   align-items: center;
   display: flex;
-  flex-flow: row ;
+  flex-flow: row;
   padding-bottom: 0.5rem;
 }
 
@@ -136,7 +123,7 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
   flex-grow: 1;
 }
 
-.connection .description .name  {
+.connection .description .name {
   color: var(--bulma-text-bold);
 }
 
@@ -145,7 +132,7 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
 }
 
 @media screen and (max-width: 1023px) {
-  body > .container  {
+  body>.container {
     padding: 0 1rem;
   }
 
@@ -212,7 +199,17 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
     min-height: 0;
   }
 
-  .debts .date, .connection-title {
+  .debts .debts-headings {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+  }
+
+  .debts .debts-content {
+    flex: 1 1 auto;
+  }
+
+  .debts .date,
+  .connection-title {
     background-color: var(--bulma-body-background-color);
     border-top: var(--main-border);
     color: var(--bulma-text-bold);
@@ -220,19 +217,27 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
     padding: 0.25rem 1rem;
   }
 
-  .debt.grid, .connection {
+  .debts .debt,
+  .connection {
     background-color: var(--bulma-background);
     border-top: var(--main-border);
     color: inherit;
     margin-bottom: 0;
     padding: 0.25rem 0.5rem;
   }
-    
-  .debt.grid .debt-payee, .debt.grid .debt-dollar-amount-paid {
+
+  .debts .debt.repayment {
+    background-color: var(--bulma-border);
+  }
+
+  .debt .debt-payee,
+  .debt .debt-dollar-amount-paid {
     color: var(--bulma-text-bold);
   }
 
-  .debt.grid .debt-memo, .debt.grid .debt-dollar-amount, .connection .email {
+  .debt .debt-memo,
+  .debt .debt-dollar-amount,
+  .connection .email {
     font-size: 0.9rem;
   }
 
@@ -255,7 +260,7 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
   .action-bar .buttons {
     justify-content: start;
   }
-  
+
   .action-bar .buttons .button {
     flex-direction: row;
   }
@@ -272,31 +277,50 @@ html:has(.outer-flex), body:has(.outer-flex), #debts-index-app, .outer-flex {
     order: 2;
   }
 
-  .debts {
-    border-left: var(--main-border);
+  .debts table {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
-    
-  .debts .cell {
+
+  .debts table thead {
+    display: table;
+    flex: 0 0 auto;
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .debts table thead tr th {
+    border: var(--main-border);
+    border-top: none;
+    color: var(--bulma-body-color);
+    font-size: 0.8rem;
+    font-weight: var(--bulma-body-weight);
+    padding: 0.25rem 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .debts table tbody.scroller {
+    border: var(--main-border);
+    border-top: none;
+    flex: 1 1 auto;
+    display: block;
+    overflow-y: auto;
+  }
+
+  .debts table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .debts table tbody tr td {
+    cursor: pointer;
     padding: 0.25rem 0.5rem;
   }
 
-  .debts .debts-headings, .debts .debt {
-    padding: 0 0.5rem;
-  }
-   
-  .debts .debts-headings {
-    border-bottom: var(--main-border);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-  }
-    
-  .debts .debts-headings div .cell:nth-last-child(n+2) {
-    border-right: var(--main-border);
-  }
-
-  .debts .debt {
-    border-bottom: var(--main-border);
-    color: var(--bulma-text-bold);
+  .debts table tbody tr.repayment {
+    background-color: var(--bulma-border);
   }
 
   .connection-buttons {

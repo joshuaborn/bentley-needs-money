@@ -9,7 +9,7 @@ interface MainPanelProps {
     setModeState: Dispatch<SetStateAction<ModeState>>,
 };
 
-export default function MainPanel(props:MainPanelProps) {
+export default function MainPanel(props: MainPanelProps) {
     let lastDate = "";
     const debtsContent = props.debts.reduce((accumulator, debt) => {
         let rowNode;
@@ -33,19 +33,33 @@ export default function MainPanel(props:MainPanelProps) {
     return (
         <div className="main-panel column is-three-quarters-desktop">
             <div className="debts">
-                <div className="debts-headings fixed-grid has-3-cols-mobile has-7-cols-tablet">
-                    <div className="grid is-gap-0 is-hidden-mobile">
-                        <div className="cell">Date</div>
-                        <div className="cell">Payee</div>
-                        <div className="cell">Memo</div>
-                        <div className="cell has-text-right">Amount</div>
-                        <div className="cell is-col-span-2 has-text-right">Amount Owed</div>
-                        <div className="cell has-text-right">Cumulative Sum</div>
-                    </div>
-                </div>
-                <div className="debts-content fixed-grid has-3-cols-mobile has-7-cols-tablet scroller">
+                {/* Mobile Grid View (Bulma) */}
+                <div className="debts-content fixed-grid has-3-cols-mobile scroller is-hidden-tablet">
                     {debtsContent}
                 </div>
+
+                {/* Table View for Tablet and Above */}
+                <table className="table is-fullwidth is-hoverable is-hidden-mobile">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Payee</th>
+                            <th>Memo</th>
+                            <th className="has-text-right">Amount</th>
+                            <th className="has-text-right" colSpan={2}>Amount Owed</th>
+                            <th className="has-text-right">Cumulative Sum</th>
+                        </tr>
+                    </thead>
+                    <tbody className="scroller">
+                        {props.debts.map(debt => {
+                            if (debt.reason.type === 'Repayment') {
+                                return <RepaymentRow key={debt.id} debt={debt} setModeState={props.setModeState} useTable={true} />;
+                            } else {
+                                return <SplitRow key={debt.id} debt={debt} setModeState={props.setModeState} useTable={true} />;
+                            }
+                        })}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
