@@ -18,4 +18,25 @@ class DebtsController < ApplicationController
       end
     end
   end
+
+  def update
+    debt = Debt.find(params[:id])
+    if debt.ower == current_person
+      debt.update_column(:ower_reconciled, params[:reconciled])
+      render json: {
+        debt: {
+          reconciled: debt.reload.ower_reconciled
+        }
+      }
+    elsif debt.owed == current_person
+      debt.update_column(:owed_reconciled, params[:reconciled])
+      render json: {
+        debt: {
+          reconciled: debt.reload.owed_reconciled
+        }
+      }
+    else
+      render status: 404, json: {}
+    end
+  end
 end

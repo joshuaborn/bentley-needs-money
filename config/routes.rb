@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   }
   resources :connections, only: [ :index, :create ]
   resources :connection_requests, only: [ :new, :create, :destroy ]
-  resources :debts, only: [ :index ]
+  resources :debts, only: [ :index, :update ]
   resources :splits, only: [ :create, :update, :destroy ]
   resources :repayments, only: [ :create, :update, :destroy ]
   resources :people, except: [ :show ]
