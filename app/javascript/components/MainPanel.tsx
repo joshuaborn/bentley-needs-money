@@ -42,6 +42,7 @@ export default function MainPanel(props: MainPanelProps) {
                 <table className="table is-fullwidth is-hoverable is-hidden-mobile">
                     <thead>
                         <tr>
+                            <th className="has-text-centered narrow-checkbox-column"></th>
                             <th>Date</th>
                             <th>Payee</th>
                             <th>Memo</th>
@@ -61,6 +62,6 @@ export default function MainPanel(props: MainPanelProps) {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 }

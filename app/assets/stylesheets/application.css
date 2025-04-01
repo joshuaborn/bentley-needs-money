@@ -131,6 +131,10 @@ body:has(.outer-flex),
   white-space: nowrap;
 }
 
+.narrow-checkbox-column {
+  width: 40px !important;
+}
+
 @media screen and (max-width: 1023px) {
   body>.container {
     padding: 0 1rem;
@@ -231,14 +235,18 @@ body:has(.outer-flex),
   }
 
   .debt .debt-payee,
-  .debt .debt-dollar-amount-paid {
+  .debt .debt-amount-paid {
     color: var(--bulma-text-bold);
   }
 
   .debt .debt-memo,
-  .debt .debt-dollar-amount,
+  .debt .debt-amount,
   .connection .email {
     font-size: 0.9rem;
+  }
+
+  .debt .debt-amount input[type="checkbox"] {
+    margin-left: 0.5rem;
   }
 
   .container:has(.connection) {

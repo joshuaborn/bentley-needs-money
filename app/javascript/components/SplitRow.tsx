@@ -1,6 +1,10 @@
 import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 
-import type { Debt, ModeState } from '../types';
+import { useState } from 'react';
+
+import type { Debt, ModeState, UpdateReconciledResponse } from '../types';
+
+import { patch } from '../server';
 import Currency from './Currency';
 
 interface DebtRowProps {
@@ -12,12 +16,13 @@ interface DebtRowProps {
 export default function SplitRow(props: DebtRowProps) {
     const handleClick = (event: SyntheticEvent): void => {
         event.preventDefault();
-        props.setModeState({
-            mode: "edit split",
-            splitId: props.debt.reason.id
-        });
+        if (!(event.target instanceof HTMLInputElement && event.target.type === 'checkbox')) {
+            props.setModeState({
+                mode: "edit split",
+                splitId: props.debt.reason.id
+            });
+        }
     };
-    const checkYNAB = props.debt.reconciled ? <i className="fa-regular fa-square-check" aria-hidden="true"></i> : <></>;
     let amountOwed = <></>;
     if (props.debt.person.role === 'Owed') {
         amountOwed = <>
@@ -28,12 +33,35 @@ export default function SplitRow(props: DebtRowProps) {
             {props.debt.person.name} owes <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} />
         </>;
     }
+    const [isChecked, setIsChecked] = useState(props.debt.reconciled);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const newCheckedState = e.target.checked;
+        setIsUpdating(true);
+        patch('/debts/' + props.debt.id.toString(), { reconciled: newCheckedState })
+            .then((response) => response.json())
+            .then((data: UpdateReconciledResponse) => {
+                setIsChecked(data.debt.reconciled);
+            })
+            .catch((error: unknown) => {
+                console.log(error);
+                props.setModeState({ mode: "idle" });
+            }).finally(() => { setIsUpdating(false) })
+    };
     if (props.useTable) {
         return (
             <tr onClick={handleClick} className="debt-row">
+                <td className="has-text-centered narrow-checkbox-column">
+                    <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={handleChange}
+                        disabled={isUpdating}
+                    />
+                </td>
                 <td>{props.debt.reason.date}</td>
                 <td>{props.debt.reason.payee}</td>
-                <td>{checkYNAB} {props.debt.reason.memo}</td>
+                <td>{props.debt.reason.memo}</td>
                 <td className="has-text-right">
                     <Currency key={props.debt.id.toString() + "-amount-paid"} cents={props.debt.reason.amount} />
                 </td>
@@ -52,13 +80,19 @@ export default function SplitRow(props: DebtRowProps) {
                     {props.debt.reason.payee}
                 </div>
                 <div className="cell debt-memo is-row-start-2-mobile">
-                    {checkYNAB} {props.debt.reason.memo}
+                    {props.debt.reason.memo}
                 </div>
                 <div className="cell debt-amount-paid is-col-span-2-mobile has-text-right">
                     <Currency key={props.debt.id.toString() + "-amount-paid"} cents={props.debt.reason.amount} />
                 </div>
                 <div className="cell debt-amount is-col-span-2 has-text-right">
                     {amountOwed}
+                    <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={handleChange}
+                        disabled={isUpdating}
+                    />
                 </div>
             </a>
         );

@@ -1,6 +1,10 @@
 import type { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 
-import type { Debt, ModeState } from '../types';
+import { useState } from 'react';
+
+import type { Debt, ModeState, UpdateReconciledResponse } from '../types';
+
+import { patch } from '../server';
 import Currency from './Currency';
 
 interface DebtRowProps {
@@ -12,10 +16,12 @@ interface DebtRowProps {
 export default function DebtRow(props: DebtRowProps) {
     const handleClick = (event: SyntheticEvent): void => {
         event.preventDefault();
-        props.setModeState({
-            mode: "edit repayment",
-            repaymentId: props.debt.reason.id
-        });
+        if (!(event.target instanceof HTMLInputElement && event.target.type === 'checkbox')) {
+            props.setModeState({
+                mode: "edit repayment",
+                repaymentId: props.debt.reason.id
+            });
+        }
     };
     let amountOwed = <></>;
     if (props.debt.person.role === 'Owed') {
@@ -27,9 +33,32 @@ export default function DebtRow(props: DebtRowProps) {
             <Currency key={props.debt.id.toString() + "-amount"} cents={props.debt.amount} /> paid to {props.debt.person.name}
         </>;
     }
+    const [isChecked, setIsChecked] = useState(props.debt.reconciled);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const newCheckedState = e.target.checked;
+        setIsUpdating(true);
+        patch('/debts/' + props.debt.id.toString(), { reconciled: newCheckedState })
+            .then((response) => response.json())
+            .then((data: UpdateReconciledResponse) => {
+                setIsChecked(data.debt.reconciled);
+            })
+            .catch((error: unknown) => {
+                console.log(error);
+                props.setModeState({ mode: "idle" });
+            }).finally(() => { setIsUpdating(false) })
+    };
     if (props.useTable) {
         return (
             <tr onClick={handleClick} className="debt-row repayment">
+                <td className="has-text-centered narrow-checkbox-column">
+                    <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={handleChange}
+                        disabled={isUpdating}
+                    />
+                </td>
                 <td>{props.debt.reason.date}</td>
                 <td></td>
                 <td></td>
@@ -53,6 +82,12 @@ export default function DebtRow(props: DebtRowProps) {
                 </div>
                 <div className="cell debt-amount is-col-span-2 has-text-right">
                     {amountOwed}
+                    <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={handleChange}
+                        disabled={isUpdating}
+                    />
                 </div>
             </a>
         );

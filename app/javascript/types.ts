@@ -8,7 +8,7 @@ export type ModeState =
     | { mode: 'create repayment' }
     | { mode: 'edit repayment', repaymentId: number }
     | { mode: 'update repayment', repaymentId: number }
-;
+    ;
 
 export interface FlashState {
     counter: number,
@@ -41,4 +41,10 @@ export interface Debt {
     person: Person,
     reason: Reason,
     reconciled: boolean
+}
+
+export interface UpdateReconciledResponse {
+    debt: {
+        reconciled: boolean
+    }
 }
