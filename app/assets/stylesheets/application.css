@@ -4,6 +4,8 @@
 
 html:has(.outer-flex),
 body:has(.outer-flex) {
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
@@ -17,6 +19,7 @@ body:has(.outer-flex),
 .outer-flex {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .outer-flex .action-bar {
@@ -25,6 +28,7 @@ body:has(.outer-flex),
 
 .outer-flex .inner-flex {
   flex: 1 1 auto;
+  margin-bottom: 0 !important;
   min-height: 0;
 }
 
@@ -188,20 +192,6 @@ body:has(.outer-flex),
 
 @media screen and (max-width: 768px) {
 
-  html:has(.outer-flex),
-  body:has(.outer-flex) {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .outer-flex {
-    flex: 1 1 auto;
-  }
-
-  .action-bar {
-    flex: 0 0 auto;
-  }
-
   .columns {
     margin-top: 0;
   }
@@ -214,7 +204,6 @@ body:has(.outer-flex),
   .inner-flex {
     display: flex;
     flex-direction: column-reverse;
-    margin-bottom: 0 !important;
   }
 
   .inner-flex .main-panel {
@@ -306,10 +295,15 @@ body:has(.outer-flex),
     order: 2;
   }
 
-  .debts table {
+  .debts {
+    display: block;
     height: 100%;
+  }
+
+  .debts table {
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
 
   .debts table thead {
@@ -330,10 +324,10 @@ body:has(.outer-flex),
   }
 
   .debts table tbody.scroller {
-    border: var(--main-border);
     border-top: none;
-    flex: 1 1 auto;
+    border: var(--main-border);
     display: block;
+    flex: 1 1 auto;
     overflow-y: auto;
   }
 
