@@ -1,4 +1,4 @@
-import { useState }  from 'react';
+import { useState } from 'react';
 
 import type { ModeState, FlashState, Person, Debt } from '../types';
 import ActionBar from './ActionBar';
@@ -11,7 +11,7 @@ interface AppProps {
     initialDebts: Debt[],
 };
 
-export default function App({connectedPeople, initialDebts, initialFlash}:AppProps) {
+export default function App({ connectedPeople, initialDebts, initialFlash }: AppProps) {
     const [flashState, setFlashState] = useState<FlashState>({
         counter: 0,
         messages: initialFlash
@@ -19,19 +19,19 @@ export default function App({connectedPeople, initialDebts, initialFlash}:AppPro
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
     const [debtsState, setDebtsState] = useState<Debt[]>(initialDebts);
     const peopleOwedMap = debtsState.reduce(
-        function(accumulator, debt) {
+        function (accumulator, debt) {
             const currentEntry = accumulator.get(debt.person.id);
             if (typeof currentEntry === "undefined" || (currentEntry.reason.date < debt.reason.date)) {
                 accumulator.set(debt.person.id, debt);
             }
             return accumulator;
         },
-        new Map<number,Debt>()
+        new Map<number, Debt>()
     );
     const peopleOwed = Array.from(peopleOwedMap).map(([, value]) => (value));
-    
+
     return (
-        <div className="outer-flex">
+        <>
             <div className="inner-flex columns is-gapless">
                 <SidePanel
                     connectedPeople={connectedPeople}
@@ -52,6 +52,6 @@ export default function App({connectedPeople, initialDebts, initialFlash}:AppPro
                 modeState={modeState}
                 setModeState={setModeState}
             />
-        </div>
+        </>
     );
 }

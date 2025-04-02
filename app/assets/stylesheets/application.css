@@ -3,10 +3,14 @@
 }
 
 html:has(.outer-flex),
+body:has(.outer-flex) {
+  height: 100%;
+}
+
+html:has(.outer-flex),
 body:has(.outer-flex),
 #debts-index-app,
 .outer-flex {
-  height: 100%;
   overflow: hidden;
 }
 
@@ -21,7 +25,6 @@ body:has(.outer-flex),
 
 .outer-flex .inner-flex {
   flex: 1 1 auto;
-  margin-bottom: 0;
   min-height: 0;
 }
 
@@ -184,6 +187,21 @@ body:has(.outer-flex),
 }
 
 @media screen and (max-width: 768px) {
+
+  html:has(.outer-flex),
+  body:has(.outer-flex) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .outer-flex {
+    flex: 1 1 auto;
+  }
+
+  .action-bar {
+    flex: 0 0 auto;
+  }
+
   .columns {
     margin-top: 0;
   }
@@ -196,6 +214,7 @@ body:has(.outer-flex),
   .inner-flex {
     display: flex;
     flex-direction: column-reverse;
+    margin-bottom: 0 !important;
   }
 
   .inner-flex .main-panel {
@@ -203,13 +222,9 @@ body:has(.outer-flex),
     min-height: 0;
   }
 
-  .debts .debts-headings {
-    flex: 0 0 auto;
-    margin-bottom: 0;
-  }
-
   .debts .debts-content {
     flex: 1 1 auto;
+    margin-bottom: 0;
   }
 
   .debts .date,
@@ -259,6 +274,12 @@ body:has(.outer-flex),
 }
 
 @media screen and (min-width: 769px) {
+
+  #debts-index-app,
+  .outer-flex {
+    height: 100%;
+  }
+
   .action-bar {
     border-bottom: var(--main-border);
     border-top: none;
