@@ -2,9 +2,12 @@ interface CurrencyProps {
     cents: number,
 };
 
-export default function Currency(props:CurrencyProps) {
-    const dollars = props.cents / 100;
-    return dollars < 0 ?
-        <>-${(-1 * dollars).toFixed(2)}</> :
-        <>${dollars.toFixed(2)}</>;
+export default function Currency(props: CurrencyProps) {
+    const isNegative = props.cents < 0;
+    const dollars = Math.abs(props.cents / 100);
+    const dollarsString = dollars.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    return isNegative ? <>-${dollarsString}</> : <>${dollarsString}</>;
 }
