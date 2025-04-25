@@ -1,4 +1,6 @@
 module ApplicationHelper
+  include Pagy::Frontend
+
   def bulma_notification_name(rails_name)
     hash_map = {
       notice: "info",

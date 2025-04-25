@@ -1,3 +1,4 @@
+<%== pagy_bulma_nav(@pagy) if @pagy.pages > 1 %>
 <table class="table is-striped is-fullwidth">
     <thead>
         <tr>
@@ -20,3 +21,4 @@
         <% end %>
     </tbody>
 </table>
+<%== pagy_bulma_nav(@pagy) if @pagy.pages > 1 %>
