@@ -1,0 +1,6 @@
+<h2>Account Confirmation</h2>
+
+<p><%= @person.name %></p>
+<p><%= @person.email %></p>
+<p><%= @person.created_at.in_time_zone("America/New_York").strftime("%a %e %b %y %l:%M:%S %P") %></p>
+<p><%= @person.confirmed_at.in_time_zone("America/New_York").strftime("%a %e %b %y %l:%M:%S %P") %></p>
