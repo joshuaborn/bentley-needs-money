@@ -94,6 +94,9 @@ jobs:
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:create db:schema:load
 
+      - name: Precompile assets
+        run: bundle exec rails assets:precompile
+
       - name: Run specs with RSpec
         env:
           RAILS_ENV: test
