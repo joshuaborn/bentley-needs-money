@@ -72,6 +72,7 @@ RSpec.configure do |config|
   Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
 
   config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
   config.before(:each, type: :controller) do
     Rails.application.reload_routes_unless_loaded
   end

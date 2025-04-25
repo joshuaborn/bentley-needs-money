@@ -1,0 +1,22 @@
+<table class="table is-striped is-fullwidth">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email Address</th>
+            <th>Requested On</th>
+            <th>Confirmed On</th>
+            <th>Connections</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @people.each do |person| %>
+            <tr>
+                <td><%= person.name %></td>
+                <td><%= person.email %></td>
+                <td><%= person.created_at.in_time_zone("America/New_York").strftime("%a %e %b %y %l:%M:%S %P") %></td>
+                <td><%= person.confirmed_at.in_time_zone("America/New_York").strftime("%a %e %b %y %l:%M:%S %P") if person.confirmed_at %></td>
+                <td><%= person.connections_count %>
+            </tr>
+        <% end %>
+    </tbody>
+</table>

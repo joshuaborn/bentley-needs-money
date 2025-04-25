@@ -10,5 +10,8 @@ Rails.application.routes.draw do
   resources :splits, only: [ :create, :update, :destroy ]
   resources :repayments, only: [ :create, :update, :destroy ]
   resources :people, except: [ :show ]
+  namespace :admin do
+    resources :people, only: [ :index ]
+  end
   root "welcome#index"
 end
