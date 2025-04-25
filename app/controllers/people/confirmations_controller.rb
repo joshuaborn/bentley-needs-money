@@ -7,7 +7,9 @@ class People::ConfirmationsController < Devise::ConfirmationsController
 
   def show
     super do |person|
-      AdminMailer.account_confirmation_email(person).deliver_later
+      if person.persisted?
+        AdminMailer.account_confirmation_email(person).deliver_later
+      end
     end
   end
 

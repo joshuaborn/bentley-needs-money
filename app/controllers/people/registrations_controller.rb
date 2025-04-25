@@ -1,7 +1,9 @@
 class People::RegistrationsController < Devise::RegistrationsController
   def create
     super do |person|
-      AdminMailer.account_creation_email(person).deliver_later
+      if person.persisted?
+        AdminMailer.account_creation_email(person).deliver_later
+      end
     end
   end
 
