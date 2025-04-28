@@ -1,4 +1,6 @@
 class People::RegistrationsController < Devise::RegistrationsController
+  invisible_captcha only: [ :create ], scope: :person, honeypot: :username
+
   def create
     super do |person|
       if person.persisted?
