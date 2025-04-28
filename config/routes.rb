@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :people, except: [ :show ]
   namespace :admin do
     resources :people, only: [ :index ]
+    resources :bot_account_requests, only: [ :index ]
   end
   root "welcome#index"
 end

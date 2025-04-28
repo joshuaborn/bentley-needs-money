@@ -1,0 +1,22 @@
+<%== pagy_bulma_nav(@pagy) if @pagy.pages > 1 %>
+<table class="table is-striped is-fullwidth">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email Address</th>
+            <th>Requested On</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @requests.each do |request| %>
+            <tr>
+                <td><%= request.username %></td>
+                <td><%= request.name %></td>
+                <td><%= request.email %></td>
+                <td><%= request.created_at.in_time_zone("America/New_York").strftime("%a %e %b %y %l:%M:%S %P") %></td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
+<%== pagy_bulma_nav(@pagy) if @pagy.pages > 1 %>
