@@ -1,44 +1,45 @@
 require 'rails_helper'
 
-RSpec.describe RepaymentsController, type: :controller do
+RSpec.describe "Repayments", type: :request do
   let(:current_user) { FactoryBot.create(:person) }
   let(:connected_user) { FactoryBot.create(:person) }
   let(:unconnected_user) { FactoryBot.create(:person) }
 
   before do
-    @request.env["devise.mapping"] = Devise.mappings[:person]
     Connection.create(from: current_user, to: connected_user)
     Connection.create(from: connected_user, to: current_user)
-    sign_in current_user
+    sign_in current_user, scope: :person
   end
 
   describe "#create" do
-    subject do
-      post :create, params: parameters, as: :json
+    subject(:request) do
+      post repayments_path, params: parameters, as: :json
     end
 
     shared_examples "status ok" do
       it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
+        request
+        expect(response).to have_http_status(:ok)
       end
     end
 
     shared_examples "create repayment" do
       it "creates a repayment" do
-        expect { subject }.to change(Repayment, :count).by(1)
+        expect { request }.to change(Repayment, :count).by(1)
       end
     end
 
     shared_examples "don't create repayment" do
       it "doesn't create a repayment" do
-        expect { subject }.not_to change(Repayment, :count)
+        expect { request }.not_to change(Repayment, :count)
       end
     end
 
     shared_examples "responds with debts" do
       it "responds with list of current user's debts" do
+        request
         decorator = DebtDecorator.new.for(current_user)
-        expect(subject.parsed_body["debts"]).to eq(
+        expect(response.parsed_body["debts"]).to eq(
           Debt.for_person(current_user).map { |debt| decorator.decorate(debt).as_json }
         )
       end
@@ -94,7 +95,8 @@ RSpec.describe RepaymentsController, type: :controller do
       include_examples "don't create repayment"
 
       it "responds with error message" do
-        expect(subject.parsed_body["errors"]).to eq({ "date"=>[ "can't be blank" ] })
+        request
+        expect(response.parsed_body["errors"]).to eq({ "date"=>[ "can't be blank" ] })
       end
     end
 
@@ -113,14 +115,15 @@ RSpec.describe RepaymentsController, type: :controller do
       include_examples "don't create repayment"
 
       it "returns a 404" do
-        expect(subject).to have_http_status(:missing)
+        request
+        expect(response).to have_http_status(:missing)
       end
     end
   end
 
   describe "#update" do
     before do
-      patch :update, params: parameters, as: :json
+      patch repayment_path(repayment.id), params: parameters, as: :json
     end
 
     shared_examples "ok status" do
@@ -234,8 +237,8 @@ RSpec.describe RepaymentsController, type: :controller do
   end
 
   describe "#destroy" do
-    subject do
-      delete :destroy, params: parameters, as: :json
+    subject(:request) do
+      delete repayment_path(Repayment.last.id), params: parameters, as: :json
     end
     let(:parameters) do
       {
@@ -256,11 +259,12 @@ RSpec.describe RepaymentsController, type: :controller do
       end
 
       it "returns a 200" do
-        expect(subject).to have_http_status(:ok)
+        request
+        expect(response).to have_http_status(:ok)
       end
 
       it "deletes a repayment" do
-        expect { subject }.to change(Repayment, :count).by(-1)
+        expect { request }.to change(Repayment, :count).by(-1)
       end
     end
 
@@ -277,11 +281,12 @@ RSpec.describe RepaymentsController, type: :controller do
       end
 
       it "returns a 404" do
-        expect(subject).to have_http_status(:missing)
+        request
+        expect(response).to have_http_status(:missing)
       end
 
       it "does not delete a repayment" do
-        expect { subject }.not_to change(Repayment, :count)
+        expect { request }.not_to change(Repayment, :count)
       end
     end
   end

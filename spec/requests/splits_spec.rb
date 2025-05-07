@@ -1,36 +1,37 @@
 require 'rails_helper'
 
-RSpec.describe SplitsController, type: :controller do
+RSpec.describe "Splits", type: :request do
   let(:current_user) { FactoryBot.create(:person) }
   let(:connected_user) { FactoryBot.create(:person) }
   let(:unconnected_user) { FactoryBot.create(:person) }
 
   before do
-    @request.env["devise.mapping"] = Devise.mappings[:person]
     Connection.create(from: current_user, to: connected_user)
     Connection.create(from: connected_user, to: current_user)
-    sign_in current_user
+    sign_in current_user, scope: :person
   end
 
   shared_examples "ok status" do
     it "returns a 200" do
-      expect(subject).to have_http_status(:ok)
+      request
+      expect(response).to have_http_status(:ok)
     end
   end
 
   describe "#create" do
-    subject do
-      post :create, params: parameters, as: :json
+    subject(:request) do
+      post splits_path, params: parameters, as: :json
     end
 
     shared_examples "create split" do
       it "creates an split" do
-        expect { subject }.to change(Split, :count).by(1)
+        expect { request }.to change(Split, :count).by(1)
       end
 
       it "responds with list of current user's debts" do
+        request
         decorator = DebtDecorator.new.for(current_user)
-        expect(subject.parsed_body["debts"]).to eq(
+        expect(response.parsed_body["debts"]).to eq(
           Debt.for_person(current_user).map { |debt| decorator.decorate(debt).as_json }
         )
       end
@@ -38,7 +39,7 @@ RSpec.describe SplitsController, type: :controller do
 
     shared_examples "doesn't create split" do
       it "doesn't create a split" do
-        expect { subject }.not_to change(Split, :count)
+        expect { request }.not_to change(Split, :count)
       end
     end
 
@@ -95,7 +96,8 @@ RSpec.describe SplitsController, type: :controller do
       include_examples "doesn't create split"
 
       it "responds with error message" do
-        expect(subject.parsed_body["errors"]).to eq({ "payee"=>[ "can't be blank" ] })
+        request
+        expect(response.parsed_body["errors"]).to eq({ "payee"=>[ "can't be blank" ] })
       end
     end
 
@@ -116,7 +118,8 @@ RSpec.describe SplitsController, type: :controller do
       include_examples "doesn't create split"
 
       it "returns a 501" do
-        expect(subject).to have_http_status(:error)
+        request
+        expect(response).to have_http_status(:error)
       end
     end
 
@@ -137,7 +140,8 @@ RSpec.describe SplitsController, type: :controller do
       include_examples "doesn't create split"
 
       it "returns a 404" do
-        expect(subject).to have_http_status(:missing)
+        request
+        expect(response).to have_http_status(:missing)
       end
     end
   end
@@ -171,7 +175,7 @@ RSpec.describe SplitsController, type: :controller do
         }
       end
 
-      before { patch :update, params: parameters, as: :json }
+      before { patch split_path(split.id), params: parameters, as: :json }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -224,7 +228,7 @@ RSpec.describe SplitsController, type: :controller do
         }
       end
 
-      before { patch :update, params: parameters, as: :json }
+      before { patch split_path(split.id), params: parameters, as: :json }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -240,7 +244,7 @@ RSpec.describe SplitsController, type: :controller do
     end
 
     context "when split is associated with an unconnected user" do
-      subject { patch :update, params: parameters, as: :json }
+      subject(:request) { patch split_path(split.id), params: parameters, as: :json }
       let!(:split) do
         Split.between_two_people(
           current_user,
@@ -267,21 +271,22 @@ RSpec.describe SplitsController, type: :controller do
       end
 
       it "returns a 404" do
-        expect(subject).to have_http_status(:missing)
+        request
+        expect(response).to have_http_status(:missing)
       end
 
       it "does not change the split's attributes" do
-        expect { subject }.not_to change { split.reload.attributes }
+        expect { request }.not_to change { split.reload.attributes }
       end
 
       it "does not change the associated debts's attributes" do
-        expect { subject }.not_to change { split.reload.debts.first.attributes }
+        expect { request }.not_to change { split.reload.debts.first.attributes }
       end
     end
   end
 
   describe "#destroy" do
-    subject { delete :destroy, params: parameters, as: :json }
+    subject(:request) { delete split_path(split.id), params: parameters, as: :json }
     let(:parameters) { { "id": split.id } }
 
     context "of an split associated with current user" do
@@ -298,7 +303,7 @@ RSpec.describe SplitsController, type: :controller do
       include_examples "ok status"
 
       it "deletes an split" do
-        expect { subject }.to change(Split, :count).by(-1)
+        expect { request }.to change(Split, :count).by(-1)
       end
     end
 
@@ -314,11 +319,12 @@ RSpec.describe SplitsController, type: :controller do
       end
 
       it "returns a 404" do
-        expect(subject).to have_http_status(:missing)
+        request
+        expect(response).to have_http_status(:missing)
       end
 
       it "does not delete an split" do
-        expect { subject }.not_to change(Split, :count)
+        expect { request }.not_to change(Split, :count)
       end
     end
   end

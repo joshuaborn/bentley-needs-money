@@ -1,32 +1,31 @@
 require 'rails_helper'
 
-RSpec.describe ConnectionsController, type: :controller do
+RSpec.describe "Connections", type: :request do
   let(:current_user) { FactoryBot.create(:person) }
   let(:other_user) { FactoryBot.create(:person) }
   let(:yet_another_user) { FactoryBot.create(:person) }
 
   before do
-    @request.env["devise.mapping"] = Devise.mappings[:person]
-    sign_in current_user
+    sign_in current_user, scope: :person
   end
 
   shared_examples "redirect" do
     it "redirects to connections index" do
-      expect(subject).to redirect_to controller: :connections, action: :index
+      request
+      expect(response).to redirect_to controller: :connections, action: :index
     end
   end
 
   describe "#index" do
-    subject { get :index }
-
     it "returns a 200" do
-      expect(subject).to have_http_status(:ok)
+      get connections_path
+      expect(response).to have_http_status(:ok)
     end
   end
 
   describe "#create (accept a connection request)" do
-    subject do
-      post :create, params: { connection_request_id: connection_request.id }
+    subject(:request) do
+      post connections_path, params: { connection_request_id: connection_request.id }
     end
 
     context "when connection request is to current user" do
@@ -37,11 +36,12 @@ RSpec.describe ConnectionsController, type: :controller do
       include_examples "redirect"
 
       it "creates connections" do
-        expect { subject }.to change(Connection, :count).by(2)
+        expect { request }.to change(Connection, :count).by(2)
       end
 
       it "sets the flash" do
-        expect(subject.request.flash[:info]).to eq("Connection request from #{connection_request.from.name} accepted.")
+        request
+        expect(flash[:info]).to eq("Connection request from #{connection_request.from.name} accepted.")
       end
 
       it "sends an email" do
@@ -49,7 +49,7 @@ RSpec.describe ConnectionsController, type: :controller do
         expect(mail_delivery).to receive(:deliver_now)
         expect(ConnectionMailer).to receive(:connection_accepted_email).
           with(other_user, current_user).and_return(mail_delivery)
-        subject
+        request
       end
     end
 
@@ -61,7 +61,7 @@ RSpec.describe ConnectionsController, type: :controller do
       include_examples "redirect"
 
       it "doesn't create connections" do
-        expect { subject }.not_to change(Connection, :count)
+        expect { request }.not_to change(Connection, :count)
       end
     end
   end
