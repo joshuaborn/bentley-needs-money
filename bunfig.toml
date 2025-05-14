@@ -1,2 +1,5 @@
 [test]
-preload = "./spec/javascript/happy-dom.ts"
+preload = [
+    "./spec/javascript/happy-dom.ts",
+    "./spec/javascript/testing-library.ts"
+]
