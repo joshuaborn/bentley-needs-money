@@ -87,6 +87,9 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Run Bun tests
+        run: bun test
+
       - name: Setup database
         env:
           RAILS_ENV: test
