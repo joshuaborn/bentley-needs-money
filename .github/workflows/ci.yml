@@ -86,6 +86,9 @@ jobs:
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
+      
+      - name: Install JavaScript packages
+        run: bun install
 
       - name: Run Bun tests
         run: bun test
