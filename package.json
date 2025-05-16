@@ -11,6 +11,7 @@
     "@happy-dom/global-registrator": "^17.4.7",
     "@jest/globals": "^29.7.0",
     "@stylistic/eslint-plugin": "^2.12.1",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/bun": "latest",
     "@types/eslint__js": "^8.42.3",
