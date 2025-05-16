@@ -20,7 +20,7 @@ export type PersonRole = 'Ower' | 'Owed';
 export interface Person {
     id: number,
     name: string,
-    role: PersonRole,
+    role?: PersonRole,
 }
 
 export type ReasonType = 'Split' | 'Repayment';
