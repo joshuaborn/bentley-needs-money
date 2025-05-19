@@ -18,6 +18,7 @@ export default function App({ connectedPeople, initialDebts, initialFlash }: App
     });
     const [modeState, setModeState] = useState<ModeState>({ mode: 'idle' });
     const [debtsState, setDebtsState] = useState<Debt[]>(initialDebts);
+    // TODO: Move this to NewRepaymentCard.tsx.
     const peopleOwedMap = debtsState.reduce(
         function (accumulator, debt) {
             const currentEntry = accumulator.get(debt.person.id);

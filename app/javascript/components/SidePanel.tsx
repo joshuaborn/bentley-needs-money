@@ -19,13 +19,16 @@ interface SidePanelProps {
     setModeState: Dispatch<SetStateAction<ModeState>>,
 }
 
-export default function SidePanel(props:SidePanelProps) {
-    const handleCloseCard = (event:SyntheticEvent): void => {
+export default function SidePanel(props: SidePanelProps) {
+    // TODO: Move this into the individual cards. It can be in a shared file imported into each card.
+    const modeState = props.modeState;
+    const handleCloseCard = (event: SyntheticEvent): void => {
         event.preventDefault();
         if (!modeState.mode.includes('create') && !modeState.mode.includes('update')) {
             props.setModeState({ mode: 'idle' });
         }
     }
+    // TODO: Move this into the individual cards.
     const peopleOptions = props.connectedPeople.map((person) => {
         return <option key={person.id} value={person.id}>{person.name}</option>;
     });
@@ -33,21 +36,20 @@ export default function SidePanel(props:SidePanelProps) {
         const key = message[1].replace(/[^\w]|/g, "").toLowerCase() + props.flashState.counter.toString();
         return <FlashNotification key={key} kind={message[0]} message={message[1]} />;
     });
-    const modeState = props.modeState;
     let contents = null;
     let debt = null;
     switch (modeState.mode) {
         case 'new split':
         case 'create split':
-            contents = <NewSplitCard 
-                            flashState={props.flashState}
-                            handleCloseCard={handleCloseCard}
-                            modeState={props.modeState}
-                            peopleOptions={peopleOptions}
-                            setDebtsState={props.setDebtsState}
-                            setFlashState={props.setFlashState}
-                            setModeState={props.setModeState}
-                       />;
+            contents = <NewSplitCard
+                flashState={props.flashState}
+                handleCloseCard={handleCloseCard}
+                modeState={props.modeState}
+                peopleOptions={peopleOptions}
+                setDebtsState={props.setDebtsState}
+                setFlashState={props.setFlashState}
+                setModeState={props.setModeState}
+            />;
             break;
         case 'new repayment':
         case 'create repayment':

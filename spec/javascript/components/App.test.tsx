@@ -26,6 +26,7 @@ describe('App', () => {
         expect(document.querySelector('.inner-flex')).toBeInTheDocument();
     });
 
+    // TODO: Move this to NewRepaymentCard.test.tsx.
     it('passes a list of the most recent debt for each connected person to SidePanel as peopleOwed', () => {
         const actualPeopleOwed = mockSidePanel.mock.calls[0][0].peopleOwed;
         const johnSmithDebt = actualPeopleOwed.find((d: Debt) => d.person.id === johnSmith.id);
