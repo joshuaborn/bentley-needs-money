@@ -69,3 +69,5 @@ gem "jsbundling-rails", "~> 1.3"
 gem "propshaft", "~> 1.1"
 
 gem "lockbox", "~> 2.0"
+
+gem "connection_pool", "~> 2.4"
