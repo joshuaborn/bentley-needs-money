@@ -78,4 +78,8 @@ RSpec.configure do |config|
   end
 
   config.default_formatter = "doc"
+
+  config.before(:each) do
+    $redis.flushdb
+  end
 end
