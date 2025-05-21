@@ -344,6 +344,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
+  connection_pool (~> 2.4)
   debug
   devise (~> 4.9)
   factory_bot_rails

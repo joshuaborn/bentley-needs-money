@@ -4,7 +4,9 @@ redis_url = {
   production: ENV.fetch("REDIS_URL")
 }
 
-$redis = Redis.new(
-  url: redis_url[Rails.env.to_sym],
-  ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
-)
+$redis = ConnectionPool::Wrapper.new do
+  Redis.new(
+    url: redis_url[Rails.env.to_sym],
+    ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+  )
+end
