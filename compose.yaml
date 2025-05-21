@@ -13,10 +13,13 @@ services:
       - .env
     environment:
       - HISTFILE=/usr/src/app/log/.bash_history
-      - REDIS_URL=redis://redis:6379/1
+      - REDIS_URL=redis://default:${REDIS_PASSWORD}@redis:6379/1
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - external_network
+      - internal_network
   db:
     image: postgres:17
     ports:
@@ -28,6 +31,8 @@ services:
       interval: 2s
       timeout: 5s
       retries: 30
+    networks:
+      - internal_network
 
   redis:
     image: redis:alpine
@@ -35,7 +40,14 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    command: redis-server
+    command: redis-server --requirepass ${REDIS_PASSWORD} --protected-mode yes
+    networks:
+      - internal_network
+
+networks:
+  external_network:
+  internal_network:
+    internal: true
 
 volumes:
   pg_data:
