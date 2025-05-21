@@ -13,6 +13,7 @@ services:
       - .env
     environment:
       - HISTFILE=/usr/src/app/log/.bash_history
+      - REDIS_URL=redis://redis:6379/1
     depends_on:
       db:
         condition: service_healthy
@@ -28,6 +29,15 @@ services:
       timeout: 5s
       retries: 30
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server
+
 volumes:
   pg_data:
   bundle:
+  redis_data:
