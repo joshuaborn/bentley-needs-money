@@ -7,4 +7,14 @@ class YnabAuthorizationsController < ApplicationController
     }.compact
     @path = "https://app.ynab.com/oauth/authorize?" + ynab_parameters.to_query
   end
+
+  def create
+    if !params[:code].nil?
+      ynab = YnabService.new(current_person)
+      ynab.request_access_tokens(params[:code])
+    else
+      flash[:error] = "Cannot authenticate with YNAB because no authorization code was provided."
+    end
+    redirect_to :root
+  end
 end

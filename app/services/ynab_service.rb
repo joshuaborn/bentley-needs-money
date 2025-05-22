@@ -25,4 +25,7 @@ class YnabService
       end
     end
   end
+
+  def request_access_tokens(code)
+  end
 end
