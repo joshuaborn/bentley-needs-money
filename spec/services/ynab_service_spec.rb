@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe YnabService do
   include Rails.application.routes.url_helpers
 
-  subject(:ynab_service) { YnabService.new(ynab_authorizations_url, current_user) }
+  subject(:ynab_service) { YnabService.new(redirect_ynab_authorizations_url, current_user) }
   let(:host) { 'localhost:3000' }
   let(:current_user) { FactoryBot.create(:person) }
   let(:access_token) { "0cd3d1c4-1107-11e8-b642-0ed5f89f718b" }
@@ -20,7 +20,7 @@ RSpec.describe YnabService do
       {
         "client_id" => Rails.application.credentials.ynab_client_id,
         "client_secret" => Rails.application.credentials.ynab_client_secret,
-        "redirect_uri" => ynab_authorizations_url,
+        "redirect_uri" => redirect_ynab_authorizations_url,
         "grant_type" => "authorization_code",
         "code" => code
       }
