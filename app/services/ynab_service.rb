@@ -1,6 +1,5 @@
 class YnabService
-  def initialize(redirect_uri, person)
-    @redirect_uri = redirect_uri
+  def initialize(person)
     @person = person
     @conn = Faraday.new(url: "https://app.ynab.com") do |builder|
       builder.request :json
@@ -10,7 +9,7 @@ class YnabService
     end
   end
 
-  def request_access_tokens(code)
+  def request_access_tokens(redirect_uri, code)
     $redis.set(
       "person:#{@person.id}:ynab:authorization_code",
       $lockbox.encrypt(code)
@@ -19,7 +18,7 @@ class YnabService
       "/oauth/token",
       client_id: Rails.application.credentials.ynab_client_id,
       client_secret: Rails.application.credentials.ynab_client_secret,
-      redirect_uri: @redirect_uri,
+      redirect_uri: redirect_uri,
       grant_type: "authorization_code",
       code: code
     )
