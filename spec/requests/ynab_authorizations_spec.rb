@@ -27,7 +27,7 @@ RSpec.describe "YnabAuthorizations", type: :request do
       let(:code) { "8bc63e42-1105-11e8-b642-0ed5f89f718b" }
 
       before do
-        allow(YnabService).to receive(:new).with(current_user).and_return(ynab_service)
+        allow(YnabService).to receive(:new).with(ynab_authorizations_url, current_user).and_return(ynab_service)
         allow(ynab_service).to receive(:request_access_tokens).with(code)
         post ynab_authorizations_url, params: { code: code }
       end

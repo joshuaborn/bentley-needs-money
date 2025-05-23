@@ -10,6 +10,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 # require 'devise'
+require 'webmock/rspec'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -82,5 +83,10 @@ RSpec.configure do |config|
 
   config.before(:each) do
     $redis.flushdb
+    WebMock.disable_net_connect!(allow_localhost: true)
+  end
+
+  config.after(:each) do
+    WebMock.reset!
   end
 end
