@@ -1,66 +1,69 @@
 require 'rails_helper'
 
-RSpec.describe YnabService, type: :model do
-  let(:current_user) { FactoryBot.create(:person) }
-  subject(:ynab_service) { YnabService.new(current_user) }
+RSpec.describe YnabService do
+  include Rails.application.routes.url_helpers
 
-  describe "#set_access_tokens" do
-    let(:access_token) { "0cd3d1c4-1107-11e8-b642-0ed5f89f718b" }
+  subject(:ynab_service) { YnabService.new(ynab_authorizations_url, current_user) }
+  let(:host) { 'localhost:3000' }
+  let(:current_user) { FactoryBot.create(:person) }
+  let(:access_token) { "0cd3d1c4-1107-11e8-b642-0ed5f89f718b" }
+  let(:refresh_token) { "13ae9632-1107-11e8-b642-0ed5f89f718b" }
+
+  before do
+    Rails.application.routes.default_url_options[:host] = host
+  end
+
+  describe "#request_access_tokens" do
+    let(:code) { "8bc63e42-1105-11e8-b642-0ed5f89f718b" }
     let(:expires_in) { 7200 }
-    let(:refresh_token) { "13ae9632-1107-11e8-b642-0ed5f89f718b" }
+    let(:request_content) do
+      {
+        "client_id" => Rails.application.credentials.ynab_client_id,
+        "client_secret" => Rails.application.credentials.ynab_client_secret,
+        "redirect_uri" => ynab_authorizations_url,
+        "grant_type" => "authorization_code",
+        "code" => code
+      }
+    end
+    let(:response_content) do
+      {
+        "access_token" => access_token,
+        "token_type" => "bearer",
+        "expires_in" => expires_in,
+        "refresh_token" => refresh_token
+      }
+    end
 
     before do
-      ynab_service.set_access_tokens(parameters)
+      stub_request(:post, "https://app.ynab.com/oauth/token").with(
+        headers: {
+          'Content-Type' => 'application/json'
+        },
+        body: request_content.to_json
+      ).to_return_json(body: response_content)
+      ynab_service.request_access_tokens(code)
     end
 
-    context "with expiration" do
-      let(:parameters) do
-        {
-          "access_token" => access_token,
-          "token_type" => "bearer",
-          "expires_in" => expires_in,
-          "refresh_token" => refresh_token
-        }
-      end
-
-      it "encrypts and sets the access token" do
-        expect(
-          $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:access_token"))
-        ).to eq(access_token)
-      end
-
-      it "gives the access token an expiration" do
-        expect($redis.ttl("person:#{current_user.id}:ynab:access_token")).to eq(expires_in)
-      end
-
-      it "encrypts and sets the refresh token" do
-        expect(
-          $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:refresh_token"))
-        ).to eq(refresh_token)
-      end
+    it "encrypts and stores the authorization code in Redis" do
+      expect(
+        $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:authorization_code"))
+      ).to eq(code)
     end
 
-    context "without expiration" do
-      let(:parameters) do
-        {
-          "access_token" => access_token,
-          "token_type" => "bearer"
-        }
-      end
+    it "encrypts and stores the access token in Redis" do
+      expect(
+        $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:access_token"))
+      ).to eq(access_token)
+    end
 
-      it "encrypts and sets the access token" do
-        expect(
-          $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:access_token"))
-        ).to eq(access_token)
-      end
+    it "gives the access token an expiration in Redis" do
+      expect($redis.ttl("person:#{current_user.id}:ynab:access_token")).to eq(expires_in)
+    end
 
-      it "does not give the access token an expiration" do
-        expect($redis.ttl("person:#{current_user.id}:ynab:access_token")).to eq(-1)
-      end
-
-      it "does not set a refresh token" do
-        expect($redis.get("person:#{current_user.id}:ynab:refresh_token")).to be(nil)
-      end
+    it "encrypts and sets the refresh token in Redis" do
+      expect(
+        $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:refresh_token"))
+      ).to eq(refresh_token)
     end
   end
 end
