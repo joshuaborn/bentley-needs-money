@@ -27,8 +27,8 @@ RSpec.describe "YnabAuthorizations", type: :request do
       let(:code) { "8bc63e42-1105-11e8-b642-0ed5f89f718b" }
 
       before do
-        allow(YnabService).to receive(:new).with(redirect_ynab_authorizations_url, current_user).and_return(ynab_service)
-        allow(ynab_service).to receive(:request_access_tokens).with(code)
+        allow(YnabService).to receive(:new).with(current_user).and_return(ynab_service)
+        allow(ynab_service).to receive(:request_access_tokens).with(redirect_ynab_authorizations_url, code)
         get redirect_ynab_authorizations_url, params: { code: code }
       end
 
@@ -37,7 +37,7 @@ RSpec.describe "YnabAuthorizations", type: :request do
       end
 
       it "invokes a YnabService instance and calls #request_access_tokens" do
-        expect(ynab_service).to have_received(:request_access_tokens).with(code)
+        expect(ynab_service).to have_received(:request_access_tokens).with(redirect_ynab_authorizations_url, code)
       end
     end
 

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe YnabService do
   include Rails.application.routes.url_helpers
 
-  subject(:ynab_service) { YnabService.new(redirect_ynab_authorizations_url, current_user) }
+  subject(:ynab_service) { YnabService.new(current_user) }
   let(:host) { 'localhost:3000' }
   let(:current_user) { FactoryBot.create(:person) }
   let(:access_token) { "0cd3d1c4-1107-11e8-b642-0ed5f89f718b" }
@@ -41,7 +41,7 @@ RSpec.describe YnabService do
         },
         body: request_content.to_json
       ).to_return_json(body: response_content)
-      ynab_service.request_access_tokens(code)
+      ynab_service.request_access_tokens(redirect_ynab_authorizations_url, code)
     end
 
     it "encrypts and stores the authorization code in Redis" do
