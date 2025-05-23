@@ -1,5 +1,11 @@
 class YnabService
+  class YnabServiceError < StandardError; end
+  class ArgumentError < YnabServiceError; end
+  class InitializationError < YnabServiceError; end
+
   def initialize(person)
+    raise ArgumentError, "There must be a currently logged-in person." if person.blank?
+
     @person = person
     @conn = Faraday.new(url: "https://app.ynab.com") do |builder|
       builder.request :json
@@ -10,6 +16,14 @@ class YnabService
   end
 
   def request_access_tokens(redirect_uri, code)
+    raise ArgumentError, "The redirect URI cannot be blank." if redirect_uri.blank?
+    raise ArgumentError, "The authorization code cannot be blank." if code.blank?
+    if Rails.application.credentials.ynab_client_id.blank? or
+       Rails.application.credentials.ynab_client_secret.blank?
+      raise InitializationError,
+        "Credentials for the application to authenticate users with YNAB are not available."
+    end
+
     $redis.set(
       "person:#{@person.id}:ynab:authorization_code",
       $lockbox.encrypt(code)
