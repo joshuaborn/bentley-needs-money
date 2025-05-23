@@ -13,8 +13,8 @@ services:
       - .env
     environment:
       - HISTFILE=/usr/src/app/log/.bash_history
-      - REDIS_URL=redis://default:${REDIS_PASSWORD}@redis:6379/1
-      - REDIS_TEST_URL=redis://default:${REDIS_PASSWORD}@redis_test:6379/1
+      - REDIS_URL=redis://default:${REDIS_PASSWORD}@redis:6379/0
+      - REDIS_TEST_URL=redis://default:${REDIS_PASSWORD}@redis_test:6379/0
     depends_on:
       db:
         condition: service_healthy
