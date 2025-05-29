@@ -4,7 +4,8 @@ class YnabService
   class InitializationError < YnabServiceError; end
 
   def initialize(person)
-    raise ArgumentError, "There must be a currently logged-in person." if person.blank?
+    raise ArgumentError, "There must be a currently logged-in person." if person.nil?
+    raise ArgumentError, "Parameter to YnabService must be a Person record." unless person.kind_of?(Person)
 
     @person = person
     @conn = Faraday.new(url: "https://app.ynab.com") do |builder|
