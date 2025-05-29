@@ -57,17 +57,17 @@ RSpec.describe YnabService do
       }
     end
 
-    context "without errors" do
-      before do
-        stub_request(:post, "https://app.ynab.com/oauth/token").with(
-          headers: {
-            'Content-Type' => 'application/json'
-          },
-          body: request_content.to_json
-        ).to_return_json(body: response_content)
-        ynab_service.request_access_tokens(redirect_uri, code)
-      end
+    before do
+      stub_request(:post, "https://app.ynab.com/oauth/token").with(
+        headers: {
+          'Content-Type' => 'application/json'
+        },
+        body: request_content.to_json
+      ).to_return_json(body: response_content)
+      ynab_service.request_access_tokens(redirect_uri, code)
+    end
 
+    context "with all expected parameters in response" do
       it "encrypts and stores the authorization code in Redis" do
         expect(
           $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:authorization_code"))
@@ -89,35 +89,35 @@ RSpec.describe YnabService do
           $lockbox.decrypt($redis.get("person:#{current_user.id}:ynab:refresh_token"))
         ).to eq(refresh_token)
       end
+    end
 
-      context "when there is no expires_in parameter in the response" do
-        let(:response_content) do
-          {
-            "access_token" => access_token,
-            "token_type" => "bearer",
-            "refresh_token" => refresh_token
-          }
-        end
-
-        it "stores the access token in Redis without expiration" do
-          expect($redis.ttl("person:#{current_user.id}:ynab:access_token")).to eq(-1)
-        end
+    context "when there is no expires_in parameter in the response" do
+      let(:response_content) do
+        {
+          "access_token" => access_token,
+          "token_type" => "bearer",
+          "refresh_token" => refresh_token
+        }
       end
 
-      context "when there is no refresh_token in the response" do
-        let(:response_content) do
-          {
-            "access_token" => access_token,
-            "token_type" => "bearer",
-            "expires_in" => expires_in
-          }
-        end
+      it "stores the access token in Redis without expiration" do
+        expect($redis.ttl("person:#{current_user.id}:ynab:access_token")).to eq(-1)
+      end
+    end
 
-        it "does not store a refresh token" do
-          expect(
-            $redis.get("person:#{current_user.id}:ynab:refresh_token")
-          ).to be_nil
-        end
+    context "when there is no refresh_token in the response" do
+      let(:response_content) do
+        {
+          "access_token" => access_token,
+          "token_type" => "bearer",
+          "expires_in" => expires_in
+        }
+      end
+
+      it "does not store a refresh token" do
+        expect(
+          $redis.get("person:#{current_user.id}:ynab:refresh_token")
+        ).to be_nil
       end
     end
 
