@@ -122,30 +122,52 @@ RSpec.describe YnabService do
     end
 
     context "without YNAB credentials for the application" do
-      it "raises a YnabServiceError::InitializationError" do
+      it "handles the YnabServiceError::InitializationError with a failure result" do
         allow(Rails.application.credentials).to receive(:ynab_client_id).and_return(nil)
         allow(Rails.application.credentials).to receive(:ynab_client_secret).and_return(nil)
-        expect { ynab_service.request_access_tokens(redirect_uri, code) }.to raise_error(YnabService::InitializationError)
+
+        result = ynab_service.request_access_tokens(redirect_uri, code)
+        expect(result).to be_failure
+        expect(result.message).to eq("We're experiencing technical difficulties. Please try again later.")
       end
     end
 
     context "without a redirect_uri" do
-      it "raises a YnabServiceError::ArgumentError when redirect_url is nil" do
-        expect { ynab_service.request_access_tokens(nil, code) }.to raise_error(YnabService::ArgumentError)
+      it "handles the YnabServiceError::ArgumentError when redirect_url is nil with a failure result" do
+        result = ynab_service.request_access_tokens(nil, code)
+        expect(result).to be_failure
+        expect(result.message).to eq("Invalid authorization parameters. Please try connecting again.")
       end
 
-      it "raises a YnabServiceError::ArgumentError when redirect_url is an empty string" do
-        expect { ynab_service.request_access_tokens("", code) }.to raise_error(YnabService::ArgumentError)
+      it "handles the YnabServiceError::ArgumentError when redirect_url is an empty string with a failure result" do
+        result = ynab_service.request_access_tokens("", code)
+        expect(result).to be_failure
+        expect(result.message).to eq("Invalid authorization parameters. Please try connecting again.")
       end
     end
 
     context "without an authorization code " do
-      it "raises a YnabServiceError::ArgumentError when code is nil" do
-        expect { ynab_service.request_access_tokens(current_user, nil) }.to raise_error(YnabService::ArgumentError)
+      it "handles the YnabServiceError::ArgumentError when code is nil with a failure result" do
+        result = ynab_service.request_access_tokens(current_user, nil)
+        expect(result).to be_failure
+        expect(result.message).to eq("Invalid authorization parameters. Please try connecting again.")
       end
 
-      it "raises a YnabServiceError::ArgumentError when code is an empty string" do
-        expect { ynab_service.request_access_tokens(current_user, "") }.to raise_error(YnabService::ArgumentError)
+      it "handles the YnabServiceError::ArgumentError when code is an empty string with a failure result" do
+        result = ynab_service.request_access_tokens(current_user, "")
+        expect(result).to be_failure
+        expect(result.message).to eq("Invalid authorization parameters. Please try connecting again.")
+      end
+    end
+
+    context 'when API request fails' do
+      it 'returns a failure result' do
+        stub_request(:post, "https://app.ynab.com/oauth/token")
+          .to_return(status: 401, body: { error: "invalid_client" }.to_json)
+
+        result = ynab_service.request_access_tokens(redirect_uri, code)
+        expect(result).to be_failure
+        expect(result.message).to eq("Authorization failed. Please try connecting again.")
       end
     end
   end

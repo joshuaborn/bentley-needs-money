@@ -38,6 +38,40 @@ class YnabService
       code: code
     )
     set_access_tokens response.body
+
+    ServiceResult.success("Successfully connected to YNAB!")
+
+  rescue ArgumentError => e
+    Rails.logger.warn "YNAB authorization failed - invalid parameters: #{e.message}"
+    ServiceResult.failure("Invalid authorization parameters. Please try connecting again.")
+
+  rescue InitializationError => e
+    Rails.logger.error "YNAB authorization failed - configuration error: #{e.message}"
+    ServiceResult.failure("We're experiencing technical difficulties. Please try again later.")
+
+  rescue Faraday::UnauthorizedError, Faraday::ForbiddenError => e
+    Rails.logger.error "YNAB authorization failed - authentication rejected: #{e.message}"
+    ServiceResult.failure("Authorization failed. Please try connecting again.")
+
+  rescue Faraday::BadRequestError => e
+    Rails.logger.warn "YNAB authorization failed - bad request: #{e.message}"
+    ServiceResult.failure("Invalid authorization code. Please try connecting again.")
+
+  rescue Faraday::TooManyRequestsError => e
+    Rails.logger.warn "YNAB authorization failed - rate limited: #{e.message}"
+    ServiceResult.failure("Too many requests. Please try again in a few minutes.")
+
+  rescue Faraday::ServerError => e
+    Rails.logger.error "YNAB authorization failed - server error: #{e.message}"
+    ServiceResult.failure("YNAB is experiencing issues. Please try again later.")
+
+  rescue Faraday::ConnectionFailed, Faraday::TimeoutError, Faraday::SSLError => e
+    Rails.logger.error "YNAB authorization failed - network error: #{e.message}"
+    ServiceResult.failure("Connection failed. Please check your internet connection and try again.")
+
+  rescue StandardError => e
+    Rails.logger.error "YNAB authorization failed - unexpected error: #{e.class} - #{e.message}"
+    ServiceResult.failure("An unexpected error occurred. Please try again.")
   end
 
   private

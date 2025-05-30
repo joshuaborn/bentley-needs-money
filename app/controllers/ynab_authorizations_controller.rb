@@ -9,12 +9,14 @@ class YnabAuthorizationsController < ApplicationController
   end
 
   def redirect
-    if !params[:code].nil?
-      ynab = YnabService.new(current_person)
-      ynab.request_access_tokens(redirect_ynab_authorizations_url, params[:code])
+    ynab = YnabService.new(current_person)
+    result = ynab.request_access_tokens(redirect_ynab_authorizations_url, params[:code])
+    if result.success?
+      flash[:notice] = result.message
+      redirect_to root_path
     else
-      flash[:error] = "Cannot authenticate with YNAB because no authorization code was provided."
+      flash[:error] = result.message
+      redirect_to new_ynab_authorization_path
     end
-    redirect_to :root
   end
 end

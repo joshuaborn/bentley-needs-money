@@ -7,7 +7,7 @@ RSpec.describe "YnabAuthorizations", type: :request do
     sign_in current_user, scope: :person
   end
 
-  describe "GET /new" do
+  describe "new" do
     before do
       get new_ynab_authorization_path
     end
@@ -21,37 +21,39 @@ RSpec.describe "YnabAuthorizations", type: :request do
     end
   end
 
-  describe "POST" do
-    context "when an authorization code is provided" do
-      let(:ynab_service) { instance_double(YnabService) }
-      let(:code) { "8bc63e42-1105-11e8-b642-0ed5f89f718b" }
+  describe "create" do
+    let(:service) { double("YnabService") }
+    let(:authorization_code) { "authorization code" }
 
-      before do
-        allow(YnabService).to receive(:new).with(current_user).and_return(ynab_service)
-        allow(ynab_service).to receive(:request_access_tokens).with(redirect_ynab_authorizations_url, code)
-        get redirect_ynab_authorizations_url, params: { code: code }
+    before do
+      allow(YnabService).to receive(:new).and_return(service)
+      allow(service).to receive(:request_access_tokens).and_return(service_result)
+      get redirect_ynab_authorizations_path, params: { code: authorization_code }
+    end
+
+    context "on success" do
+      let(:message) { "This is a success message." }
+      let(:service_result) { ServiceResult.success(message) }
+
+      it "redirects to home" do
+        expect(response).to redirect_to root_path
       end
 
-      it "redirects" do
-        expect(response).to have_http_status(:redirect)
-      end
-
-      it "invokes a YnabService instance and calls #request_access_tokens" do
-        expect(ynab_service).to have_received(:request_access_tokens).with(redirect_ynab_authorizations_url, code)
+      it "sets the success message in the flash" do
+        expect(flash[:notice]).to eq(message)
       end
     end
 
-    context "with no authorization code" do
-      before do
-        get redirect_ynab_authorizations_url, params: { code: nil }
+    context "on failure" do
+      let(:message) { "This is a failure message." }
+      let(:service_result) { ServiceResult.failure(message) }
+
+      it "redirects back to the new path" do
+        expect(response).to redirect_to action: 'new'
       end
 
-      it "redirects" do
-        expect(response).to have_http_status(:redirect)
-      end
-
-      it "sets a flash message with an error" do
-        expect(flash[:error]).to match(/Cannot authenticate with YNAB because no authorization code was provided./)
+      it "sets the failure message in the flash" do
+        expect(flash[:error]).to eq(message)
       end
     end
   end
