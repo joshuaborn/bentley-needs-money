@@ -77,23 +77,28 @@ class YnabService
   end
 
   def request_transactions
-    access_token = get_access_token
-    if access_token.nil? and get_refresh_token.nil?
-      Rails.logger.warn "YNAB API call failed - no access token available"
-      return ServiceResult.failure("No YNAB connection available. Please connect to YNAB first.")
+    make_authenticated_request("transactions", :get, "/api/v1/budgets/default/transactions") do |response|
+      ServiceResult.success("Successfully fetched transactions from YNAB.", response.body)
     end
-
-    response = @conn.get("/api/v1/budgets/default/transactions") do |req|
-      req.headers["Authorization"] = "Bearer #{access_token}"
-    end
-    ServiceResult.success("Successfully fetched transactions from YNAB.", response.body)
-
   rescue StandardError => e
     Rails.logger.error "YNAB API call failed: #{e.class} - #{e.message}"
     ServiceResult.failure("Failed to fetch budgets from YNAB.")
   end
 
   private
+
+  def make_authenticated_request(operation_name, method, path, **options)
+    access_token = get_access_token
+    if access_token.nil? and get_refresh_token.nil?
+      Rails.logger.warn "YNAB API call failed - no access token available"
+      return ServiceResult.failure("No YNAB connection available. Please connect to YNAB first.")
+    end
+
+    response = @conn.public_send(method, path, **options) do |req|
+      req.headers["Authorization"] = "Bearer #{access_token}"
+    end
+    yield(response)
+  end
 
   def set_access_tokens(parameters)
     $redis.pipelined do |pipeline|
