@@ -168,11 +168,11 @@ RSpec.describe YnabService do
     context 'when API request fails' do
       it 'returns a failure result' do
         stub_request(:post, "https://app.ynab.com/oauth/token")
-          .to_return(status: 401, body: { error: "invalid_client" }.to_json)
+          .to_return(status: 500, body: { error: "Internal Server Error" }.to_json)
 
         result = ynab_service.request_access_tokens(redirect_uri, code)
         expect(result).to be_failure
-        expect(result.message).to eq("Authorization failed. Please try connecting again.")
+        expect(result.message).to eq("YNAB is experiencing issues. Please try again later.")
       end
     end
   end
@@ -226,7 +226,7 @@ RSpec.describe YnabService do
         it "returns an error result" do
           result = ynab_service.request_transactions
           expect(result.failure?).to be true
-          expect(result.message).to eq("Failed to fetch budgets from YNAB.")
+          expect(result.message).to eq("YNAB is experiencing issues. Please try again later.")
         end
       end
     end
