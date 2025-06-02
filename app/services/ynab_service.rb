@@ -76,7 +76,7 @@ class YnabService
     ServiceResult.failure("An unexpected error occurred. Please try again.")
   end
 
-  def get_transactions
+  def request_transactions
     access_token = get_access_token
     if access_token.nil? and get_refresh_token.nil?
       Rails.logger.warn "YNAB API call failed - no access token available"

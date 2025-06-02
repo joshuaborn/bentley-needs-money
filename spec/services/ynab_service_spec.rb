@@ -177,7 +177,7 @@ RSpec.describe YnabService do
     end
   end
 
-  describe "#get_transactions" do
+  describe "#request_transactions" do
     let(:response_content) { "response content" }
 
     context "when access token is available" do
@@ -198,12 +198,12 @@ RSpec.describe YnabService do
         end
 
         it "makes request to the YNAB API" do
-          ynab_service.get_transactions
+          ynab_service.request_transactions
           expect(a_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions")).to have_been_made
         end
 
         it "returns the payload of transactions" do
-          result = ynab_service.get_transactions
+          result = ynab_service.request_transactions
           expect(result.success?).to be true
           expect(result.payload).to eq(response_content)
         end
@@ -219,12 +219,12 @@ RSpec.describe YnabService do
         end
 
         it "makes request to the YNAB API" do
-          ynab_service.get_transactions
+          ynab_service.request_transactions
           expect(a_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions")).to have_been_made
         end
 
         it "returns an error result" do
-          result = ynab_service.get_transactions
+          result = ynab_service.request_transactions
           expect(result.failure?).to be true
           expect(result.message).to eq("Failed to fetch budgets from YNAB.")
         end
@@ -233,12 +233,12 @@ RSpec.describe YnabService do
 
     context "when neither an access token nor a refresh token are available" do
       it "does not make a request to the YNAB API" do
-        ynab_service.get_transactions
+        ynab_service.request_transactions
         expect(a_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions")).not_to have_been_made
       end
 
       it "returns a failure result" do
-        result = ynab_service.get_transactions
+        result = ynab_service.request_transactions
         expect(result.failure?).to be true
           expect(result.message).to eq("No YNAB connection available. Please connect to YNAB first.")
       end
