@@ -1,13 +1,14 @@
 class ServiceResult
-  attr_reader :message, :success
+  attr_reader :message, :success, :payload
 
-  def initialize(success, message)
+  def initialize(success, message, payload = nil)
     @success = success
     @message = message
+    @payload = payload
   end
 
-  def self.success(message)
-    new(true, message)
+  def self.success(message, payload = nil)
+    new(true, message, payload)
   end
 
   def self.failure(message)

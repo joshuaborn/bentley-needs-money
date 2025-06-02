@@ -29,6 +29,7 @@ class YnabService
       "person:#{@person.id}:ynab:authorization_code",
       $lockbox.encrypt(code)
     )
+
     response = @conn.post(
       "/oauth/token",
       client_id: Rails.application.credentials.ynab_client_id,
@@ -37,6 +38,7 @@ class YnabService
       grant_type: "authorization_code",
       code: code
     )
+
     set_access_tokens response.body
 
     ServiceResult.success("Successfully connected to YNAB!")
@@ -74,6 +76,23 @@ class YnabService
     ServiceResult.failure("An unexpected error occurred. Please try again.")
   end
 
+  def get_transactions
+    access_token = get_access_token
+    if access_token.nil? and get_refresh_token.nil?
+      Rails.logger.warn "YNAB API call failed - no access token available"
+      return ServiceResult.failure("No YNAB connection available. Please connect to YNAB first.")
+    end
+
+    response = @conn.get("/api/v1/budgets/default/transactions") do |req|
+      req.headers["Authorization"] = "Bearer #{access_token}"
+    end
+    ServiceResult.success("Successfully fetched transactions from YNAB.", response.body)
+
+  rescue StandardError => e
+    Rails.logger.error "YNAB API call failed: #{e.class} - #{e.message}"
+    ServiceResult.failure("Failed to fetch budgets from YNAB.")
+  end
+
   private
 
   def set_access_tokens(parameters)
@@ -97,5 +116,19 @@ class YnabService
         )
       end
     end
+  end
+
+  def get_access_token
+    encrypted_token = $redis.get("person:#{@person.id}:ynab:access_token")
+    return nil if encrypted_token.nil?
+
+    $lockbox.decrypt(encrypted_token)
+  end
+
+  def get_refresh_token
+    encrypted_token = $redis.get("person:#{@person.id}:ynab:refresh_token")
+    return nil if encrypted_token.nil?
+
+    $lockbox.decrypt(encrypted_token)
   end
 end
