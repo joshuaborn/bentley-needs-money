@@ -8,12 +8,15 @@ class YnabService
     raise ArgumentError, "Parameter to YnabService must be a Person record." unless person.kind_of?(Person)
 
     @person = person
-    @conn = Faraday.new(url: "https://app.ynab.com") do |builder|
+    @connection = Faraday.new(url: "https://api.ynab.com") do |builder|
+      builder.request :authorization, "Bearer", -> { get_access_token }
       builder.request :json
       builder.response :json
       builder.response :raise_error
       builder.response :logger if Rails.env.development?
     end
+
+    self
   end
 
   def request_access_tokens(redirect_uri, code)
@@ -31,7 +34,14 @@ class YnabService
         $lockbox.encrypt(code)
       )
 
-      response = @conn.post(
+      oauth_connection = Faraday.new(url: "https://app.ynab.com") do |builder|
+        builder.request :json
+        builder.response :json
+        builder.response :raise_error
+        builder.response :logger if Rails.env.development?
+      end
+
+      response = oauth_connection.post(
         "/oauth/token",
         client_id: Rails.application.credentials.ynab_client_id,
         client_secret: Rails.application.credentials.ynab_client_secret,
@@ -53,9 +63,20 @@ class YnabService
   end
 
   def request_transactions
-    make_authenticated_request("transactions", :get, "/api/v1/budgets/default/transactions") do |response|
+    make_authenticated_request("transactions", :get, "/v1/budgets/default/transactions") do |response|
+      Rails.logger.info ""
+      Rails.logger.info "REQUEST TRANSACTIONS"
+      Rails.logger.info ""
+      Rails.logger.info response
       ServiceResult.success("Successfully fetched transactions from YNAB.", response.body)
     end
+  end
+
+  def get_access_token
+    encrypted_token = $redis.get("person:#{@person.id}:ynab:access_token")
+    return nil if encrypted_token.nil?
+
+    $lockbox.decrypt(encrypted_token)
   end
 
   private
@@ -68,9 +89,7 @@ class YnabService
     end
 
     with_error_handling(operation_name) do
-      response = @conn.public_send(method, path, **options) do |req|
-        req.headers["Authorization"] = "Bearer #{access_token}"
-      end
+      response = @connection.public_send(method, path, **options)
       yield(response)
     end
   end
@@ -131,13 +150,6 @@ class YnabService
         )
       end
     end
-  end
-
-  def get_access_token
-    encrypted_token = $redis.get("person:#{@person.id}:ynab:access_token")
-    return nil if encrypted_token.nil?
-
-    $lockbox.decrypt(encrypted_token)
   end
 
   def get_refresh_token

@@ -20,7 +20,7 @@ RSpec.describe YnabService do
       end
 
       it "sets up Faraday connection" do
-        expect(ynab_service.instance_variable_get(:@conn)).to be_a(Faraday::Connection)
+        expect(ynab_service.instance_variable_get(:@connection)).to be_a(Faraday::Connection)
       end
     end
 
@@ -190,7 +190,7 @@ RSpec.describe YnabService do
 
       context "and the API request succeeds" do
         before do
-          stub_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions").with(
+          stub_request(:get, "https://api.ynab.com/v1/budgets/default/transactions").with(
             headers: {
               'Authorization' => "Bearer #{access_token}"
             }
@@ -199,7 +199,7 @@ RSpec.describe YnabService do
 
         it "makes request to the YNAB API" do
           ynab_service.request_transactions
-          expect(a_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions")).to have_been_made
+          expect(a_request(:get, "https://api.ynab.com/v1/budgets/default/transactions")).to have_been_made
         end
 
         it "returns the payload of transactions" do
@@ -211,7 +211,7 @@ RSpec.describe YnabService do
 
       context "and the API request fails" do
         before do
-          stub_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions").with(
+          stub_request(:get, "https://api.ynab.com/v1/budgets/default/transactions").with(
             headers: {
               'Authorization' => "Bearer #{access_token}"
             }
@@ -220,7 +220,7 @@ RSpec.describe YnabService do
 
         it "makes request to the YNAB API" do
           ynab_service.request_transactions
-          expect(a_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions")).to have_been_made
+          expect(a_request(:get, "https://api.ynab.com/v1/budgets/default/transactions")).to have_been_made
         end
 
         it "returns an error result" do
@@ -234,7 +234,7 @@ RSpec.describe YnabService do
     context "when neither an access token nor a refresh token are available" do
       it "does not make a request to the YNAB API" do
         ynab_service.request_transactions
-        expect(a_request(:get, "https://app.ynab.com/api/v1/budgets/default/transactions")).not_to have_been_made
+        expect(a_request(:get, "https://api.ynab.com/v1/budgets/default/transactions")).not_to have_been_made
       end
 
       it "returns a failure result" do
@@ -248,5 +248,35 @@ RSpec.describe YnabService do
     #   it "first refreshes a new access token" do
     #   end
     # end
+  end
+
+  describe "#get_access_token" do
+    let(:redis_key) { "person:#{current_user.id}:ynab:access_token" }
+
+    context "when access token exists in Redis" do
+      let(:access_token) { "test_access_token_123" }
+
+      before do
+        $redis.set(redis_key, $lockbox.encrypt(access_token))
+      end
+
+      after do
+        $redis.del(redis_key)
+      end
+
+      it "retrieves and decrypts the access token" do
+        expect(ynab_service.get_access_token).to eq(access_token)
+      end
+    end
+
+    context "when access token does not exist in Redis" do
+      before do
+        $redis.del(redis_key)
+      end
+
+      it "returns nil" do
+        expect(ynab_service.get_access_token).to be_nil
+      end
+    end
   end
 end
