@@ -20,7 +20,7 @@
           <div class="navbar-start">
             <%= link_to 'Expenses', debts_path, class: "navbar-item" + (current_page?(debts_path) ? " is-active" : "") %>
             <%= link_to 'Connections', connections_path, class: "navbar-item" + (current_page?(connections_path) ? " is-active" : "") %>
-            <%= link_to 'YNAB Integration', new_ynab_authorization_path, class: "navbar-item" + (current_page?(new_ynab_authorization_path) ? " is-active" : "") %>
+            <%= link_to 'YNAB Integration', ynab_transactions_path, class: "navbar-item" + (current_page?(ynab_transactions_path) ? " is-active" : "") %>
           </div>
           <div class="navbar-end">
             <div class="navbar-item has-dropdown is-hoverable dropdown">

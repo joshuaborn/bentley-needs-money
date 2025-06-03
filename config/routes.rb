@@ -14,10 +14,11 @@ Rails.application.routes.draw do
     resources :people, only: [ :index ]
     resources :bot_account_requests, only: [ :index ]
   end
-  resources :ynab_authorizations, only: [ :new ] do
+  resources :ynab_authorizations, only: [] do
     collection do
       get "redirect"
     end
   end
+  resources :ynab_transactions, only: [ :index ]
   root "welcome#index"
 end
